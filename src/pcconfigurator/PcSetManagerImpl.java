@@ -47,7 +47,7 @@ public class PcSetManagerImpl implements PcSetManager {
 	 * @param Component
 	 */
         public List<Configuration> findConfigByComponent(int Component) {
-		// TODO - implement PcSetManagerImp.findConfigByComponent
+		// TODO - implement PcSetManagerImp.findConfigByComponent a
 		throw new UnsupportedOperationException();
 	}
 
