@@ -8,7 +8,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	 * 
 	 * @param Component
 	 */
-	public void createComponent(int Component) {
+	public void createComponent(Component component) {
 		// TODO - implement ComponentManagerImpl.createComponent
 		throw new UnsupportedOperationException();
 	}
@@ -17,7 +17,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	 * 
 	 * @param Long
 	 */
-	public Component getComponentById(int Long) {
+	public Component getComponentById(Long id) {
 		// TODO - implement ComponentManagerImpl.getComponentById
 		throw new UnsupportedOperationException();
 	}
@@ -31,7 +31,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	 * 
 	 * @param Component
 	 */
-	public void updateComponent(int Component) {
+	public void updateComponent(Component component) {
 		// TODO - implement ComponentManagerImpl.updateComponent
 		throw new UnsupportedOperationException();
 	}
@@ -40,7 +40,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	 * 
 	 * @param Component
 	 */
-	public void deleteComponent(int Component) {
+	public void deleteComponent(Component component) {
 		// TODO - implement ComponentManagerImpl.deleteComponent
 		throw new UnsupportedOperationException();
 	}
@@ -49,7 +49,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	 * 
 	 * @param ComponentTypes
 	 */
-	public Set<Component> findCompByType(int ComponentTypes) {
+	public Set<Component> findCompByType(ComponentTypes type) {
 		// TODO - implement ComponentManagerImpl.findCompByType
 		throw new UnsupportedOperationException();
 	}

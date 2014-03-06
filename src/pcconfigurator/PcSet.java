@@ -2,27 +2,18 @@ package pcconfigurator;
 
 import java.util.Calendar;
 
-
 public class PcSet {
 
-	private Component component;
-	private Configuration configuration;
-	private Calendar addTime;
+    private Component component;
+    private Configuration configuration;
+    private Calendar addTime;
 
-	public PcSet() {
-		// TODO - implement PcSet.PcSet
-		throw new UnsupportedOperationException();
-	}
+    public PcSet(Component component, Configuration configuration, Calendar addTime) {
+        this.component = component;
+        this.configuration = configuration;
+        this.addTime = addTime;
+    }
 
-	/**
-	 * 
-	 * @param Component
-	 * @param Configuration
-	 * @param Calendar
-	 */
-	public PcSet(int Component, int Configuration, int Calendar) {
-		// TODO - implement PcSet.PcSet
-		throw new UnsupportedOperationException();
-	}
+    
 
 }

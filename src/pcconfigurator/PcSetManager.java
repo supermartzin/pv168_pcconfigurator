@@ -2,45 +2,43 @@ package pcconfigurator;
 
 import java.util.List;
 
-
-
 public interface PcSetManager {
 
-	/**
-	 * 
-	 * @param PcSet
-	 */
-	void createPcSet(int PcSet);
+    /**
+     *
+     * @param PcSet
+     */
+    void createPcSet(PcSet pcSet);
 
-	/**
-	 * 
-	 * @param Configuration
-	 * @param Component
-	 */
-	PcSet getPcSet(int Configuration, int Component);
+    /**
+     *
+     * @param Configuration
+     * @param Component
+     */
+    PcSet getPcSet(Configuration configuration,Component component);
 
-	/**
-	 * 
-	 * @param PcSet
-	 */
-	void updatePcSet(int PcSet);
+    /**
+     *
+     * @param PcSet
+     */
+    void updatePcSet(PcSet pcSet);
 
-	/**
-	 * 
-	 * @param PcSet
-	 */
-	void deletePcSet(int PcSet);
+    /**
+     *
+     * @param PcSet
+     */
+    void deletePcSet(PcSet pcSet);
 
-	/**
-	 * 
-	 * @param Component
-	 */
-	List<Configuration> findConfigByComponent(int Component);
+    /**
+     *
+     * @param Component
+     */
+    List<Configuration> findConfigByComponent(Component component);
 
-	/**
-	 * 
-	 * @param Configuration
-	 */
-	List<Component> listCompsInConfiguration(int Configuration);
+    /**
+     *
+     * @param Configuration
+     */
+    List<Component> listCompsInConfiguration(Configuration configuration);
 
 }

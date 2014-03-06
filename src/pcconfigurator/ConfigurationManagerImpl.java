@@ -9,7 +9,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	 * @param Configuration
 	 */
         @Override
-	public void createConfiguration(int Configuration) {
+	public void createConfiguration(Configuration configuration) {
 		// TODO - implement ConfigurationManagerImpl.createConfiguration
 		throw new UnsupportedOperationException();
 	}
@@ -19,7 +19,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	 * @param Long
 	 */
         @Override
-	public Configuration getConfigurationById(int Long) {
+	public Configuration getConfigurationById(Long id) {
 		// TODO - implement ConfigurationManagerImpl.getConfigurationById
 		throw new UnsupportedOperationException();
 	}
@@ -35,7 +35,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	 * @param Configuration
 	 */
         @Override
-	public void updateConfiguration(int Configuration) {
+	public void updateConfiguration(Configuration configuration) {
 		// TODO - implement ConfigurationManagerImpl.updateConfiguration
 		throw new UnsupportedOperationException();
 	}
@@ -45,7 +45,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	 * @param Configuration
 	 */
         @Override
-	public void deleteConfiguration(int Configuration) {
+	public void deleteConfiguration(Configuration configuration) {
 		// TODO - implement ConfigurationManagerImpl.deleteConfiguration
 		throw new UnsupportedOperationException();
 	}
@@ -56,7 +56,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
          * @return 
 	 */
         @Override
-	public Set<Configuration> findConfigurationByName(int String) {
+	public Set<Configuration> findConfigurationByName(String name) {
 		// TODO - implement ConfigurationManagerImpl.findConfigurationByName
 		throw new UnsupportedOperationException();
 	}

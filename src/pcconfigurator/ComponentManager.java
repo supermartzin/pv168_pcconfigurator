@@ -4,36 +4,36 @@ import java.util.Set;
 
 public interface ComponentManager {
 
-	/**
-	 * 
-	 * @param Component
-	 */
-	void createComponent(int Component);
+    /**
+     *
+     * @param component
+     */
+    void createComponent(Component component);
 
-	/**
-	 * 
-	 * @param Long
-	 */
-	Component getComponentById(int Long);
+    /**
+     *
+     * @param Long
+     */
+    Component getComponentById(Long id);
 
-	Set<Component> findAllComponents();
+    Set<Component> findAllComponents();
 
-	/**
-	 * 
-	 * @param Component
-	 */
-	void updateComponent(int Component);
+    /**
+     *
+     * @param Component
+     */
+    void updateComponent(Component component);
 
-	/**
-	 * 
-	 * @param Component
-	 */
-	void deleteComponent(int Component);
+    /**
+     *
+     * @param Component
+     */
+    void deleteComponent(Component component);
 
-	/**
-	 * 
-	 * @param ComponentTypes
-	 */
-	Set<Component> findCompByType(int ComponentTypes);
+    /**
+     *
+     * @param ComponentTypes
+     */
+    Set<Component> findCompByType(ComponentTypes type);
 
 }
