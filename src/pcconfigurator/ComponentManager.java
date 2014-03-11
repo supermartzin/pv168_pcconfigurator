@@ -12,7 +12,8 @@ public interface ComponentManager {
 
     /**
      *
-     * @param Long
+     * @param id
+     * @return 
      */
     Component getComponentById(Long id);
 
@@ -20,19 +21,20 @@ public interface ComponentManager {
 
     /**
      *
-     * @param Component
+     * @param component
      */
     void updateComponent(Component component);
 
     /**
      *
-     * @param Component
+     * @param component
      */
     void deleteComponent(Component component);
 
     /**
      *
-     * @param ComponentTypes
+     * @param type
+     * @return 
      */
     Set<Component> findCompByType(ComponentTypes type);
 
