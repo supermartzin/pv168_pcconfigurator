@@ -11,7 +11,7 @@ public class ComponentManagerImpl implements ComponentManager {
 	}
 
         @Override
-	public Component getComponentById(Long id) {
+	public Component getComponentById(long id) {
 		// TODO - implement ComponentManagerImpl.getComponentById
 		throw new UnsupportedOperationException();
 	}

@@ -15,7 +15,7 @@ public interface ComponentManager {
      * @param id
      * @return 
      */
-    Component getComponentById(Long id);
+    Component getComponentById(long id);
 
     Set<Component> findAllComponents();
 

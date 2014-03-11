@@ -19,7 +19,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 	 * @param Long
 	 */
         @Override
-	public Configuration getConfigurationById(Long id) {
+	public Configuration getConfigurationById(long id) {
 		// TODO - implement ConfigurationManagerImpl.getConfigurationById
 		throw new UnsupportedOperationException();
 	}
