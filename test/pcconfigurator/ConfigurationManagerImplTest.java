@@ -37,7 +37,13 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testCreateConfiguration() {
-        Configuration configuration = new Configuration(1,"Test configuration","David Kaya");        
+        Configuration configuration = new Configuration(1,"Test configuration","David Kaya");
+        try{
+            configManager.createConfiguration(null);
+            fail("Created null configuration");
+        } catch (IllegalArgumentException ex){
+        }
+        
         assertNotNull("ID is null",configuration.getId());
         
         configManager.createConfiguration(configuration);
@@ -104,7 +110,7 @@ public class ConfigurationManagerImplTest {
         }
         
         try{
-            configuration.setName(null);       
+            configuration.setName(null);   
             configManager.updateConfiguration(configuration);
             fail("Null argument in name!");
         }catch (IllegalArgumentException ex){
@@ -131,15 +137,26 @@ public class ConfigurationManagerImplTest {
     @Test
     public void testDeleteConfiguration() {        
         Configuration configuration = new Configuration(1,"First Configuration","David Kaya");
-        
+        Configuration configuration2 = new Configuration(2,"Second Configuration","Chuck Norris");
+        Configuration configuration3 = new Configuration(3,"Third Configuration","Steven Segal");
         configManager.createConfiguration(configuration);
+        configManager.createConfiguration(configuration2);
+        
         configManager.deleteConfiguration(configuration);
         
+        assertEquals("Configuration has not been found in DB",configuration2, configManager.getConfigurationById(configuration2.getId()));
+   
         try{
             Configuration tempConfig = configManager.getConfigurationById(configuration.getId());
             fail("Configuration has not been deleted!");
         } catch (IllegalArgumentException ex){
         }
+        try{
+            configManager.deleteConfiguration(configuration3);
+            fail("Removed nonexisting configuration");
+        } catch (IllegalArgumentException ex){
+        }
+        
     }
 
     /**
