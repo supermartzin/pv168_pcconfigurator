@@ -49,6 +49,8 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testCreateComponent() {
+        // test validneho komponentu
+        System.out.println("Test of creating valid component:");
         Component component = new Component(1, "Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         compManager.createComponent(component);
         
@@ -57,9 +59,21 @@ public class ComponentManagerImplTest {
         
         Component result = compManager.getComponentById(compID);
         assertEquals("components do not match", component, result);
-        assertNotSame("components must not be the same objects", component, result);
-        
+        assertNotSame("components must not be the same objects", component, result);        
         assertEquals("number of components in set do not match", 1, compManager.findAllComponents().size());
+        System.out.println("OK");
+        
+        // test invalidneho komponentu
+        System.out.println("Test of creating invalid component:");
+        try
+        {
+            compManager.createComponent(null);
+            System.out.println("FAIL");
+            fail("cannot add null component, exception must be thrown");
+        } catch (IllegalArgumentException ex) 
+        {
+            System.out.println("OK");
+        }  
     }
 
     /**
@@ -67,6 +81,8 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testGetComponentById() {
+        // test validneho komponentu
+        System.out.println("Test of getting valid component:");
         Component component = new Component(10, "ASUS", new BigDecimal(89.90), ComponentTypes.MOTHERBOARD, 38, "Zakladna doska ASUS");
         compManager.createComponent(component);
         
@@ -74,12 +90,19 @@ public class ComponentManagerImplTest {
         
         assertEquals("components do not match", component, result);
         assertNotSame("components must not be the same objects", component, result);
+        System.out.println("OK");
         
+        // test invalidneho komponentu
+        System.out.println("Test of getting invalid component:");
         try
         {
             result = compManager.getComponentById(new Long(-5));
+            System.out.println("FAIL");
             fail("ID cannot be negative number, exception must be thrown");
-        } catch(IllegalArgumentException ex) {}
+        } catch(IllegalArgumentException ex) 
+        {
+            System.out.println("OK");
+        }
         
     }
 
@@ -88,6 +111,8 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testFindAllComponents() {
+        // test neprazdneho zoznamu komponentov
+        System.out.println("Test of returning nonempty set of components:");
         Component comp1 = new Component(1, "AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
         Component comp2 = new Component(2, "Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
         Component comp3 = new Component(3, "Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
@@ -106,7 +131,14 @@ public class ComponentManagerImplTest {
         assertEquals("components do not match", comps, result);
         assertNotSame("components must not be the same objects", comp1, compManager.getComponentById((long) 1));
         assertNotSame("components must not be the same objects", comp2, compManager.getComponentById((long) 2));
-        assertNotSame("components must not be the same objects", comp3, compManager.getComponentById((long) 3));       
+        assertNotSame("components must not be the same objects", comp3, compManager.getComponentById((long) 3));
+        System.out.println("OK");
+        
+        // test prazdneho zoznamu komponentov
+        System.out.println("Test of returning empty set of components:");
+        ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl();
+        assertTrue("set of components should be empty", compManagerEmpty.findAllComponents().isEmpty());
+        System.out.println("OK");
     }
 
     /**
@@ -114,12 +146,7 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testUpdateComponent() {
-        System.out.println("updateComponent");
-        Component component = null;
-        ComponentManagerImpl instance = new ComponentManagerImpl();
-        instance.updateComponent(component);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -127,12 +154,7 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testDeleteComponent() {
-        System.out.println("deleteComponent");
-        Component component = null;
-        ComponentManagerImpl instance = new ComponentManagerImpl();
-        instance.deleteComponent(component);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
 
     /**
@@ -140,14 +162,7 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testFindCompByType() {
-        System.out.println("findCompByType");
-        ComponentTypes type = null;
-        ComponentManagerImpl instance = new ComponentManagerImpl();
-        Set<Component> expResult = null;
-        Set<Component> result = instance.findCompByType(type);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
     }
     
 }
