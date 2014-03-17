@@ -128,9 +128,12 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testUpdateComponent() {
-        Component component = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
         Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
-        compManager.createComponent(component);
+        compManager.createComponent(comp1);
+        compManager.createComponent(comp2);
+        
+        long compID = comp1.getId();
         
         try
         {
@@ -140,36 +143,58 @@ public class ComponentManagerImplTest {
         
         try
         {
-            component.setName(null);
-            compManager.updateComponent(component);
+            Component comp = compManager.getComponentById(compID);
+            comp.setName(null);
+            compManager.updateComponent(comp);
             fail("cannot update component with null name, exception must be thrown");
         } catch (IllegalArgumentException ex) {}
         
-        component = compManager.getComponentById(component.getId()); 
         try
         {
-            component.setPower(-15);
-            compManager.updateComponent(component);
+            Component comp = compManager.getComponentById(compID);
+            comp.setPower(-150);
+            compManager.updateComponent(comp);
             fail("cannot update component with negative power, exception must be thrown");
         } catch (IllegalArgumentException ex) {}
         
-        component = compManager.getComponentById(component.getId());
         try
         {
-            component.setPrice(new BigDecimal(-25));
-            compManager.updateComponent(component);
+            Component comp = compManager.getComponentById(compID);
+            comp.setPrice(new BigDecimal(-149.80));
+            compManager.updateComponent(comp);
             fail("cannot update component with negative price, exception must be thrown");
         } catch (IllegalArgumentException ex) {}
         
-        component = compManager.getComponentById(component.getId());
         try
         {
-            component.setPrice(new BigDecimal(-25));
-            compManager.updateComponent(component);
-            fail("cannot update component with negative price, exception must be thrown");
+            Component comp = compManager.getComponentById(compID);
+            comp.setVendor(null);
+            compManager.updateComponent(comp);
+            fail("cannot update component with null vendor, exception must be thrown");
         } catch (IllegalArgumentException ex) {}
         
-        Component toUpdate = compManager.getComponentById(component.getId());
+        Component comp = compManager.getComponentById(compID);
+        comp.setName("Zakladna doska P3X2");
+        comp.setPower(23);
+        comp.setPrice(new BigDecimal(124));
+        comp.setType(ComponentTypes.MOTHERBOARD);
+        comp.setVendor("Intel");
+        compManager.updateComponent(comp);
+        
+        assertEquals("name do not match", "Zakladna doska P3X2", comp.getName());
+        assertEquals("power do not match", 23, comp.getPower());
+        assertEquals("price do not match", new BigDecimal(124), comp.getPrice());
+        assertEquals("type do not match", ComponentTypes.MOTHERBOARD, comp.getType());
+        assertEquals("vendor do not match", "Intel", comp.getVendor());
+        
+        // test ci sa updatom nezmenili ine komponenty
+        Component component = compManager.getComponentById(comp2.getId());
+        assertEquals("name of other component has been modified", comp2.getName(), component.getName());
+        assertEquals("power of other component has been modified", comp2.getPower(), component.getPower());
+        assertEquals("price of other component has been modified", comp2.getPrice(), component.getPrice());
+        assertEquals("type of other component has been modified", comp2.getType(), component.getType());
+        assertEquals("vendor of other component has been modified", comp2.getVendor(), component.getVendor());
+        
     }
 
     /**
@@ -177,7 +202,36 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testDeleteComponent() {
+        // vymazanie validneho komponentu
+        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        compManager.createComponent(comp1);
+        compManager.createComponent(comp2);
         
+        assertNotNull("id cannot be null", comp1.getId());
+        assertNotNull("id cannot be null", comp2.getId());
+        
+        compManager.deleteComponent(comp1);
+        
+        assertNull("component should be deleted and null", compManager.getComponentById(comp1.getId()));
+        assertNotNull("component should not be modified by deleting other components", compManager.getComponentById(comp2.getId()));
+        
+        // vymazanie invalidnych komponentov
+        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
+        compManager.createComponent(comp3);
+        
+        try
+        {
+            compManager.deleteComponent(null);
+            fail("cannot delete null component, exception should be thrown");
+        } catch (IllegalArgumentException ex) { }
+        
+        try
+        {
+            comp3.setId(null);
+            compManager.deleteComponent(comp3);
+            fail("cannot delete component with null id, exception must be thrown");
+        } catch (IllegalArgumentException ex) { }
     }
 
     /**
