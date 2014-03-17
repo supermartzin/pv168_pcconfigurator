@@ -50,8 +50,7 @@ public class ComponentManagerImplTest {
     @Test
     public void testCreateComponent() {
         // test validneho komponentu
-        System.out.println("Test of creating valid component:");
-        Component component = new Component(1, "Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component component = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         compManager.createComponent(component);
         
         long compID = component.getId();
@@ -61,19 +60,13 @@ public class ComponentManagerImplTest {
         assertEquals("components do not match", component, result);
         assertNotSame("components must not be the same objects", component, result);        
         assertEquals("number of components in set do not match", 1, compManager.findAllComponents().size());
-        System.out.println("OK");
         
         // test invalidneho komponentu
-        System.out.println("Test of creating invalid component:");
         try
         {
             compManager.createComponent(null);
-            System.out.println("FAIL");
             fail("cannot add null component, exception must be thrown");
-        } catch (IllegalArgumentException ex) 
-        {
-            System.out.println("OK");
-        }  
+        } catch (IllegalArgumentException ex) { }  
     }
 
     /**
@@ -82,27 +75,20 @@ public class ComponentManagerImplTest {
     @Test
     public void testGetComponentById() {
         // test validneho komponentu
-        System.out.println("Test of getting valid component:");
-        Component component = new Component(10, "ASUS", new BigDecimal(89.90), ComponentTypes.MOTHERBOARD, 38, "Zakladna doska ASUS");
+        Component component = new Component("ASUS", new BigDecimal(89.90), ComponentTypes.MOTHERBOARD, 38, "Zakladna doska ASUS");
         compManager.createComponent(component);
         
         Component result = compManager.getComponentById(component.getId());
         
         assertEquals("components do not match", component, result);
         assertNotSame("components must not be the same objects", component, result);
-        System.out.println("OK");
         
         // test invalidneho komponentu
-        System.out.println("Test of getting invalid component:");
         try
         {
-            result = compManager.getComponentById(new Long(-5));
-            System.out.println("FAIL");
+            result = compManager.getComponentById((long) (-5));
             fail("ID cannot be negative number, exception must be thrown");
-        } catch(IllegalArgumentException ex) 
-        {
-            System.out.println("OK");
-        }
+        } catch(IllegalArgumentException ex) { }
         
     }
 
@@ -112,10 +98,9 @@ public class ComponentManagerImplTest {
     @Test
     public void testFindAllComponents() {
         // test neprazdneho zoznamu komponentov
-        System.out.println("Test of returning nonempty set of components:");
-        Component comp1 = new Component(1, "AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
-        Component comp2 = new Component(2, "Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
-        Component comp3 = new Component(3, "Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
+        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
         Set<Component> comps = new HashSet<>();
         comps.add(comp1);
         comps.add(comp2);
@@ -129,16 +114,13 @@ public class ComponentManagerImplTest {
         
         assertEquals("expected number of components does not match", comps.size(), result.size());
         assertEquals("components do not match", comps, result);
-        assertNotSame("components must not be the same objects", comp1, compManager.getComponentById((long) 1));
-        assertNotSame("components must not be the same objects", comp2, compManager.getComponentById((long) 2));
-        assertNotSame("components must not be the same objects", comp3, compManager.getComponentById((long) 3));
-        System.out.println("OK");
+        assertNotSame("components must not be the same objects", comp1, compManager.getComponentById(comp1.getId()));
+        assertNotSame("components must not be the same objects", comp2, compManager.getComponentById(comp2.getId()));
+        assertNotSame("components must not be the same objects", comp3, compManager.getComponentById(comp3.getId()));
         
         // test prazdneho zoznamu komponentov
-        System.out.println("Test of returning empty set of components:");
         ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl();
         assertTrue("set of components should be empty", compManagerEmpty.findAllComponents().isEmpty());
-        System.out.println("OK");
     }
 
     /**
@@ -146,7 +128,48 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testUpdateComponent() {
+        Component component = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        compManager.createComponent(component);
         
+        try
+        {
+            compManager.updateComponent(null);
+            fail("cannot update null component, exception must be thrown");
+        } catch (IllegalArgumentException ex) {}
+        
+        try
+        {
+            component.setName(null);
+            compManager.updateComponent(component);
+            fail("cannot update component with null name, exception must be thrown");
+        } catch (IllegalArgumentException ex) {}
+        
+        component = compManager.getComponentById(component.getId()); 
+        try
+        {
+            component.setPower(-15);
+            compManager.updateComponent(component);
+            fail("cannot update component with negative power, exception must be thrown");
+        } catch (IllegalArgumentException ex) {}
+        
+        component = compManager.getComponentById(component.getId());
+        try
+        {
+            component.setPrice(new BigDecimal(-25));
+            compManager.updateComponent(component);
+            fail("cannot update component with negative price, exception must be thrown");
+        } catch (IllegalArgumentException ex) {}
+        
+        component = compManager.getComponentById(component.getId());
+        try
+        {
+            component.setPrice(new BigDecimal(-25));
+            compManager.updateComponent(component);
+            fail("cannot update component with negative price, exception must be thrown");
+        } catch (IllegalArgumentException ex) {}
+        
+        Component toUpdate = compManager.getComponentById(component.getId());
     }
 
     /**

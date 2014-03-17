@@ -39,7 +39,7 @@ public class PcSetManagerImplTest {
     @Test
     public void testCreatePcSet() {
         Configuration config = new Configuration(1,"Test configuration","David Kaya");
-        Component comp = new Component(1, "Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
         PcSet result = pcSetManager.getPcSet(config, comp);
@@ -54,7 +54,7 @@ public class PcSetManagerImplTest {
     @Test
     public void testGetPcSet() {
         Configuration config = new Configuration(1,"Test configuration","David Kaya");
-        Component comp = new Component(1, "Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
         PcSet result = pcSetManager.getPcSet(config, comp);
@@ -75,7 +75,7 @@ public class PcSetManagerImplTest {
     @Test
     public void testUpdatePcSet() {
         Configuration config = new Configuration(1,"Test configuration","David Kaya");
-        Component comp = new Component(1, "Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         
         try{

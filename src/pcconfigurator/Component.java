@@ -11,8 +11,7 @@ public class Component {
     private int power;
     private String name;
 
-    public Component(long id, String vendor, BigDecimal price, ComponentTypes type, int power, String name) {
-        this.id = id;
+    public Component(String vendor, BigDecimal price, ComponentTypes type, int power, String name) {
         this.vendor = vendor;
         this.price = price;
         this.type = type;
@@ -84,9 +83,6 @@ public class Component {
             return false;
         }
         final Component other = (Component) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 }
