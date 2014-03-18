@@ -38,7 +38,7 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testCreatePcSet() {
-        Configuration config = new Configuration(1,"Test configuration","David Kaya");
+        Configuration config = new Configuration("Test configuration","David Kaya");
         Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
@@ -53,14 +53,14 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testGetPcSet() {
-        Configuration config = new Configuration(1,"Test configuration","David Kaya");
+        Configuration config = new Configuration("Test configuration","David Kaya");
         Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
         PcSet result = pcSetManager.getPcSet(config, comp);
         
         try{
-            pcSetManager.getPcSet(new Configuration(2,"Test","Steven Segal"), null);
+            pcSetManager.getPcSet(new Configuration("Test","Steven Segal"), null);
             fail("This PcSet does not exist!");
         } catch(IllegalArgumentException ex){
         }
@@ -74,7 +74,7 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testUpdatePcSet() {
-        Configuration config = new Configuration(1,"Test configuration","David Kaya");
+        Configuration config = new Configuration("Test configuration","David Kaya");
         Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         PcSet expected = new PcSet(comp, config);
         
@@ -88,7 +88,7 @@ public class PcSetManagerImplTest {
         
         
         pcSetManager.createPcSet(expected);        
-        expected.setConfiguration(new Configuration(2,"Test configuration","Chuck Norris"));
+        expected.setConfiguration(new Configuration("Test configuration","Chuck Norris"));
         pcSetManager.updatePcSet(expected);     
         PcSet result = pcSetManager.getPcSet(config, comp);
         

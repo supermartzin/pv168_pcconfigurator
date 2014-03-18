@@ -11,8 +11,7 @@ public class Configuration {
     private DateTime lastUpdate;
     
     
-    public Configuration(long id, String name, String creator) {
-        this.id = id;
+    public Configuration(String name, String creator) {
         this.name = name;
         this.creator = creator;
         this.creationTime = new DateTime();

@@ -37,7 +37,7 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testCreateConfiguration() {
-        Configuration configuration = new Configuration(1,"Test configuration","David Kaya");
+        Configuration configuration = new Configuration("Test configuration","David Kaya");
         try{
             configManager.createConfiguration(null);
             fail("Created null configuration");
@@ -65,10 +65,9 @@ public class ConfigurationManagerImplTest {
         } catch (IllegalArgumentException ex){   
         }
         
-        long id = 1;
-        Configuration expResult = new Configuration(id,"Test configuration","David Kaya");
+        Configuration expResult = new Configuration("Test configuration","David Kaya");
         configManager.createConfiguration(expResult);
-        Configuration result = configManager.getConfigurationById(id);
+        Configuration result = configManager.getConfigurationById(1);
         assertEquals("Wrong configuration has been returned!",expResult, result);
     }
 
@@ -77,9 +76,9 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindAllConfigurations() {
-        Configuration firstConfig = new Configuration(1, "First configuration","David Kaya");
-        Configuration secondConfig = new Configuration(2, "Second configuration", "Steven Segal");
-        Configuration thirdConfig = new Configuration(3, "Third configuration", "Chuck Norris");
+        Configuration firstConfig = new Configuration("First configuration","David Kaya");
+        Configuration secondConfig = new Configuration("Second configuration", "Steven Segal");
+        Configuration thirdConfig = new Configuration("Third configuration", "Chuck Norris");
         configManager.createConfiguration(firstConfig);
         configManager.createConfiguration(secondConfig);
         configManager.createConfiguration(thirdConfig);
@@ -100,7 +99,8 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testUpdateConfiguration() {
-        Configuration configuration = new Configuration(1,"First configuration","David Kaya");
+        Configuration configuration = new Configuration("First configuration","David Kaya");
+        Configuration configuration2 = new Configuration("Second configuration","Steven Segal");
         configManager.createConfiguration(configuration);
         
         try{
@@ -115,6 +115,7 @@ public class ConfigurationManagerImplTest {
             fail("Null argument in name!");
         }catch (IllegalArgumentException ex){
         }
+     
         
         try{          
             configuration.setCreator(null);
@@ -123,12 +124,13 @@ public class ConfigurationManagerImplTest {
         }catch (IllegalArgumentException ex){
         }
         
-        configuration.setName("New Configuration");
+        
         configuration.setCreator("Chuck Norris");
         configManager.updateConfiguration(configuration);
-        Configuration result = configManager.getConfigurationById(configuration.getId());
+        Configuration result = configManager.getConfigurationById(1);
         
-        assertEquals(configuration, result);
+        assertEquals("Configuration is not updated",configuration, result);
+        assertEquals("This configuration should not be updated",configuration2,configManager.getConfigurationById(2));
     }
 
     /**
@@ -136,14 +138,15 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testDeleteConfiguration() {        
-        Configuration configuration = new Configuration(1,"First Configuration","David Kaya");
-        Configuration configuration2 = new Configuration(2,"Second Configuration","Chuck Norris");
-        Configuration configuration3 = new Configuration(3,"Third Configuration","Steven Segal");
+        Configuration configuration = new Configuration("First Configuration","David Kaya");
+        Configuration configuration2 = new Configuration("Second Configuration","Chuck Norris");
+        Configuration configuration3 = new Configuration("Third Configuration","Steven Segal");
         configManager.createConfiguration(configuration);
         configManager.createConfiguration(configuration2);
         
         configManager.deleteConfiguration(configuration);
         
+        assertEquals("Size is not same! Should be 1",1,configManager.findAllConfigurations().size());
         assertEquals("Configuration has not been found in DB",configuration2, configManager.getConfigurationById(configuration2.getId()));
    
         try{
@@ -164,9 +167,9 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindConfigurationByName() {
-        Configuration firstConfig = new Configuration(1, "First configuration","David Kaya");
-        Configuration secondConfig = new Configuration(2, "Second", "Steven Segal");
-        Configuration thirdConfig = new Configuration(3, "configuration", "Chuck Norris");
+        Configuration firstConfig = new Configuration("First configuration","David Kaya");
+        Configuration secondConfig = new Configuration("Second", "Steven Segal");
+        Configuration thirdConfig = new Configuration("configuration", "Chuck Norris");
         configManager.createConfiguration(firstConfig);
         configManager.createConfiguration(secondConfig);
         configManager.createConfiguration(thirdConfig);
