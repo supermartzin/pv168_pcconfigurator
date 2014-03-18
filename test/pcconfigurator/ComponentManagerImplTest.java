@@ -8,7 +8,11 @@ package pcconfigurator;
 
 import java.util.Set;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.TreeSet;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -57,7 +61,7 @@ public class ComponentManagerImplTest {
         assertNotNull("id of component is null", compID);
         
         Component result = compManager.getComponentById(compID);
-        assertEquals("components do not match", component, result);
+        assertFullEquals("components do not match: ", component, result);
         assertNotSame("components must not be the same objects", component, result);        
         assertEquals("number of components in set do not match", 1, compManager.findAllComponents().size());
         
@@ -80,13 +84,13 @@ public class ComponentManagerImplTest {
         
         Component result = compManager.getComponentById(component.getId());
         
-        assertEquals("components do not match", component, result);
+        assertFullEquals("components do not match: ", component, result);
         assertNotSame("components must not be the same objects", component, result);
         
         // test invalidneho komponentu
         try
         {
-            result = compManager.getComponentById((long) (-5));
+            compManager.getComponentById(new Long(-5));
             fail("ID cannot be negative number, exception must be thrown");
         } catch(IllegalArgumentException ex) { }
         
@@ -101,7 +105,7 @@ public class ComponentManagerImplTest {
         Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
         Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
         Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
-        Set<Component> comps = new HashSet<>();
+        Set<Component> comps = new TreeSet<>(idComparator);
         comps.add(comp1);
         comps.add(comp2);
         comps.add(comp3);
@@ -110,13 +114,21 @@ public class ComponentManagerImplTest {
         compManager.createComponent(comp2);
         compManager.createComponent(comp3);
         
-        Set<Component> result = compManager.findAllComponents();
+        Set<Component> result = new TreeSet(idComparator);
+        result.addAll(compManager.findAllComponents());
         
         assertEquals("expected number of components does not match", comps.size(), result.size());
         assertEquals("components do not match", comps, result);
-        assertNotSame("components must not be the same objects", comp1, compManager.getComponentById(comp1.getId()));
-        assertNotSame("components must not be the same objects", comp2, compManager.getComponentById(comp2.getId()));
-        assertNotSame("components must not be the same objects", comp3, compManager.getComponentById(comp3.getId()));
+        
+        Iterator iterA = comps.iterator();
+        Iterator iterB = result.iterator();
+        while (iterA.hasNext() && iterB.hasNext())
+        {
+            Component nextA = (Component) iterA.next();
+            Component nextB = (Component) iterB.next();
+            assertFullEquals("components do not match: ", nextA, nextB);
+            assertNotSame("components must not be the same objects", nextA, nextB);
+        }
         
         // test prazdneho zoznamu komponentov
         ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl();
@@ -189,11 +201,7 @@ public class ComponentManagerImplTest {
         
         // test ci sa updatom nezmenili ine komponenty
         Component component = compManager.getComponentById(comp2.getId());
-        assertEquals("name of other component has been modified", comp2.getName(), component.getName());
-        assertEquals("power of other component has been modified", comp2.getPower(), component.getPower());
-        assertEquals("price of other component has been modified", comp2.getPrice(), component.getPrice());
-        assertEquals("type of other component has been modified", comp2.getType(), component.getType());
-        assertEquals("vendor of other component has been modified", comp2.getVendor(), component.getVendor());
+        assertFullEquals("component should not be modified by updating other components: ", comp2, component);
         
     }
 
@@ -215,6 +223,7 @@ public class ComponentManagerImplTest {
         
         assertNull("component should be deleted and null", compManager.getComponentById(comp1.getId()));
         assertNotNull("component should not be modified by deleting other components", compManager.getComponentById(comp2.getId()));
+        assertFullEquals("component should not be modified by deleting other components: ", comp2, compManager.getComponentById(comp2.getId()));
         
         // vymazanie invalidnych komponentov
         Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
@@ -239,7 +248,56 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testFindCompByType() {
+        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
+        Component comp4 = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component comp5 = new Component("AMD", new BigDecimal("37.90"), ComponentTypes.MOTHERBOARD, 39, "Základná doska AMD 760G/SB710");
+        compManager.createComponent(comp1);
+        compManager.createComponent(comp2);
+        compManager.createComponent(comp3);
+        compManager.createComponent(comp4);
+        compManager.createComponent(comp5);
         
+        Set<Component> expected = new TreeSet<>(idComparator);
+        expected.add(comp4);
+        expected.add(comp5);
+        
+        Set<Component> result = new TreeSet<>(idComparator);
+        result.addAll(compManager.findCompByType(ComponentTypes.MOTHERBOARD));
+        
+        assertEquals("number of components do not match", expected.size(), result.size());
+        Iterator iterA = expected.iterator();
+        Iterator iterB = result.iterator();
+        while (iterA.hasNext() && iterB.hasNext())
+        {
+            Component nextA = (Component) iterA.next();
+            Component nextB = (Component) iterB.next();
+            assertFullEquals("components do not match: ", nextA, nextB);
+            assertNotSame("object must not be the same", nextA, nextB);
+        }     
     }
     
+    private void assertFullEquals(String message, Component expected, Component actual)
+    {
+        assertEquals(message + "ids do not match", expected.getId(), actual.getId());
+        assertEquals(message + "vendor's name do not match", expected.getVendor(), actual.getVendor());
+        assertEquals(message + "price do not match", expected.getPrice(), actual.getPrice());
+        assertEquals(message + "type do not match", expected.getType(), actual.getType());
+        assertEquals(message + "power do not match", expected.getPower(), actual.getPower());
+        assertEquals(message + "name do not match", expected.getName(), actual.getName());
+    }
+    
+    private void assertFullEquals(Component expected, Component actual)
+    {
+        assertFullEquals("", expected, actual);
+    }
+    
+    private static Comparator<Component> idComparator = new Comparator<Component>() 
+    {
+        @Override
+        public int compare(Component o1, Component o2) {
+            return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
+        }
+    };
 }
