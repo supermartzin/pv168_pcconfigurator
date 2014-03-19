@@ -1,36 +1,36 @@
 package pcconfigurator;
 
-import org.joda.time.*;
+import java.time.ZonedDateTime;
 
 public class Configuration {
 
     private long id;
     private String name;
     private String creator;
-    private DateTime creationTime;
-    private DateTime lastUpdate;
+    private ZonedDateTime creationTime;
+    private ZonedDateTime lastUpdate;
     
     
     public Configuration(String name, String creator) {
         this.name = name;
         this.creator = creator;
-        this.creationTime = new DateTime();
-        this.lastUpdate = new DateTime();
+        this.creationTime = ZonedDateTime.now();
+        this.lastUpdate = ZonedDateTime.now();
     }
-
-    public DateTime getCreationTime() {
+    
+    public ZonedDateTime getCreationTime() {      
         return creationTime;
     }
 
-    public void setCreationTime(DateTime creationTime) {
+    public void setCreationTime(ZonedDateTime creationTime) {
         this.creationTime = creationTime;
     }
 
-    public DateTime getLasUpdate() {
+    public ZonedDateTime getLasUpdate() {
         return lastUpdate;
     }
 
-    public void setLasUpdate(DateTime lasUpdate) {
+    public void setLasUpdate(ZonedDateTime lasUpdate) {
         this.lastUpdate = lasUpdate;
     }
 

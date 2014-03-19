@@ -20,12 +20,22 @@ import static org.junit.Assert.*;
  * @author davidkaya
  */
 public class ConfigurationManagerImplTest {
-    
+
     private ConfigurationManager configManager;
+    
+    @BeforeClass
+    public static void setUpClass(){
+        
+    }
+    
+    @AfterClass
+    public static void tearDownClass(){
+        
+    }
     
     @Before
     public void setUp() {
-        configManager = new ConfigurationManagerImpl();
+        configManager = new ConfigurationManagerImpl();        
     }
     
     @After
@@ -180,7 +190,11 @@ public class ConfigurationManagerImplTest {
         
         String name = "configuration";
         Set<Configuration> result = configManager.findConfigurationByName(name);
-        assertEquals("Filter by name does not work",expResult, result);       
+        assertEquals("Filter by name does not work",expResult, result);  
+        
+        String name2 = "test";
+        Set<Configuration> result2 = configManager.findConfigurationByName(name2);
+        assertEquals("Result should by empty",0,result2.size());
     }
     
 }

@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.joda.time.*;
 
 /**
  *
@@ -23,6 +22,16 @@ import org.joda.time.*;
 public class PcSetManagerImplTest {
     
     private PcSetManager pcSetManager;
+    
+    @BeforeClass
+    public static void setUpClass(){
+        
+    }
+    
+    @AfterClass
+    public static void tearDownClass(){
+        
+    }
     
     @Before
     public void setUp() {
