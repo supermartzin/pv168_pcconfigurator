@@ -127,10 +127,10 @@ public class ConfigurationManagerImplTest {
         
         configuration.setCreator("Chuck Norris");
         configManager.updateConfiguration(configuration);
-        Configuration result = configManager.getConfigurationById(1);
+        Configuration result = configManager.getConfigurationById(configuration.getId());
         
         assertEquals("Configuration is not updated",configuration, result);
-        assertEquals("This configuration should not be updated",configuration2,configManager.getConfigurationById(2));
+        assertEquals("This configuration should not be updated",configuration2,configManager.getConfigurationById(configuration2.getId()));
     }
 
     /**
@@ -146,11 +146,11 @@ public class ConfigurationManagerImplTest {
         
         configManager.deleteConfiguration(configuration);
         
-        assertEquals("Size is not same! Should be 1",1,configManager.findAllConfigurations().size());
-        assertEquals("Configuration has not been found in DB",configuration2, configManager.getConfigurationById(configuration2.getId()));
+        assertEquals("Size is not same! Should be 1", 1, configManager.findAllConfigurations().size());
+        assertEquals("Configuration has not been found in DB", configuration2, configManager.getConfigurationById(configuration2.getId()));
    
         try{
-            Configuration tempConfig = configManager.getConfigurationById(configuration.getId());
+            configManager.getConfigurationById(configuration.getId());
             fail("Configuration has not been deleted!");
         } catch (IllegalArgumentException ex){
         }
