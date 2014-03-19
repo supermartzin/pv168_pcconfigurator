@@ -93,16 +93,12 @@ public class PcSetManagerImplTest {
         } catch (IllegalArgumentException ex){
         }
         
-        
-        
-        
         pcSetManager.createPcSet(expected);        
         expected.setConfiguration(new Configuration("Test configuration","Chuck Norris"));
         pcSetManager.updatePcSet(expected);     
         PcSet result = pcSetManager.getPcSet(config, comp);
         
-        assertEquals("Wrong update",expected,result);
-        
+        assertEquals("Wrong update",expected,result);        
     }
 
     /**
@@ -110,12 +106,7 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testDeletePcSet() {
-        System.out.println("deletePcSet");
-        PcSet pcSet = null;
-        PcSetManagerImpl instance = new PcSetManagerImpl();
-        instance.deletePcSet(pcSet);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // TO DO
     }
 
     /**
@@ -123,14 +114,7 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testFindConfigByComponent() {
-        System.out.println("findConfigByComponent");
-        Component component = null;
-        PcSetManagerImpl instance = new PcSetManagerImpl();
-        List<Configuration> expResult = null;
-        List<Configuration> result = instance.findConfigByComponent(component);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // TO DO
     }
 
     /**
@@ -138,14 +122,6 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testListCompsInConfiguration() {
-        System.out.println("listCompsInConfiguration");
-        Configuration configuration = null;
-        PcSetManagerImpl instance = new PcSetManagerImpl();
-        List<Component> expResult = null;
-        List<Component> result = instance.listCompsInConfiguration(configuration);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        // TO DO
     }
-    
 }
