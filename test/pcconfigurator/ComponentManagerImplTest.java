@@ -88,7 +88,7 @@ public class ComponentManagerImplTest {
         // test invalidneho komponentu
         try
         {
-            compManager.getComponentById(new Long(-5));
+            Component componentById = compManager.getComponentById((long) -5);
             fail("ID cannot be negative number, exception must be thrown");
         } catch(IllegalArgumentException ex) { }
         
@@ -291,11 +291,6 @@ public class ComponentManagerImplTest {
         assertFullEquals("", expected, actual);
     }
     
-    private static Comparator<Component> idComparator = new Comparator<Component>() 
-    {
-        @Override
-        public int compare(Component o1, Component o2) {
-            return Long.valueOf(o1.getId()).compareTo(Long.valueOf(o2.getId()));
-        }
-    };
+    private static final Comparator<Component> idComparator = (Component o1, Component o2) 
+            -> Long.valueOf(o1.getId()).compareTo(o2.getId());
 }
