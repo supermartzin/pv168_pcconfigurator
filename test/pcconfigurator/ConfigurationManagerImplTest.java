@@ -6,6 +6,9 @@
 
 package pcconfigurator;
 
+import pcconfigurator.configurationmanager.ConfigurationManager;
+import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.After;

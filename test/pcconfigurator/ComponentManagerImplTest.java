@@ -6,6 +6,9 @@
 
 package pcconfigurator;
 
+import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentTypes;
 import java.util.Set;
 import java.math.BigDecimal;
 import java.util.Comparator;

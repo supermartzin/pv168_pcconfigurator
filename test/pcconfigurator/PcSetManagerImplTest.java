@@ -6,6 +6,7 @@
 
 package pcconfigurator;
 
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,10 +14,17 @@ import java.util.Comparator;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentTypes;
+import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.pcsetmanager.PcSet;
+import pcconfigurator.pcsetmanager.PcSetManager;
+import pcconfigurator.pcsetmanager.PcSetManagerImpl;
+
 
 /**
  *
