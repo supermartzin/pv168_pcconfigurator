@@ -1,6 +1,8 @@
 package pcconfigurator.configurationmanager;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+
 
 public class Configuration {
 
@@ -17,6 +19,9 @@ public class Configuration {
         this.creationTime = LocalDateTime.now();
         this.lastUpdate = LocalDateTime.now();
     }
+
+    Configuration() {        
+    }
     
     public LocalDateTime getCreationTime() {      
         return creationTime;
@@ -26,11 +31,11 @@ public class Configuration {
         this.creationTime = creationTime;
     }
 
-    public LocalDateTime getLasUpdate() {
+    public LocalDateTime getLastUpdate() {
         return lastUpdate;
     }
 
-    public void setLasUpdate(LocalDateTime lasUpdate) {
+    public void setLastUpdate(LocalDateTime lasUpdate) {
         this.lastUpdate = lasUpdate;
     }
 
@@ -81,6 +86,7 @@ public class Configuration {
     }
     
     
+    public static final Comparator<Configuration> idComparator = (Configuration o1, Configuration o2) 
+            -> o1.getId().compareTo(o2.getId());
     
-
 }

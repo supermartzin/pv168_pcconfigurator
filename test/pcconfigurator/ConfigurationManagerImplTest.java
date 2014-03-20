@@ -6,17 +6,28 @@
 
 package pcconfigurator;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
-import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import pcconfigurator.exception.InternalFailureException;
 
 /**
  *
@@ -25,10 +36,32 @@ import static org.junit.Assert.*;
 public class ConfigurationManagerImplTest {
 
     private ConfigurationManager configManager;
+    private Connection conn;
+    private static String name;
+    private static String password;
+    private static  String dbUrl;
     
     @BeforeClass
-    public static void setUpClass(){
-        
+    public static void setUpClass(){        
+        Properties prop = new Properties();
+        InputStream input = null;
+        try{
+            input = new FileInputStream("/Users/davidkaya/Desktop/pv168_pcconfigurator/test/pcconfigurator/test_credentials.properties");
+            prop.load(input);
+            dbUrl = prop.getProperty("db_url");
+            name = prop.getProperty("name");
+            password = prop.getProperty("password");
+        } catch (IOException ex){
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
+        } finally{
+            if(input!=null){
+                try{
+                    input.close();
+                } catch (IOException e){
+                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,e);
+                }
+            }
+        }
     }
     
     @AfterClass
@@ -37,12 +70,22 @@ public class ConfigurationManagerImplTest {
     }
     
     @Before
-    public void setUp() {
-        configManager = new ConfigurationManagerImpl();        
+    public void setUp() {        
+        try{
+            if(name != null && password != null && dbUrl != null)
+                conn = DriverManager.getConnection("jdbc:derby://localhost:1527/pcconfiguration_test", name,password);
+            else
+                throw new InternalFailureException("Property file is empty");
+        } catch(SQLException | InternalFailureException ex){
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
+        }
+
+        configManager = new ConfigurationManagerImpl(conn);        
     }
     
     @After
-    public void tearDown() {
+    public void tearDown() {     
+        
     }
 
     /**
@@ -56,10 +99,9 @@ public class ConfigurationManagerImplTest {
             fail("Created null configuration");
         } catch (IllegalArgumentException ex){
         }
-        
-        assertNotNull("ID is null",configuration.getId());
-        
         configManager.createConfiguration(configuration);
+        assertNotNull("ID is null",configuration.getId());
+                
         Configuration returnedConfiguration = configManager.getConfigurationById(configuration.getId());
         
         assertNotSame("Objects are the same one.",configuration, configManager.getConfigurationById(configuration.getId()));
@@ -73,14 +115,14 @@ public class ConfigurationManagerImplTest {
     @Test
     public void testGetConfigurationById() {
         try{
-            configManager.getConfigurationById(10);
+            configManager.getConfigurationById(10000);
             fail("Configuration with ID 10 does not exist a has been returned!");
         } catch (IllegalArgumentException ex){   
         }
         
         Configuration expResult = new Configuration("Test configuration","David Kaya");
         configManager.createConfiguration(expResult);
-        Configuration result = configManager.getConfigurationById(1);
+        Configuration result = configManager.getConfigurationById(expResult.getId());
         assertEquals("Wrong configuration has been returned!",expResult, result);
     }
 
@@ -89,6 +131,13 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindAllConfigurations() {
+        PreparedStatement st = null;
+        try {
+            st=conn.prepareStatement("DELETE FROM database.configuration");
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Configuration firstConfig = new Configuration("First configuration","David Kaya");
         Configuration secondConfig = new Configuration("Second configuration", "Steven Segal");
         Configuration thirdConfig = new Configuration("Third configuration", "Chuck Norris");
@@ -96,7 +145,7 @@ public class ConfigurationManagerImplTest {
         configManager.createConfiguration(secondConfig);
         configManager.createConfiguration(thirdConfig);
         
-        Set<Configuration> expResult = new HashSet<>();
+        Set<Configuration> expResult = new TreeSet<>(Configuration.idComparator);
         expResult.add(firstConfig);
         expResult.add(secondConfig);
         expResult.add(thirdConfig);
@@ -115,7 +164,7 @@ public class ConfigurationManagerImplTest {
         Configuration configuration = new Configuration("First configuration","David Kaya");
         Configuration configuration2 = new Configuration("Second configuration","Steven Segal");
         configManager.createConfiguration(configuration);
-        
+        configManager.createConfiguration(configuration2);
         try{
             configManager.updateConfiguration(null);
             fail("Null argument in update!");
@@ -137,20 +186,27 @@ public class ConfigurationManagerImplTest {
         }catch (IllegalArgumentException ex){
         }
         
-        
+        configuration.setName("First configuration");
         configuration.setCreator("Chuck Norris");
         configManager.updateConfiguration(configuration);
-        Configuration result = configManager.getConfigurationById(1);
+        Configuration result = configManager.getConfigurationById(configuration.getId());
         
         assertEquals("Configuration is not updated",configuration, result);
-        assertEquals("This configuration should not be updated",configuration2,configManager.getConfigurationById(2));
+        assertEquals("This configuration should not be updated",configuration2,configManager.getConfigurationById(configuration2.getId()));
     }
 
     /**
      * Test of deleteConfiguration method, of class ConfigurationManagerImpl.
      */
     @Test
-    public void testDeleteConfiguration() {        
+    public void testDeleteConfiguration() { 
+        PreparedStatement st = null;
+        try {
+            st=conn.prepareStatement("DELETE FROM database.configuration");
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Configuration configuration = new Configuration("First Configuration","David Kaya");
         Configuration configuration2 = new Configuration("Second Configuration","Chuck Norris");
         Configuration configuration3 = new Configuration("Third Configuration","Steven Segal");
@@ -187,12 +243,12 @@ public class ConfigurationManagerImplTest {
         configManager.createConfiguration(secondConfig);
         configManager.createConfiguration(thirdConfig);
         
-        Set<Configuration> expResult = new HashSet<>();
+        Set<Configuration> expResult = new TreeSet<>(Configuration.idComparator);
         expResult.add(firstConfig);
         expResult.add(thirdConfig);
         
-        String name = "configuration";
-        Set<Configuration> result = configManager.findConfigurationByName(name);
+        String configName = "configuration";
+        Set<Configuration> result = configManager.findConfigurationByName(configName);
         assertEquals("Filter by name does not work",expResult, result);  
         
         String name2 = "test";
