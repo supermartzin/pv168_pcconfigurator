@@ -46,7 +46,7 @@ public class ConfigurationManagerImplTest {
         Properties prop = new Properties();
         InputStream input = null;
         try{
-            input = new FileInputStream("/Users/davidkaya/Desktop/pv168_pcconfigurator/test/pcconfigurator/test_credentials.properties");
+            input = new FileInputStream("./test/pcconfigurator/test_credentials.properties");
             prop.load(input);
             dbUrl = prop.getProperty("db_url");
             name = prop.getProperty("name");
@@ -79,7 +79,7 @@ public class ConfigurationManagerImplTest {
         } catch(SQLException | InternalFailureException ex){
             Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
         }
-
+        
         configManager = new ConfigurationManagerImpl(conn);        
     }
     
@@ -207,6 +207,7 @@ public class ConfigurationManagerImplTest {
         } catch (SQLException ex) {
             Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         Configuration configuration = new Configuration("First Configuration","David Kaya");
         Configuration configuration2 = new Configuration("Second Configuration","Chuck Norris");
         Configuration configuration3 = new Configuration("Third Configuration","Steven Segal");
@@ -236,6 +237,13 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindConfigurationByName() {
+        PreparedStatement st = null;
+        try {
+            st=conn.prepareStatement("DELETE FROM database.configuration");
+            st.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Configuration firstConfig = new Configuration("First configuration","David Kaya");
         Configuration secondConfig = new Configuration("Second", "Steven Segal");
         Configuration thirdConfig = new Configuration("configuration", "Chuck Norris");

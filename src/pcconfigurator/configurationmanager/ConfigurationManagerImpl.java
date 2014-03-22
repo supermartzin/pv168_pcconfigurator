@@ -221,7 +221,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     /**
      *
-     * @param String
+     * @param name
      * @return
      */
     @Override

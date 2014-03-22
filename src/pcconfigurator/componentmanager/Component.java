@@ -1,6 +1,7 @@
 package pcconfigurator.componentmanager;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Component {
 
@@ -83,6 +84,6 @@ public class Component {
             return false;
         }
         final Component other = (Component) obj;
-        return this.id == other.id;
+        return Objects.equals(this.id, other.id);
     }
 }
