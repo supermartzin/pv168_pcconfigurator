@@ -120,7 +120,7 @@ public class ConfigurationManagerImplTest {
     public void testGetConfigurationById() {
         try{
             configManager.getConfigurationById(10000);
-            fail("Configuration with ID 10 does not exist a has been returned!");
+            fail("Configuration with ID 10000 does not exist a has been returned!");
         } catch (IllegalArgumentException ex){   
         }
         

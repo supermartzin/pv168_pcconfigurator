@@ -12,6 +12,8 @@ public class Component {
     private int power;
     private String name;
 
+    public Component() { }
+
     public Component(String vendor, BigDecimal price, ComponentTypes type, int power, String name) {
         this.id = null;
         this.vendor = vendor;

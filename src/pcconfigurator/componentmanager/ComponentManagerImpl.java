@@ -1,6 +1,5 @@
 package pcconfigurator.componentmanager;
 
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +30,7 @@ public class ComponentManagerImpl implements ComponentManager {
         try
         {
             connection.setAutoCommit(false);
-            st = connection.prepareStatement("INSERT INTO database.configuration (vendor, price, type, power, name) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+            st = connection.prepareStatement("INSERT INTO database.component (vendor, price, type, power, name) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             st.setString(1, component.getVendor());
             st.setBigDecimal(2, component.getPrice());
             st.setString(3, component.getType().name());
@@ -82,11 +81,50 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
-        @Override
-	public Component getComponentById(long id) {
-		// TODO - implement ComponentManagerImpl.getComponentById
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Component getComponentById(Long id) {
+	if (id == null) throw new IllegalArgumentException("id is null");
+        
+        PreparedStatement st = null;
+        try
+        {
+            st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component WHERE comp_id = ?");
+            st.setLong(1, id);
+            
+            ResultSet rs = st.executeQuery();
+            if (rs.next())
+            {
+                Component component = new Component();
+                component.setId(rs.getLong("comp_id"));
+                component.setVendor(rs.getString("vendor"));
+                component.setPrice(rs.getBigDecimal("price"));
+                component.setType(ComponentTypes.valueOf(rs.getString("type")));
+                component.setPower(rs.getInt("power"));
+                component.setName(rs.getString("name"));
+                
+                if (rs.next()) throw new InternalFailureException("more components with the same ID found");
+                
+                return component;
+            }
+            else throw new InternalFailureException("this ID does not exist");
+        } catch (SQLException | IllegalArgumentException ex)
+        {
+            logger.log(Level.SEVERE, "Getting of component from database failed: ", ex);
+            throw new InternalFailureException("Getting of component from database failed: ", ex);
+        } finally
+        {
+            if (st != null)
+            {
+                try
+                {
+                    st.close();
+                } catch (SQLException ex)
+                {
+                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
+        }
+    }
 
         @Override
 	public Set<Component> findAllComponents() {
