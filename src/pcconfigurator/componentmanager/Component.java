@@ -13,6 +13,7 @@ public class Component {
     private String name;
 
     public Component(String vendor, BigDecimal price, ComponentTypes type, int power, String name) {
+        this.id = null;
         this.vendor = vendor;
         this.price = price;
         this.type = type;
@@ -20,7 +21,7 @@ public class Component {
         this.name = name;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

@@ -6,20 +6,23 @@
 
 package pcconfigurator;
 
-import pcconfigurator.componentmanager.ComponentManagerImpl;
-import pcconfigurator.componentmanager.Component;
-import pcconfigurator.componentmanager.ComponentTypes;
-import java.util.Set;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.componentmanager.ComponentTypes;
 
 /**
  *
@@ -28,12 +31,23 @@ import static org.junit.Assert.*;
 public class ComponentManagerImplTest {
     
     private ComponentManagerImpl compManager;
+    public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
+    private Connection connection;
+    private static String name;
+    private static String password;
+    private static String dbURL;
     
     public ComponentManagerImplTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        Properties properties = new Properties();
+        InputStream input = null;
+        try
+        {
+            input = new FileInputStream("./test/pcconfigurator")
+        }
     }
     
     @AfterClass
@@ -42,7 +56,7 @@ public class ComponentManagerImplTest {
     
     @Before
     public void setUp() {
-        compManager = new ComponentManagerImpl();
+        //compManager = new ComponentManagerImpl();
     }
     
     @After

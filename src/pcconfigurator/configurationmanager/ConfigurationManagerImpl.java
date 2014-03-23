@@ -87,13 +87,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "SELECT id,name,creator,creation_time,last_update FROM database.configuration WHERE id = ?");
+                    "SELECT conf_id,name,creator,creation_time,last_update FROM database.configuration WHERE conf_id = ?");
             st.setLong(1, id);
             ResultSet resultSet = st.executeQuery();
 
             if (resultSet.next()) {
                 Configuration configuration = new Configuration();
-                configuration.setId(resultSet.getLong("id"));
+                configuration.setId(resultSet.getLong("conf_id"));
                 configuration.setName(resultSet.getString("name"));
                 configuration.setCreator(resultSet.getString("creator"));
                 Instant instant = Instant.ofEpochMilli(resultSet.getDate("creation_time").getTime());
@@ -127,10 +127,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         Set<Configuration> configSet = new TreeSet<>(Configuration.idComparator);
         try {
-            st = conn.prepareStatement("SELECT id FROM database.configuration");
+            st = conn.prepareStatement("SELECT conf_id FROM database.configuration");
             ResultSet resultSet = st.executeQuery();
             while (resultSet.next()) {
-                configSet.add(getConfigurationById((resultSet.getLong("id"))));
+                configSet.add(getConfigurationById((resultSet.getLong("conf_id"))));
             }
         } catch (SQLException ex) {
             Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,7 +150,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         
         try {
             conn.setAutoCommit(false);
-            st = conn.prepareStatement("UPDATE database.configuration SET name=?,creator=?,last_update=? WHERE id=?");
+            st = conn.prepareStatement("UPDATE database.configuration SET name=?,creator=?,last_update=? WHERE conf_id=?");
             st.setString(1, configuration.getName());
             st.setString(2, configuration.getCreator());
             Date updateDate = new Date(configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC) * 1000);
@@ -193,7 +193,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         testConfiguration(configuration);
         try {
             conn.setAutoCommit(false);
-            st = conn.prepareStatement("DELETE FROM database.configuration WHERE id=?");
+            st = conn.prepareStatement("DELETE FROM database.configuration WHERE conf_id=?");
             st.setLong(1, configuration.getId());
             if (st.executeUpdate() != 1) {
                 throw new InternalFailureException("Deleted more than 1 record");
@@ -234,7 +234,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             ResultSet resultSet = st.executeQuery();
             while(resultSet.next()){
                 Configuration configuration = new Configuration();
-                configuration.setId(resultSet.getLong("id"));
+                configuration.setId(resultSet.getLong("conf_id"));
                 configuration.setName(resultSet.getString("name"));
                 configuration.setCreator(resultSet.getString("creator"));
                 Instant instant = Instant.ofEpochMilli(resultSet.getDate("creation_time").getTime());
@@ -277,7 +277,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             throw new IllegalArgumentException("Configuration argument is null");
         }
         if (configuration.getCreator() == null){
-            throw new IllegalArgumentException("Creatir is null");
+            throw new IllegalArgumentException("Creator is null");
         }
         if (configuration.getName() == null){
             throw new IllegalArgumentException("Name is null");

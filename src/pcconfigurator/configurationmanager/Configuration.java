@@ -2,6 +2,7 @@ package pcconfigurator.configurationmanager;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.Objects;
 
 
 public class Configuration {
@@ -79,10 +80,7 @@ public class Configuration {
             return false;
         }
         final Configuration other = (Configuration) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.id, other.id);
     }
     
     
