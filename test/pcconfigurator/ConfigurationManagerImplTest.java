@@ -7,6 +7,8 @@
 package pcconfigurator;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -62,6 +64,8 @@ public class ConfigurationManagerImplTest {
                 }
             }
         }
+        
+        
     }
     
     @AfterClass
@@ -80,7 +84,7 @@ public class ConfigurationManagerImplTest {
             Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
         }
         
-        configManager = new ConfigurationManagerImpl(conn);        
+        configManager = new ConfigurationManagerImpl(conn);          
     }
     
     @After

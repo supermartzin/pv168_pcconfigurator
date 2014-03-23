@@ -1,7 +1,17 @@
-Thu Mar 20 12:42:21 CET 2014 : Apache Derby Network Server - 10.9.1.0 - (1344872) started and ready to accept connections on port 1527
+Sun Mar 23 11:54:31 CET 2014 : Apache Derby Network Server - 10.9.1.0 - (1344872) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Thu Mar 20 12:42:26 CET 2014:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a816c00e-0144-df4c-9307-fffff515c32d 
+Sun Mar 23 11:54:31 CET 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a816c00e-0144-ee93-dc54-fffff515c32d 
+on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration  with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
+Loaded from file:/Applications/NetBeans/glassfish-4.0/javadb/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_20-ea-b05
+user.dir=/Applications/NetBeans/glassfish-4.0/javadb
+derby.system.home=/Users/davidkaya/Desktop/pv168_pcconfigurator/db
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sun Mar 23 13:36:12 CET 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a4bcc063-0144-ee93-dc54-fffff515c32d 
 on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration_test  with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
 Loaded from file:/Applications/NetBeans/glassfish-4.0/javadb/lib/derby.jar
 java.vendor=Oracle Corporation
