@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
- *
- * @author davidkaya
+ * @author David Kaya
+ * @version 0.1
  */
 
 package pcconfigurator;
@@ -15,34 +10,47 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 public class SqlScriptRunner {
 
     public static final String DEFAULT_SCRIPT_DELIMETER = ";";
     public static final Logger LOGGER = Logger.getLogger(SqlScriptRunner.class.getName());
 
-    private final boolean autoCommit, stopOnError, logToFile;
+    private final boolean autoCommit, logErrors;
     private final Connection connection;
 
-    public SqlScriptRunner(final Connection connection, final boolean autoCommit, final boolean stopOnError) {
-        this(connection, autoCommit, stopOnError, true);
+    /**
+     * 
+     * @param connection : Connection to database.
+     * @param autoCommit : True - it will commit automatically, false - you have to commit manualy.
+     */
+    public SqlScriptRunner(final Connection connection, final boolean autoCommit) {
+        this(connection, autoCommit, true);
     }
-
-    public SqlScriptRunner(final Connection connection, final boolean autoCommit, final boolean stopOnError, final boolean logToFile) {
+    
+    /**
+     * 
+     * @param connection : Connection to database.
+     * @param autoCommit : True - it will commit automatically, false - you have to commit manualy.
+     * @param logErrors : True - it will log errors, false - it will not log errors.
+     */
+    public SqlScriptRunner(final Connection connection, final boolean autoCommit, final boolean logErrors) {
         if (connection == null) {
             throw new RuntimeException("Connection is required");
         }
         this.connection = connection;
-        this.autoCommit = autoCommit;
-        this.stopOnError = stopOnError;
-        this.logToFile = logToFile;
+        this.autoCommit = autoCommit;       
+        this.logErrors = logErrors;
     }
-
+    
+    /**
+     * 
+     * @param reader - file with your script
+     * @throws SQLException - throws SQLException on error
+     */
     public void runScript(final Reader reader) throws SQLException {
         final boolean originalAutoCommit = this.connection.getAutoCommit();
         try {
@@ -51,59 +59,36 @@ public class SqlScriptRunner {
             }
             this.runScript(this.connection, reader);
         } finally {
-            this.connection.setAutoCommit(autoCommit);
+            this.connection.setAutoCommit(originalAutoCommit);
         }
     }
-
+    
     private void runScript(final Connection connection, final Reader reader) {
 
         for (String script : formatString(reader)) {
             PreparedStatement statement = null;
-            ResultSet rs = null;
+            
             try {
-                statement = connection.prepareStatement(script);
-                boolean hasResults = false;
-                if (stopOnError) {
-                    hasResults = statement.execute();
-                } else {
-                    try {
-                        statement.execute();
-                    } catch (SQLException ex) {
-                        if (logToFile) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                        } else {
-                            ex.fillInStackTrace();
-                        }
-                    }
-                }
-
+                statement = connection.prepareStatement(script);                
+                statement.execute();
+                
+                //If auto commit is enabled, then commit
                 if (autoCommit) {
                     connection.commit();
                 }
 
             } catch (SQLException ex) {
-                if (logToFile) {
+                if (logErrors) {
                     Logger.getLogger(SqlScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
                 } else {
                     ex.fillInStackTrace();
                 }
-            } finally {
-                if (rs != null) {
-                    try {
-                        rs.close();
-                    } catch (SQLException ex) {
-                        if (logToFile) {
-                            LOGGER.log(Level.SEVERE, null, ex);
-                        } else {
-                            ex.fillInStackTrace();
-                        }
-                    }
-                }
+            } finally {                
                 if (statement != null) {
                     try {
                         statement.close();
                     } catch (SQLException ex) {
-                        if (logToFile) {
+                        if (logErrors) {
                             LOGGER.log(Level.SEVERE, null, ex);
                         } else {
                             ex.fillInStackTrace();
@@ -114,7 +99,12 @@ public class SqlScriptRunner {
         }
 
     }
-
+    
+    /**
+     * Parses file into commands delimeted by ';'
+     * @param reader 
+     * @return string[] - commands from file
+     */
     private String[] formatString(final Reader reader) {
         String result = "";
         String line;
@@ -129,7 +119,7 @@ public class SqlScriptRunner {
                 }
             }
         } catch (IOException ex) {
-            if (logToFile) {
+            if (logErrors) {
                 LOGGER.log(Level.SEVERE, null, ex);
             } else {
                 ex.fillInStackTrace();
