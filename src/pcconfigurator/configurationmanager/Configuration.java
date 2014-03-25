@@ -83,7 +83,6 @@ public class Configuration {
         return Objects.equals(this.id, other.id);
     }
     
-    
     public static final Comparator<Configuration> idComparator = (Configuration o1, Configuration o2) 
             -> o1.getId().compareTo(o2.getId());
     

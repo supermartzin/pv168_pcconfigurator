@@ -1,6 +1,7 @@
 package pcconfigurator.componentmanager;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Component {
@@ -89,4 +90,7 @@ public class Component {
         final Component other = (Component) obj;
         return Objects.equals(this.id, other.id);
     }
+    
+    public static final Comparator<Component> idComparator = (Component o1, Component o2) 
+            -> o1.getId().compareTo(o2.getId());
 }

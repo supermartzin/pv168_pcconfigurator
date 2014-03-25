@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import pcconfigurator.exception.*;
@@ -23,7 +24,7 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public void createComponent(Component component)
     {
-        testComponent(component);
+        checkComponent(component);
         if (component.getId() != null) throw new IllegalArgumentException("Component is already in database");
         
         PreparedStatement st = null;
@@ -97,7 +98,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 Component component = new Component();
                 component.setId(rs.getLong("comp_id"));
                 component.setVendor(rs.getString("vendor"));
-                component.setPrice(rs.getBigDecimal("price"));
+                component.setPrice((rs.getBigDecimal("price")));
                 component.setType(ComponentTypes.valueOf(rs.getString("type")));
                 component.setPower(rs.getInt("power"));
                 component.setName(rs.getString("name"));
@@ -126,11 +127,31 @@ public class ComponentManagerImpl implements ComponentManager {
         }
     }
 
-        @Override
-	public Set<Component> findAllComponents() {
-		// TODO - implement ComponentManagerImpl.findAllComponents
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Set<Component> findAllComponents() {
+        Set<Component> components = new TreeSet<>(Component.idComparator);
+
+        try {
+            PreparedStatement st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component");
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+            {
+                Component component = new Component();
+                component.setId(rs.getLong("comp_id"));
+                component.setVendor(rs.getString("vendor"));
+                component.setPrice((rs.getBigDecimal("price")));
+                component.setType(ComponentTypes.valueOf(rs.getString("type")));
+                component.setPower(rs.getInt("power"));
+                component.setName(rs.getString("name"));
+                
+                components.add(component);
+            }
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, "Getting all components from database failed: ", ex);
+        }
+        
+        return components;
+    }
 
         @Override
 	public void updateComponent(Component component) {
@@ -150,7 +171,7 @@ public class ComponentManagerImpl implements ComponentManager {
 		throw new UnsupportedOperationException();
 	}
         
-    private void testComponent(Component component) throws IllegalArgumentException
+    private void checkComponent(Component component) throws IllegalArgumentException
     {
         if                   (component == null) throw new IllegalArgumentException("Component is null");
         if         (component.getName() == null) throw new IllegalArgumentException("Name of component is null");

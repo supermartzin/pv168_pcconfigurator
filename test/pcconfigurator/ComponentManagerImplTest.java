@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -99,7 +100,7 @@ public class ComponentManagerImplTest {
             } catch (SQLException ex) {
                 logger.log(Level.SEVERE, "Error during closing connection to database: ", ex);
             }
-    }
+    } 
     
     @Before
     public void setUp() {
@@ -149,7 +150,7 @@ public class ComponentManagerImplTest {
                 }
             }
         }
-    }
+    } 
 
     /**
      * Test of createComponent method, of class ComponentManagerImpl.
@@ -157,7 +158,7 @@ public class ComponentManagerImplTest {
     @Test
     public void testCreateComponent() {
         // test validneho komponentu
-        Component component = new Component("Intel", (new BigDecimal(25.50)).setScale(5), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component component = new Component("Intel", (new BigDecimal(25.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
         compManager.createComponent(component);
         
         long compID = component.getId();
@@ -166,7 +167,7 @@ public class ComponentManagerImplTest {
         Component result = compManager.getComponentById(compID);
         assertFullEquals("components do not match: ", component, result);
         assertNotSame("components must not be the same objects", component, result);        
-        //assertEquals("number of components in set do not match", 1, compManager.findAllComponents().size());
+        assertEquals("number of components in set do not match", 1, compManager.findAllComponents().size());
         
         // test invalidneho komponentu
         try
@@ -182,7 +183,7 @@ public class ComponentManagerImplTest {
     @Test
     public void testGetComponentById() {
         // test validneho komponentu
-        Component component = new Component("ASUS", (new BigDecimal(25.50)).setScale(5), ComponentTypes.MOTHERBOARD, 38, "Zakladna doska ASUS");
+        Component component = new Component("ASUS", (new BigDecimal(89.95)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 38, "Zakladna doska ASUS");
         compManager.createComponent(component);
         
         Component result = compManager.getComponentById(component.getId());
@@ -203,20 +204,24 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testFindAllComponents() {
-        // test neprazdneho zoznamu komponentov
-        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
-        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
-        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
-        Set<Component> comps = new TreeSet<>(idComparator);
-        comps.add(comp1);
-        comps.add(comp2);
-        comps.add(comp3);
+        // test prazdneho zoznamu komponentov
+        ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl(connection);
+        assertTrue("set of components should be empty", compManagerEmpty.findAllComponents().isEmpty());
         
+        // test neprazdneho zoznamu komponentov
+        Component comp1 = new Component("AMD Graphics", (new BigDecimal(149.80)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", (new BigDecimal(24.00)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp3 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");        
         compManager.createComponent(comp1);
         compManager.createComponent(comp2);
         compManager.createComponent(comp3);
         
-        Set<Component> result = new TreeSet(idComparator);
+        Set<Component> comps = new TreeSet<>(Component.idComparator);
+        comps.add(comp1);
+        comps.add(comp2);
+        comps.add(comp3);
+        
+        Set<Component> result = new TreeSet<>(Component.idComparator);
         result.addAll(compManager.findAllComponents());
         
         assertEquals("expected number of components does not match", comps.size(), result.size());
@@ -231,10 +236,6 @@ public class ComponentManagerImplTest {
             assertFullEquals("components do not match: ", nextA, nextB);
             assertNotSame("components must not be the same objects", nextA, nextB);
         }
-        
-        // test prazdneho zoznamu komponentov
-        //ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl();
-        //assertTrue("set of components should be empty", compManagerEmpty.findAllComponents().isEmpty());
     }
 
     /**
@@ -242,8 +243,8 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testUpdateComponent() {
-        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
-        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp1 = new Component("AMD Graphics", (new BigDecimal(149.80)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", (new BigDecimal(24.00)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
         compManager.createComponent(comp1);
         compManager.createComponent(comp2);
         
@@ -274,7 +275,7 @@ public class ComponentManagerImplTest {
         try
         {
             Component comp = compManager.getComponentById(compID);
-            comp.setPrice(new BigDecimal(-149.80));
+            comp.setPrice((new BigDecimal(-149.80)).setScale(2, BigDecimal.ROUND_HALF_UP));
             compManager.updateComponent(comp);
             fail("cannot update component with negative price, exception must be thrown");
         } catch (IllegalArgumentException ex) {}
@@ -290,14 +291,14 @@ public class ComponentManagerImplTest {
         Component comp = compManager.getComponentById(compID);
         comp.setName("Zakladna doska P3X2");
         comp.setPower(23);
-        comp.setPrice(new BigDecimal(124));
+        comp.setPrice((new BigDecimal(124)).setScale(2, BigDecimal.ROUND_HALF_UP));
         comp.setType(ComponentTypes.MOTHERBOARD);
         comp.setVendor("Intel");
         compManager.updateComponent(comp);
         
         assertEquals("name do not match", "Zakladna doska P3X2", comp.getName());
         assertEquals("power do not match", 23, comp.getPower());
-        assertEquals("price do not match", new BigDecimal(124), comp.getPrice());
+        assertEquals("price do not match", (new BigDecimal(124)).setScale(2, BigDecimal.ROUND_HALF_UP), comp.getPrice());
         assertEquals("type do not match", ComponentTypes.MOTHERBOARD, comp.getType());
         assertEquals("vendor do not match", "Intel", comp.getVendor());
         
@@ -313,8 +314,8 @@ public class ComponentManagerImplTest {
     @Test
     public void testDeleteComponent() {
         // vymazanie validneho komponentu
-        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
-        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp1 = new Component("AMD Graphics", (new BigDecimal(149.80)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", (new BigDecimal(24.00)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
         compManager.createComponent(comp1);
         compManager.createComponent(comp2);
         
@@ -328,7 +329,7 @@ public class ComponentManagerImplTest {
         assertFullEquals("component should not be modified by deleting other components: ", comp2, compManager.getComponentById(comp2.getId()));
         
         // vymazanie invalidnych komponentov
-        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
+        Component comp3 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
         compManager.createComponent(comp3);
         
         try
@@ -350,22 +351,22 @@ public class ComponentManagerImplTest {
      */
     @Test
     public void testFindCompByType() {
-        Component comp1 = new Component("AMD Graphics", new BigDecimal(149.80), ComponentTypes.GPU, 250, "R9 290X");
-        Component comp2 = new Component("Creative", new BigDecimal(24.00), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
-        Component comp3 = new Component("Kingston", new BigDecimal(37.50), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
-        Component comp4 = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
-        Component comp5 = new Component("AMD", new BigDecimal("37.90"), ComponentTypes.MOTHERBOARD, 39, "Základná doska AMD 760G/SB710");
+        Component comp1 = new Component("AMD Graphics", (new BigDecimal(149.80)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.GPU, 250, "R9 290X");
+        Component comp2 = new Component("Creative", (new BigDecimal(24.00)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.SOUNDCARD, 15, "SoundBlaster S150");
+        Component comp3 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M");
+        Component comp4 = new Component("Intel", (new BigDecimal("25.50")).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        Component comp5 = new Component("AMD", (new BigDecimal("37.90")).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 39, "Základná doska AMD 760G/SB710");
         compManager.createComponent(comp1);
         compManager.createComponent(comp2);
         compManager.createComponent(comp3);
         compManager.createComponent(comp4);
         compManager.createComponent(comp5);
         
-        Set<Component> expected = new TreeSet<>(idComparator);
+        Set<Component> expected = new TreeSet<>(Component.idComparator);
         expected.add(comp4);
         expected.add(comp5);
         
-        Set<Component> result = new TreeSet<>(idComparator);
+        Set<Component> result = new TreeSet<>(Component.idComparator);
         result.addAll(compManager.findCompByType(ComponentTypes.MOTHERBOARD));
         
         assertEquals("number of components do not match", expected.size(), result.size());
@@ -394,7 +395,4 @@ public class ComponentManagerImplTest {
     {
         assertFullEquals("", expected, actual);
     }
-    
-    private static final Comparator<Component> idComparator = (Component o1, Component o2) 
-            -> Long.valueOf(o1.getId()).compareTo(o2.getId());
 }
