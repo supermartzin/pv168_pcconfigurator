@@ -6,6 +6,7 @@
 
 package pcconfigurator;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,9 +16,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import pcconfigurator.configurationmanager.ConfigurationManager;
-import pcconfigurator.configurationmanager.Configuration;
-import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,10 +23,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManager;
+import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import pcconfigurator.exception.InternalFailureException;
 
 /**
@@ -37,8 +38,8 @@ import pcconfigurator.exception.InternalFailureException;
  */
 public class ConfigurationManagerImplTest {
 
-    private ConfigurationManager configManager;
-    private Connection conn;
+    private static ConfigurationManager configManager;
+    private static Connection conn;
     private static String name;
     private static String password;
     private static  String dbUrl;
@@ -65,16 +66,7 @@ public class ConfigurationManagerImplTest {
             }
         }
         
-        
-    }
-    
-    @AfterClass
-    public static void tearDownClass(){
-        
-    }
-    
-    @Before
-    public void setUp() {        
+        // create connection
         try{
             if(name != null && password != null && dbUrl != null)
                 conn = DriverManager.getConnection("jdbc:derby://localhost:1527/pcconfiguration_test", name,password);
@@ -84,12 +76,68 @@ public class ConfigurationManagerImplTest {
             Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
         }
         
-        configManager = new ConfigurationManagerImpl(conn);          
+        configManager = new ConfigurationManagerImpl(conn);              
+    }
+    
+    @AfterClass
+    public static void tearDownClass(){
+        // close connection
+        if (conn != null)
+            try {
+                conn.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing connection to database: ", ex);
+            }
+    }
+    
+    @Before
+    public void setUp() {                
+        SqlScriptRunner sr = new SqlScriptRunner(conn, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("createTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,"Error during reading file: ",ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }
     }
     
     @After
-    public void tearDown() {     
-        
+    public void tearDown() { 
+        SqlScriptRunner sr = new SqlScriptRunner(conn, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("dropTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during reading file: ", ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }      
     }
 
     /**

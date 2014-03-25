@@ -7,6 +7,8 @@
 package pcconfigurator;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -37,9 +39,9 @@ import pcconfigurator.exception.InternalFailureException;
  */
 public class ComponentManagerImplTest {
     
-    private ComponentManagerImpl compManager;
+    private static ComponentManagerImpl compManager;
     public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
-    private Connection connection;
+    private static Connection connection;
     private static String name;
     private static String password;
     private static String dbURL;
@@ -74,14 +76,8 @@ public class ComponentManagerImplTest {
                 }
             }   
         }
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
+        
+        // create connection
         try
         {
             if (name != null && password != null && dbURL != null) connection = DriverManager.getConnection("jdbc:derby://localhost:1527/pcconfiguration_test", name, password);
@@ -94,8 +90,65 @@ public class ComponentManagerImplTest {
         compManager = new ComponentManagerImpl(connection);
     }
     
+    @AfterClass
+    public static void tearDownClass() {
+        // close connection
+        if (connection != null)
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error during closing connection to database: ", ex);
+            }
+    }
+    
+    @Before
+    public void setUp() {
+        SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("createTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.SEVERE,"Error during reading file: ",ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }        
+    }
+    
     @After
     public void tearDown() {
+        SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("dropTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            logger.log(Level.SEVERE, "Error during reading file: ", ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }
     }
 
     /**
