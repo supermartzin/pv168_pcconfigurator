@@ -134,6 +134,15 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             }
         } catch (SQLException ex) {
             Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if (st != null)
+            {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
         }
         
         return configSet;

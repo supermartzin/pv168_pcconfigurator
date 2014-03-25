@@ -294,13 +294,15 @@ public class ComponentManagerImplTest {
         comp.setPrice((new BigDecimal(124)).setScale(2, BigDecimal.ROUND_HALF_UP));
         comp.setType(ComponentTypes.MOTHERBOARD);
         comp.setVendor("Intel");
-        compManager.updateComponent(comp);
         
-        assertEquals("name do not match", "Zakladna doska P3X2", comp.getName());
-        assertEquals("power do not match", 23, comp.getPower());
-        assertEquals("price do not match", (new BigDecimal(124)).setScale(2, BigDecimal.ROUND_HALF_UP), comp.getPrice());
-        assertEquals("type do not match", ComponentTypes.MOTHERBOARD, comp.getType());
-        assertEquals("vendor do not match", "Intel", comp.getVendor());
+        compManager.updateComponent(comp);
+        Component result = compManager.getComponentById(comp.getId());
+        
+        assertEquals("name do not match", "Zakladna doska P3X2", result.getName());
+        assertEquals("power do not match", 23, result.getPower());
+        assertEquals("price do not match", (new BigDecimal(124)).setScale(2, BigDecimal.ROUND_HALF_UP), result.getPrice());
+        assertEquals("type do not match", ComponentTypes.MOTHERBOARD, result.getType());
+        assertEquals("vendor do not match", "Intel", result.getVendor());
         
         // test ci sa updatom nezmenili ine komponenty
         Component component = compManager.getComponentById(comp2.getId());
@@ -323,8 +325,13 @@ public class ComponentManagerImplTest {
         assertNotNull("id cannot be null", comp2.getId());
         
         compManager.deleteComponent(comp1);
+        try {
+            Component deletedComp = compManager.getComponentById(comp1.getId());
+            fail("Component with this ID should be deleted and no longer in database.");
+        } catch (InternalFailureException ex) {
+            
+        }
         
-        assertNull("component should be deleted and null", compManager.getComponentById(comp1.getId()));
         assertNotNull("component should not be modified by deleting other components", compManager.getComponentById(comp2.getId()));
         assertFullEquals("component should not be modified by deleting other components: ", comp2, compManager.getComponentById(comp2.getId()));
         

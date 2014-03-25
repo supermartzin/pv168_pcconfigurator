@@ -130,9 +130,10 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public Set<Component> findAllComponents() {
         Set<Component> components = new TreeSet<>(Component.idComparator);
-
+        PreparedStatement st = null;
+        
         try {
-            PreparedStatement st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component");
+            st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component");
             ResultSet rs = st.executeQuery();
             while (rs.next())
             {
@@ -148,28 +149,144 @@ public class ComponentManagerImpl implements ComponentManager {
             }
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, "Getting all components from database failed: ", ex);
+        } finally {
+            if (st != null)
+            {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
         }
         
         return components;
     }
 
-        @Override
-	public void updateComponent(Component component) {
-		// TODO - implement ComponentManagerImpl.updateComponent
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void updateComponent(Component component) {
+	checkComponent(component);
+        PreparedStatement st = null;
+        
+        try
+        {
+            connection.setAutoCommit(false);
+            st = connection.prepareStatement("UPDATE database.component SET vendor=?, price=?, type=?, power=?, name=? WHERE comp_id=?");
+            st.setString(1, component.getVendor());
+            st.setBigDecimal(2, component.getPrice());
+            st.setString(3, component.getType().name());
+            st.setInt(4, component.getPower());
+            st.setString(5, component.getName());
+            st.setLong(6, component.getId());
+            
+            if (st.executeUpdate() != 1) throw new InternalFailureException("Updated more than 1 component in database");
+            
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException | InternalFailureException ex) {
+            if (connection != null)
+            {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
+                }
+            }
+            
+            logger.log(Level.SEVERE, "Updating component in database failed: ", ex);
+        } finally {
+            if (st != null)
+            {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
+        }
+    }
 
-        @Override
-	public void deleteComponent(Component component) {
-		// TODO - implement ComponentManagerImpl.deleteComponent
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public void deleteComponent(Component component) { 
+        checkComponent(component);
+        
+        if (component.getId() == null) throw new IllegalArgumentException("component without ID");
+        
+        PreparedStatement st = null;
+        try
+        {
+            connection.setAutoCommit(false);
+            st = connection.prepareStatement("DELETE FROM database.component WHERE comp_id=?");
+            st.setLong(1, component.getId());
+            
+            if (st.executeUpdate() != 1) throw new InternalFailureException("deleted more than one component form database");
+            
+            connection.commit();
+            connection.setAutoCommit(true);
+        } catch (SQLException | InternalFailureException ex) {
+            if (connection != null)
+            {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex1) {
+                    logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
+                }
+            }
+            
+            logger.log(Level.SEVERE, "Deleting component from database failed: ", ex);
+        } finally {
+            if (st != null)
+            {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
+        }
+    }
 
-        @Override
-	public Set<Component> findCompByType(ComponentTypes type) {
-		// TODO - implement ComponentManagerImpl.findCompByType
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public Set<Component> findCompByType(ComponentTypes type) {
+	if (type == null) throw new IllegalArgumentException("type is null");
+        
+        Set<Component> components = new TreeSet<>(Component.idComparator);
+        PreparedStatement st = null;
+        
+        try
+        {
+            st = connection.prepareStatement("SELECT * FROM database.component WHERE type LIKE ?");
+            st.setString(1, type.name());
+            
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+            {
+                Component component = new Component();
+                
+                component.setId(rs.getLong("comp_id"));
+                component.setVendor(rs.getString("vendor"));
+                component.setPrice(rs.getBigDecimal("price"));
+                component.setType(ComponentTypes.valueOf(rs.getString("type")));
+                component.setPower(rs.getInt("power"));
+                component.setName(rs.getString("name"));
+                
+                components.add(component);
+            }
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, "Error during getting components from database: ", ex);
+        } finally {
+            if (st != null)
+            {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                }
+            }
+        }
+        
+        return components;
+    }
         
     private void checkComponent(Component component) throws IllegalArgumentException
     {
