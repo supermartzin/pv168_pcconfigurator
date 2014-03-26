@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SqlScriptRunner {
 
@@ -28,7 +31,7 @@ public class SqlScriptRunner {
      * @param autoCommit : True - it will commit automatically, false - you have to commit manualy.
      */
     public SqlScriptRunner(final Connection connection, final boolean autoCommit) {
-        this(connection, autoCommit, true);
+        this(connection, autoCommit, false);
     }
     
     /**
@@ -131,6 +134,72 @@ public class SqlScriptRunner {
             throw new RuntimeException("Error while parsing or no scripts in file!");
         } else {
             return result.replaceAll("(?<!"+DEFAULT_SCRIPT_DELIMETER+")(\\r?\\n)+", "").split(DEFAULT_SCRIPT_DELIMETER);
+        }
+    }
+    /**
+     * Drops all tables - NOT FUNCTIONAL YET
+     */
+    public void dropAllTables(){       
+        DatabaseMetaData md;
+        ResultSet rs;
+        PreparedStatement st;
+        try {
+            md = connection.getMetaData();
+            rs = md.getTables(null, null, "%", null);
+            
+            while(rs.next()){
+                st = connection.prepareStatement("DROP TABLE ?");
+                st.setString(1, rs.getString(3));
+                st.execute();
+            }
+            
+            if(autoCommit)
+                connection.commit();
+            
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Deletes all records but does not reset primary key counter
+     */
+    public void deleteAllRecors(){
+        deleteAllRecords(false);
+    }
+    
+    /**
+     * Deletes all records
+     * @param resetPrimaryKey : true - resets primary key counter, false - does not reset primary key counter
+     */
+    public void deleteAllRecords(final boolean resetPrimaryKey){
+        DatabaseMetaData md;
+        ResultSet rs;
+        ResultSet primaryKeySet;
+        PreparedStatement st;
+        
+        try {
+            md = connection.getMetaData();
+            rs = md.getTables(null, null, "%", null);
+           
+            while(rs.next()){
+                st = connection.prepareStatement("DELETE * FROM ?");
+                st.setString(1, rs.getString(3));
+                st.execute();
+                if(resetPrimaryKey){
+                    PreparedStatement alter = connection.prepareStatement("ALTER SEQUENCE ? RESTART WITH 1");
+                    primaryKeySet = md.getPrimaryKeys(null, null, rs.getString(3));
+                    while(primaryKeySet.next()){
+                        alter.setString(1, rs.getString(3)+"_"+primaryKeySet.getString("COLUMN_NAME")+"_seq");
+                        st.execute();
+                    }
+                }
+            }
+            
+            if(autoCommit)
+                connection.commit();
+            
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 }

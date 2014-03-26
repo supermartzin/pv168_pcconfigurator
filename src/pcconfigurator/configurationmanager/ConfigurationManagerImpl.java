@@ -17,8 +17,6 @@ import pcconfigurator.exception.*;
 
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
-    public static final Logger logger = Logger.getLogger(ConfigurationManagerImpl.class.getName());
-
     private Connection conn;
 
     public ConfigurationManagerImpl(Connection conn) {
@@ -38,14 +36,15 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         try {
             conn.setAutoCommit(false);
-            st = conn.prepareStatement("INSERT INTO database.configuration (name,creator,creation_time,last_update) VALUES (?,?,?,?)",
-                    Statement.RETURN_GENERATED_KEYS);
+            st = conn.prepareStatement("INSERT INTO database.configuration (name,creator,creation_time,last_update) "
+                                     + "VALUES (?,?,?,?)",
+                                        Statement.RETURN_GENERATED_KEYS);
             st.setString(1, configuration.getName());
             st.setString(2, configuration.getCreator());
-//            Instant instant = configuration.getCreationTime().toInstant(ZoneOffset.UTC);            
+          
             Date creationDate = new Date(configuration.getCreationTime().toEpochSecond(ZoneOffset.UTC) * 1000);
             st.setDate(3, creationDate);
-//            Instant instant2 = configuration.getLasUpdate().toInstant(ZoneOffset.UTC);
+
             Date updateDate = new Date(configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC) * 1000);
             st.setDate(4, updateDate);
 
@@ -87,7 +86,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                    "SELECT conf_id,name,creator,creation_time,last_update FROM database.configuration WHERE conf_id = ?");
+                    "SELECT conf_id,name,creator,creation_time,last_update "
+                  + "FROM database.configuration "
+                  + "WHERE conf_id = ?");
             st.setLong(1, id);
             ResultSet resultSet = st.executeQuery();
 
@@ -127,7 +128,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         Set<Configuration> configSet = new TreeSet<>(Configuration.idComparator);
         try {
-            st = conn.prepareStatement("SELECT conf_id FROM database.configuration");
+            st = conn.prepareStatement("SELECT conf_id "
+                                     + "FROM database.configuration");
             ResultSet resultSet = st.executeQuery();
             while (resultSet.next()) {
                 configSet.add(getConfigurationById((resultSet.getLong("conf_id"))));
@@ -159,7 +161,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         
         try {
             conn.setAutoCommit(false);
-            st = conn.prepareStatement("UPDATE database.configuration SET name=?,creator=?,last_update=? WHERE conf_id=?");
+            st = conn.prepareStatement("UPDATE database.configuration "
+                                     + "SET name=?,creator=?,last_update=? "
+                                     + "WHERE conf_id=?");
             st.setString(1, configuration.getName());
             st.setString(2, configuration.getCreator());
             Date updateDate = new Date(configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC) * 1000);
@@ -202,7 +206,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         testConfiguration(configuration);
         try {
             conn.setAutoCommit(false);
-            st = conn.prepareStatement("DELETE FROM database.configuration WHERE conf_id=?");
+            st = conn.prepareStatement("DELETE FROM database.configuration "
+                                     + "WHERE conf_id=?");
             st.setLong(1, configuration.getId());
             if (st.executeUpdate() != 1) {
                 throw new InternalFailureException("Deleted more than 1 record");
@@ -238,7 +243,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         PreparedStatement st = null;
         Set<Configuration> result = new TreeSet<>(Configuration.idComparator);
         try{
-            st = conn.prepareStatement("SELECT * FROM database.configuration WHERE name LIKE ?");
+            st = conn.prepareStatement("SELECT * "
+                                     + "FROM database.configuration "
+                                     + "WHERE name "
+                                     + "LIKE ?");
             st.setString(1, "%"+name+"%");
             ResultSet resultSet = st.executeQuery();
             while(resultSet.next()){
