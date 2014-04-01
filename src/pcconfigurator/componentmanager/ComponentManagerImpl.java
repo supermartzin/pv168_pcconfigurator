@@ -9,27 +9,32 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 import pcconfigurator.exception.*;
 
 public class ComponentManagerImpl implements ComponentManager {
     
     public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
-    private Connection connection;
+    private final DataSource dataSource;
     
-    public ComponentManagerImpl(Connection connection)
+    public ComponentManagerImpl(DataSource dataSource)
     {
-        this.connection = connection;
+        this.dataSource = dataSource;
     }
 
     @Override
     public void createComponent(Component component)
     {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        
         checkComponent(component);
         if (component.getId() != null) throw new IllegalArgumentException("Component is already in database");
         
         PreparedStatement st = null;
+        Connection connection = null;
         try
         {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             st = connection.prepareStatement("INSERT INTO database.component (vendor, price, type, power, name) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
             st.setString(1, component.getVendor());
@@ -53,42 +58,27 @@ public class ComponentManagerImpl implements ComponentManager {
             else throw new InternalFailureException("setting ID - no key found");
             
             connection.commit();
-            connection.setAutoCommit(true);
         } catch (SQLException | InternalFailureException ex)
         {
-            if (connection != null)
-            {
-                try
-                {
-                    connection.rollback();
-                } catch (SQLException ex1)
-                {
-                    logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
-                }
-            }
+            rollbackChanges(connection);
             logger.log(Level.SEVERE, "Inserting component into database failed: ", ex);
         } finally
         {
-            if (st != null)
-            {
-                try
-                {
-                    st.close();
-                } catch (SQLException ex)
-                {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
     }
 
     @Override
-    public Component getComponentById(Long id) {
+    public Component getComponentById(Long id) 
+    {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
 	if (id == null) throw new IllegalArgumentException("id is null");
         
+        Connection connection = null;
         PreparedStatement st = null;
         try
         {
+            connection = dataSource.getConnection();
             st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component WHERE comp_id = ?");
             st.setLong(1, id);
             
@@ -114,25 +104,20 @@ public class ComponentManagerImpl implements ComponentManager {
             throw new InternalFailureException("Getting of component from database failed: ", ex);
         } finally
         {
-            if (st != null)
-            {
-                try
-                {
-                    st.close();
-                } catch (SQLException ex)
-                {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
     }
 
     @Override
     public Set<Component> findAllComponents() {
-        Set<Component> components = new TreeSet<>(Component.idComparator);
-        PreparedStatement st = null;
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         
+        Set<Component> components = new TreeSet<>(Component.idComparator);
+        
+        Connection connection = null;
+        PreparedStatement st = null;        
         try {
+            connection = dataSource.getConnection();
             st = connection.prepareStatement("SELECT comp_id, vendor, price, type, power, name FROM database.component");
             ResultSet rs = st.executeQuery();
             while (rs.next())
@@ -150,14 +135,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, "Getting all components from database failed: ", ex);
         } finally {
-            if (st != null)
-            {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
         
         return components;
@@ -165,11 +143,14 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public void updateComponent(Component component) {
-	checkComponent(component);
-        PreparedStatement st = null;
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        checkComponent(component);
         
+        Connection connection = null;
+        PreparedStatement st = null;        
         try
         {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             st = connection.prepareStatement("UPDATE database.component SET vendor=?, price=?, type=?, power=?, name=? WHERE comp_id=?");
             st.setString(1, component.getVendor());
@@ -182,39 +163,25 @@ public class ComponentManagerImpl implements ComponentManager {
             if (st.executeUpdate() != 1) throw new InternalFailureException("Updated more than 1 component in database");
             
             connection.commit();
-            connection.setAutoCommit(true);
         } catch (SQLException | InternalFailureException ex) {
-            if (connection != null)
-            {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
-                }
-            }
-            
+            rollbackChanges(connection);
             logger.log(Level.SEVERE, "Updating component in database failed: ", ex);
         } finally {
-            if (st != null)
-            {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
     }
 
     @Override
     public void deleteComponent(Component component) { 
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         checkComponent(component);
-        
         if (component.getId() == null) throw new IllegalArgumentException("component without ID");
         
+        Connection connection = null;
         PreparedStatement st = null;
         try
         {
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             st = connection.prepareStatement("DELETE FROM database.component WHERE comp_id=?");
             st.setLong(1, component.getId());
@@ -222,39 +189,26 @@ public class ComponentManagerImpl implements ComponentManager {
             if (st.executeUpdate() != 1) throw new InternalFailureException("deleted more than one component form database");
             
             connection.commit();
-            connection.setAutoCommit(true);
         } catch (SQLException | InternalFailureException ex) {
-            if (connection != null)
-            {
-                try {
-                    connection.rollback();
-                } catch (SQLException ex1) {
-                    logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
-                }
-            }
-            
+            rollbackChanges(connection);
             logger.log(Level.SEVERE, "Deleting component from database failed: ", ex);
         } finally {
-            if (st != null)
-            {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
     }
 
     @Override
     public Set<Component> findCompByType(ComponentTypes type) {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
 	if (type == null) throw new IllegalArgumentException("type is null");
         
         Set<Component> components = new TreeSet<>(Component.idComparator);
-        PreparedStatement st = null;
         
+        Connection connection = null;
+        PreparedStatement st = null;        
         try
         {
+            connection = dataSource.getConnection();
             st = connection.prepareStatement("SELECT * FROM database.component WHERE type LIKE ?");
             st.setString(1, type.name());
             
@@ -275,14 +229,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, "Error during getting components from database: ", ex);
         } finally {
-            if (st != null)
-            {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(connection, st);
         }
         
         return components;
@@ -299,5 +246,43 @@ public class ComponentManagerImpl implements ComponentManager {
         if         (component.getType() == null) throw new IllegalArgumentException("Type of component is null");
         if       (component.getVendor() == null) throw new IllegalArgumentException("Vendor of component is null");
         if     (component.getVendor().isEmpty()) throw new IllegalArgumentException("Vednor of component is empty");
+    }
+    
+    private void closeSources(Connection connection, Statement statement)
+    {
+        if (statement != null)
+        {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+            }
+        }
+            
+        if (connection != null) 
+        {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error during switching autocommit to true: ", ex);
+            }
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error closing connection: ", ex);
+            }
+        }
+    }
+    
+    private void rollbackChanges(Connection connection) {
+        if (connection != null)
+        {
+            try {
+                if (connection.getAutoCommit()) throw new IllegalStateException("Connection is in autocommit mode!");
+                connection.rollback();
+            } catch (SQLException ex1) {
+                logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
+            }
+        }
     }
 }

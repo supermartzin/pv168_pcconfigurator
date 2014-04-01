@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.derby.jdbc.ClientDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -42,12 +45,28 @@ public class ComponentManagerImplTest {
     
     private static ComponentManagerImpl compManager;
     public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
-    private static Connection connection;
+    private static DataSource dataSource;
     private static String name;
     private static String password;
     private static String dbURL;
     
     public ComponentManagerImplTest() {
+    }
+    
+    private DataSource setDataSource()
+    {
+        ClientDataSource ds = new ClientDataSource();
+        if (name != null && password != null && dbURL != null) 
+        {
+            ds.setUser(name);
+            ds.setDatabaseName("pcconfiguration_test");
+            ds.setPortNumber(1527);
+            ds.setServerName("localhost");
+            ds.setPassword(password);
+        }
+        else throw new InternalFailureException("cannot create DataSource, properties are empty");
+        
+        return ds;
     }
     
     @BeforeClass
@@ -77,34 +96,17 @@ public class ComponentManagerImplTest {
                 }
             }   
         }
-        
-        // create connection
-        try
-        {
-            if (name != null && password != null && dbURL != null) connection = DriverManager.getConnection("jdbc:derby://localhost:1527/pcconfiguration_test", name, password);
-            else throw new InternalFailureException("property file is empty");
-        } catch (SQLException | InternalFailureException ex)
-        {
-            logger.log(Level.SEVERE, "Connecting to database failed: ", ex);
-        }
-        
-        compManager = new ComponentManagerImpl(connection);
     }
     
     @AfterClass
     public static void tearDownClass() {
-        // close connection
-        if (connection != null)
-            try {
-                connection.close();
-            } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Error during closing connection to database: ", ex);
-            }
     } 
     
     @Before
     public void setUp() {
-        SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        dataSource = setDataSource();
+        compManager = new ComponentManagerImpl(dataSource);
+      /*  SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("createTables.sql");
@@ -124,12 +126,12 @@ public class ComponentManagerImplTest {
                     logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
-        }        
+        }  */      
     }
     
     @After
     public void tearDown() {
-        SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        /*SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("dropTables.sql");
@@ -149,7 +151,7 @@ public class ComponentManagerImplTest {
                     logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
-        }
+        }*/
     } 
 
     /**
@@ -205,7 +207,7 @@ public class ComponentManagerImplTest {
     @Test
     public void testFindAllComponents() {
         // test prazdneho zoznamu komponentov
-        ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl(connection);
+        ComponentManagerImpl compManagerEmpty = new ComponentManagerImpl(dataSource);
         assertTrue("set of components should be empty", compManagerEmpty.findAllComponents().isEmpty());
         
         // test neprazdneho zoznamu komponentov

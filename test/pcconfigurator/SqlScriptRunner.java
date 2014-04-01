@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SqlScriptRunner {
@@ -23,6 +24,7 @@ public class SqlScriptRunner {
     public static final Logger LOGGER = Logger.getLogger(SqlScriptRunner.class.getName());
 
     private final boolean autoCommit, logErrors;
+    private final DataSource dataSource;
     private final Connection connection;
 
     /**
@@ -30,8 +32,8 @@ public class SqlScriptRunner {
      * @param connection : Connection to database.
      * @param autoCommit : True - it will commit automatically, false - you have to commit manualy.
      */
-    public SqlScriptRunner(final Connection connection, final boolean autoCommit) {
-        this(connection, autoCommit, false);
+    public SqlScriptRunner(final DataSource dataSource, final boolean autoCommit) {
+        this(dataSource, autoCommit, false);
     }
     
     /**
@@ -40,11 +42,11 @@ public class SqlScriptRunner {
      * @param autoCommit : True - it will commit automatically, false - you have to commit manualy.
      * @param logErrors : True - it will log errors, false - it will not log errors.
      */
-    public SqlScriptRunner(final Connection connection, final boolean autoCommit, final boolean logErrors) {
-        if (connection == null) {
-            throw new RuntimeException("Connection is required");
+    public SqlScriptRunner(final DataSource dataSource, final boolean autoCommit, final boolean logErrors) {
+        if (dataSource == null) {
+            throw new RuntimeException("DataSource is required");
         }
-        this.connection = connection;
+        this.dataSource = dataSource;
         this.autoCommit = autoCommit;       
         this.logErrors = logErrors;
     }

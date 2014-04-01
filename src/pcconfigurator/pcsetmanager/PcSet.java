@@ -66,13 +66,6 @@ public class PcSet {
         if (!Objects.equals(this.component, other.component)) {
             return false;
         }
-        if (!Objects.equals(this.configuration, other.configuration)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.configuration, other.configuration);
     }
-    
-    
-    
-
 }
