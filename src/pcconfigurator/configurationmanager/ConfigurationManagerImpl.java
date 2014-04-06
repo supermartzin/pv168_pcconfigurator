@@ -13,14 +13,16 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
 import pcconfigurator.exception.*;
 
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
-    private Connection conn;
+    public static final Logger LOGGER = Logger.getLogger(ConfigurationManagerImpl.class.getName());
+    private final DataSource dataSource;
 
-    public ConfigurationManagerImpl(Connection conn) {
-        this.conn = conn;
+    public ConfigurationManagerImpl(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -29,12 +31,17 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      */
     @Override
     public void createConfiguration(Configuration configuration) {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        
         testConfiguration(configuration);
         if (configuration.getId() != null) {
             throw new IllegalArgumentException("Configuration is already in database");
         }
+        
         PreparedStatement st = null;
+        Connection conn = null;
         try {
+            conn = dataSource.getConnection();
             conn.setAutoCommit(false);
             st = conn.prepareStatement("INSERT INTO database.configuration (name,creator,creation_time,last_update) "
                                      + "VALUES (?,?,?,?)",
@@ -57,22 +64,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
             conn.commit();
         } catch (SQLException | InternalFailureException ex) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Inserting configuration into database failed: ", ex);
         } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            closeSources(conn, st);
         }
     }
 
@@ -82,16 +77,21 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      * @param id
      */
     @Override
-    public Configuration getConfigurationById(long id) {
+    public Configuration getConfigurationById(Long id) {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+	if (id == null) throw new IllegalArgumentException("id is null");
+        
+        Connection conn = null;
         PreparedStatement st = null;
         try {
+            conn = dataSource.getConnection();
             st = conn.prepareStatement(
                     "SELECT conf_id,name,creator,creation_time,last_update "
                   + "FROM database.configuration "
                   + "WHERE conf_id = ?");
             st.setLong(1, id);
+            
             ResultSet resultSet = st.executeQuery();
-
             if (resultSet.next()) {
                 Configuration configuration = new Configuration();
                 configuration.setId(resultSet.getLong("conf_id"));
@@ -110,24 +110,23 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 throw new IllegalArgumentException("This ID does not EXIST");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Getting of configuration from database failed: ", ex);
             throw new InternalFailureException("Error while get configuration", ex);
         } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            closeSources(conn, st);
         }
     }
 
     @Override
     public Set<Configuration> findAllConfigurations() {
-        PreparedStatement st = null;
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        
         Set<Configuration> configSet = new TreeSet<>(Configuration.idComparator);
+        
+        Connection conn = null;
+        PreparedStatement st = null;
         try {
+            conn = dataSource.getConnection();
             st = conn.prepareStatement("SELECT conf_id "
                                      + "FROM database.configuration");
             ResultSet resultSet = st.executeQuery();
@@ -135,16 +134,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 configSet.add(getConfigurationById((resultSet.getLong("conf_id"))));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Getting all configurations from database failed: ", ex);
         } finally {
-            if (st != null)
-            {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, "Closing of statement failed: ", ex);
-                }
-            }
+            closeSources(conn, st);
         }
         
         return configSet;
@@ -156,10 +148,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      */
     @Override
     public void updateConfiguration(Configuration configuration) {
-        PreparedStatement st = null;
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         testConfiguration(configuration);
         
+        Connection conn = null;
+        PreparedStatement st = null;
         try {
+            conn = dataSource.getConnection();
             conn.setAutoCommit(false);
             st = conn.prepareStatement("UPDATE database.configuration "
                                      + "SET name=?,creator=?,last_update=? "
@@ -174,22 +169,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             }
             conn.commit();
         } catch (SQLException | InternalFailureException ex) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Updating configuration in database failed: ", ex);
         } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            closeSources(conn, st);
         }
     }
 
@@ -199,12 +182,14 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      */
     @Override
     public void deleteConfiguration(Configuration configuration) {
-        PreparedStatement st = null;
-        if(configuration.getId()==null){
-            throw new IllegalArgumentException("NO ID");
-        }
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         testConfiguration(configuration);
+        if(configuration.getId()==null) throw new IllegalArgumentException("NO ID");
+        
+        Connection conn = null;
+        PreparedStatement st = null;
         try {
+            conn = dataSource.getConnection();
             conn.setAutoCommit(false);
             st = conn.prepareStatement("DELETE FROM database.configuration "
                                      + "WHERE conf_id=?");
@@ -214,22 +199,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             }
             conn.commit();
         } catch (SQLException | InternalFailureException ex) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex1) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Deleting component from database failed: ", ex);
         } finally {
-            if (st != null) {
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            closeSources(conn, st);
         }
     }
 
@@ -240,9 +213,15 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
      */
     @Override
     public Set<Configuration> findConfigurationByName(String name) {
-        PreparedStatement st = null;
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        if (name == null) throw new IllegalArgumentException("name is null");
+        
         Set<Configuration> result = new TreeSet<>(Configuration.idComparator);
-        try{
+        
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
+            conn = dataSource.getConnection();
             st = conn.prepareStatement("SELECT * "
                                      + "FROM database.configuration "
                                      + "WHERE name "
@@ -261,16 +240,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 result.add(configuration);
             }
         } catch (SQLException ex){
-            Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE,null,ex);
+            LOGGER.log(Level.SEVERE,"Error during getting configurations from database: ",ex);
         } finally {
-            if(st!=null){
-                try {
-                    st.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(ConfigurationManagerImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } 
+            closeSources(conn, st);
         }
+        
         return result;
     }
 
@@ -289,7 +263,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-       private void testConfiguration(Configuration configuration) throws IllegalArgumentException {
+    private void testConfiguration(Configuration configuration) throws IllegalArgumentException {
         if (configuration == null) {
             throw new IllegalArgumentException("Configuration argument is null");
         }
@@ -310,6 +284,44 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
         if (configuration.getLastUpdate() == null) {
             throw new IllegalArgumentException("Last update time is null");
+        }
+    }
+    
+    private void closeSources(Connection connection, Statement statement)
+    {
+        if (statement != null)
+        {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Closing of statement failed: ", ex);
+            }
+        }
+            
+        if (connection != null) 
+        {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error during switching autocommit to true: ", ex);
+            }
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error closing connection: ", ex);
+            }
+        }
+    }
+    
+    private void rollbackChanges(Connection connection) {
+        if (connection != null)
+        {
+            try {
+                if (connection.getAutoCommit()) throw new IllegalStateException("Connection is in autocommit mode!");
+                connection.rollback();
+            } catch (SQLException ex1) {
+                LOGGER.log(Level.SEVERE, "Rollback of update failed: ", ex1);
+            }
         }
     }
 }

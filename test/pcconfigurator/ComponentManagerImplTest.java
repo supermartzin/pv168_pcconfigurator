@@ -12,11 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
@@ -24,8 +20,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.derby.jdbc.ClientDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -44,24 +39,19 @@ import pcconfigurator.exception.InternalFailureException;
 public class ComponentManagerImplTest {
     
     private static ComponentManagerImpl compManager;
-    public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(ComponentManagerImpl.class.getName());
     private static DataSource dataSource;
     private static String name;
     private static String password;
     private static String dbURL;
     
-    public ComponentManagerImplTest() {
-    }
-    
     private DataSource setDataSource()
     {
-        ClientDataSource ds = new ClientDataSource();
+        BasicDataSource ds = new BasicDataSource();
         if (name != null && password != null && dbURL != null) 
         {
-            ds.setUser(name);
-            ds.setDatabaseName("pcconfiguration_test");
-            ds.setPortNumber(1527);
-            ds.setServerName("localhost");
+            ds.setUrl(dbURL);
+            ds.setUsername(name);
             ds.setPassword(password);
         }
         else throw new InternalFailureException("cannot create DataSource, properties are empty");
@@ -82,7 +72,7 @@ public class ComponentManagerImplTest {
             password = properties.getProperty("password");
         } catch (IOException ex)
         {
-            logger.log(Level.SEVERE, "Reading property file failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Reading property file failed: ", ex);
         } finally
         {
             if (input != null)
@@ -92,7 +82,7 @@ public class ComponentManagerImplTest {
                     input.close();
                 } catch (IOException ex)
                 {
-                    logger.log(Level.SEVERE, "Closing of input failed: ", ex);
+                    LOGGER.log(Level.SEVERE, "Closing of input failed: ", ex);
                 }
             }   
         }
@@ -106,52 +96,52 @@ public class ComponentManagerImplTest {
     public void setUp() {
         dataSource = setDataSource();
         compManager = new ComponentManagerImpl(dataSource);
-      /*  SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("createTables.sql");
             try {
                 sr.runScript(fr);
             } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Error during executing script: ", ex);
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
             }
         } catch (FileNotFoundException ex) {
-            logger.log(Level.SEVERE,"Error during reading file: ",ex);
+            LOGGER.log(Level.SEVERE,"Error during reading file: ",ex);
         } finally {
             if (fr != null)
             {
                 try {
                     fr.close();
                 } catch (IOException ex) {
-                    logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
-        }  */      
+        }        
     }
     
     @After
     public void tearDown() {
-        /*SqlScriptRunner sr = new SqlScriptRunner(connection, true, true);
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("dropTables.sql");
             try {
                 sr.runScript(fr);
             } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Error during executing script: ", ex);
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
             }
         } catch (FileNotFoundException ex) {
-            logger.log(Level.SEVERE, "Error during reading file: ", ex);
+            LOGGER.log(Level.SEVERE, "Error during reading file: ", ex);
         } finally {
             if (fr != null)
             {
                 try {
                     fr.close();
                 } catch (IOException ex) {
-                    logger.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
-        }*/
+        }
     } 
 
     /**

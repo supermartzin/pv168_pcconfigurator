@@ -15,7 +15,7 @@ public interface ConfigurationManager {
      * @param Long
      * @return
      */
-    public Configuration getConfigurationById(long id);
+    public Configuration getConfigurationById(Long id);
 
     Set<Configuration> findAllConfigurations();
 

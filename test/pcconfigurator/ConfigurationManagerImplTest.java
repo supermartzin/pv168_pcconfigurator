@@ -11,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -20,6 +19,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -38,10 +39,25 @@ import pcconfigurator.exception.InternalFailureException;
 public class ConfigurationManagerImplTest {
 
     private static ConfigurationManager configManager;
-    private static Connection conn;
+    public static final Logger LOGGER = Logger.getLogger(ConfigurationManagerImpl.class.getName());
+    private static DataSource dataSource;
     private static String name;
     private static String password;
-    private static  String dbUrl;
+    private static String dbUrl;
+    
+    private DataSource setDataSource()
+    {
+        BasicDataSource ds = new BasicDataSource();
+        if (name != null && password != null && dbUrl != null) 
+        {
+            ds.setUrl(dbUrl);
+            ds.setUsername(name);
+            ds.setPassword(password);
+        }
+        else throw new InternalFailureException("cannot create DataSource, properties are empty");
+        
+        return ds;
+    }
     
     @BeforeClass
     public static void setUpClass(){        
@@ -54,61 +70,44 @@ public class ConfigurationManagerImplTest {
             name = prop.getProperty("name");
             password = prop.getProperty("password");
         } catch (IOException ex){
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
+            LOGGER.log(Level.SEVERE,null,ex);
         } finally{
             if(input!=null){
                 try{
                     input.close();
                 } catch (IOException e){
-                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,e);
+                    LOGGER.log(Level.SEVERE,null,e);
                 }
             }
-        }
-        
-        // create connection
-        try{
-            if(name != null && password != null && dbUrl != null)
-                conn = DriverManager.getConnection("jdbc:derby://localhost:1527/pcconfiguration_test", name,password);
-            else
-                throw new InternalFailureException("Property file is empty");
-        } catch(SQLException | InternalFailureException ex){
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,null,ex);
-        }
-        
-        configManager = new ConfigurationManagerImpl(conn);              
+        }                 
     }
     
     @AfterClass
     public static void tearDownClass(){
-        // close connection
-        if (conn != null)
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing connection to database: ", ex);
-            }
     }
     
     @Before
-    public void setUp() {                
-        SqlScriptRunner sr = new SqlScriptRunner(conn, true, true);
+    public void setUp() {  
+        dataSource = setDataSource();
+        configManager = new ConfigurationManagerImpl(dataSource);
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("createTables.sql");
             try {
                 sr.runScript(fr);
             } catch (SQLException ex) {
-                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during executing script: ", ex);
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE,"Error during reading file: ",ex);
+            LOGGER.log(Level.SEVERE,"Error during reading file: ",ex);
         } finally {
             if (fr != null)
             {
                 try {
                     fr.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
         }
@@ -116,24 +115,24 @@ public class ConfigurationManagerImplTest {
     
     @After
     public void tearDown() { 
-        SqlScriptRunner sr = new SqlScriptRunner(conn, true, true);
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
         FileReader fr = null;
         try {
             fr = new FileReader("dropTables.sql");
             try {
                 sr.runScript(fr);
             } catch (SQLException ex) {
-                Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during executing script: ", ex);
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during reading file: ", ex);
+            LOGGER.log(Level.SEVERE, "Error during reading file: ", ex);
         } finally {
             if (fr != null)
             {
                 try {
                     fr.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
                 }
             }
         }      
@@ -166,7 +165,7 @@ public class ConfigurationManagerImplTest {
     @Test
     public void testGetConfigurationById() {
         try{
-            configManager.getConfigurationById(10000);
+            configManager.getConfigurationById(new Long(10000));
             fail("Configuration with ID 10000 does not exist a has been returned!");
         } catch (IllegalArgumentException ex){   
         }
@@ -182,13 +181,6 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindAllConfigurations() {
-        PreparedStatement st = null;
-        try {
-            st=conn.prepareStatement("DELETE FROM database.configuration");
-            st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
         Configuration firstConfig = new Configuration("First configuration","David Kaya");
         Configuration secondConfig = new Configuration("Second configuration", "Steven Segal");
         Configuration thirdConfig = new Configuration("Third configuration", "Chuck Norris");
@@ -250,15 +242,7 @@ public class ConfigurationManagerImplTest {
      * Test of deleteConfiguration method, of class ConfigurationManagerImpl.
      */
     @Test
-    public void testDeleteConfiguration() { 
-        PreparedStatement st = null;
-        try {
-            st=conn.prepareStatement("DELETE FROM database.configuration");
-            st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+    public void testDeleteConfiguration() {         
         Configuration configuration = new Configuration("First Configuration","David Kaya");
         Configuration configuration2 = new Configuration("Second Configuration","Chuck Norris");
         Configuration configuration3 = new Configuration("Third Configuration","Steven Segal");
@@ -288,13 +272,6 @@ public class ConfigurationManagerImplTest {
      */
     @Test
     public void testFindConfigurationByName() {
-        PreparedStatement st = null;
-        try {
-            st=conn.prepareStatement("DELETE FROM database.configuration");
-            st.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(ConfigurationManagerImplTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
         Configuration firstConfig = new Configuration("First configuration","David Kaya");
         Configuration secondConfig = new Configuration("Second", "Steven Segal");
         Configuration thirdConfig = new Configuration("configuration", "Chuck Norris");

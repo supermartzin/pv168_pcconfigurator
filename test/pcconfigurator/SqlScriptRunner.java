@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SqlScriptRunner {
 
@@ -24,8 +23,7 @@ public class SqlScriptRunner {
     public static final Logger LOGGER = Logger.getLogger(SqlScriptRunner.class.getName());
 
     private final boolean autoCommit, logErrors;
-    private final DataSource dataSource;
-    private final Connection connection;
+    private Connection connection;
 
     /**
      * 
@@ -46,7 +44,13 @@ public class SqlScriptRunner {
         if (dataSource == null) {
             throw new RuntimeException("DataSource is required");
         }
-        this.dataSource = dataSource;
+        
+        //this.connection = null;
+        try {
+            this.connection = dataSource.getConnection();
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error during getting connection from DataSource: ", ex);
+        }
         this.autoCommit = autoCommit;       
         this.logErrors = logErrors;
     }

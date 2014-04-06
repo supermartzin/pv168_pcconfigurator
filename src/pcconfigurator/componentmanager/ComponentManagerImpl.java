@@ -14,7 +14,7 @@ import pcconfigurator.exception.*;
 
 public class ComponentManagerImpl implements ComponentManager {
     
-    public static final Logger logger = Logger.getLogger(ComponentManagerImpl.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(ComponentManagerImpl.class.getName());
     private final DataSource dataSource;
     
     public ComponentManagerImpl(DataSource dataSource)
@@ -61,7 +61,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } catch (SQLException | InternalFailureException ex)
         {
             rollbackChanges(connection);
-            logger.log(Level.SEVERE, "Inserting component into database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Inserting component into database failed: ", ex);
         } finally
         {
             closeSources(connection, st);
@@ -100,7 +100,7 @@ public class ComponentManagerImpl implements ComponentManager {
             else throw new InternalFailureException("this ID does not exist");
         } catch (SQLException | IllegalArgumentException ex)
         {
-            logger.log(Level.SEVERE, "Getting of component from database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Getting of component from database failed: ", ex);
             throw new InternalFailureException("Getting of component from database failed: ", ex);
         } finally
         {
@@ -133,7 +133,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 components.add(component);
             }
         } catch (SQLException ex) {
-            logger.log(Level.SEVERE, "Getting all components from database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Getting all components from database failed: ", ex);
         } finally {
             closeSources(connection, st);
         }
@@ -165,7 +165,7 @@ public class ComponentManagerImpl implements ComponentManager {
             connection.commit();
         } catch (SQLException | InternalFailureException ex) {
             rollbackChanges(connection);
-            logger.log(Level.SEVERE, "Updating component in database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Updating component in database failed: ", ex);
         } finally {
             closeSources(connection, st);
         }
@@ -191,7 +191,7 @@ public class ComponentManagerImpl implements ComponentManager {
             connection.commit();
         } catch (SQLException | InternalFailureException ex) {
             rollbackChanges(connection);
-            logger.log(Level.SEVERE, "Deleting component from database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Deleting component from database failed: ", ex);
         } finally {
             closeSources(connection, st);
         }
@@ -227,7 +227,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 components.add(component);
             }
         } catch (SQLException ex) {
-            logger.log(Level.SEVERE, "Error during getting components from database: ", ex);
+            LOGGER.log(Level.SEVERE, "Error during getting components from database: ", ex);
         } finally {
             closeSources(connection, st);
         }
@@ -255,7 +255,7 @@ public class ComponentManagerImpl implements ComponentManager {
             try {
                 statement.close();
             } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Closing of statement failed: ", ex);
+                LOGGER.log(Level.SEVERE, "Closing of statement failed: ", ex);
             }
         }
             
@@ -264,12 +264,12 @@ public class ComponentManagerImpl implements ComponentManager {
             try {
                 connection.setAutoCommit(true);
             } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Error during switching autocommit to true: ", ex);
+                LOGGER.log(Level.SEVERE, "Error during switching autocommit to true: ", ex);
             }
             try {
                 connection.close();
             } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Error closing connection: ", ex);
+                LOGGER.log(Level.SEVERE, "Error closing connection: ", ex);
             }
         }
     }
@@ -281,7 +281,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 if (connection.getAutoCommit()) throw new IllegalStateException("Connection is in autocommit mode!");
                 connection.rollback();
             } catch (SQLException ex1) {
-                logger.log(Level.SEVERE, "Rollback of update failed: ", ex1);
+                LOGGER.log(Level.SEVERE, "Rollback of update failed: ", ex1);
             }
         }
     }
