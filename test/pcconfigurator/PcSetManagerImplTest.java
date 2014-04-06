@@ -7,11 +7,22 @@
 package pcconfigurator;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -19,8 +30,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
+import pcconfigurator.exception.InternalFailureException;
 import pcconfigurator.pcsetmanager.PcSet;
 import pcconfigurator.pcsetmanager.PcSetManager;
 import pcconfigurator.pcsetmanager.PcSetManagerImpl;
@@ -33,10 +47,53 @@ import pcconfigurator.pcsetmanager.PcSetManagerImpl;
 public class PcSetManagerImplTest {
     
     private PcSetManager pcSetManager;
+    public static final Logger LOGGER = Logger.getLogger(PcSetManagerImpl.class.getName());
+    private static DataSource dataSource;
+    private static String name;
+    private static String password;
+    private static String dbURL;
+    
+    private DataSource setDataSource()
+    {
+        BasicDataSource ds = new BasicDataSource();
+        if (name != null && password != null && dbURL != null) 
+        {
+            ds.setUrl(dbURL);
+            ds.setUsername(name);
+            ds.setPassword(password);
+        }
+        else throw new InternalFailureException("cannot create DataSource, properties are empty");
+        
+        return ds;
+    }
     
     @BeforeClass
-    public static void setUpClass(){
-        
+    public static void setUpClass() {
+        Properties properties = new Properties();
+        InputStream input = null;
+        try
+        {
+            input = new FileInputStream("./test/pcconfigurator/test_credentials.properties");
+            properties.load(input);
+            dbURL = properties.getProperty("db_url");
+            name = properties.getProperty("name");
+            password = properties.getProperty("password");
+        } catch (IOException ex)
+        {
+            LOGGER.log(Level.SEVERE, "Reading property file failed: ", ex);
+        } finally
+        {
+            if (input != null)
+            {
+                try
+                {
+                    input.close();
+                } catch (IOException ex)
+                {
+                    LOGGER.log(Level.SEVERE, "Closing of input failed: ", ex);
+                }
+            }   
+        }
     }
     
     @AfterClass
@@ -46,11 +103,54 @@ public class PcSetManagerImplTest {
     
     @Before
     public void setUp() {
-        pcSetManager = new PcSetManagerImpl();
+        dataSource = setDataSource();
+        pcSetManager = new PcSetManagerImpl(dataSource);
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("createTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            LOGGER.log(Level.SEVERE,"Error during reading file: ",ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }
     }
     
     @After
     public void tearDown() {
+        SqlScriptRunner sr = new SqlScriptRunner(dataSource, true, true);
+        FileReader fr = null;
+        try {
+            fr = new FileReader("dropTables.sql");
+            try {
+                sr.runScript(fr);
+            } catch (SQLException ex) {
+                LOGGER.log(Level.SEVERE, "Error during executing script: ", ex);
+            }
+        } catch (FileNotFoundException ex) {
+            LOGGER.log(Level.SEVERE, "Error during reading file: ", ex);
+        } finally {
+            if (fr != null)
+            {
+                try {
+                    fr.close();
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Error during closing File Reader: ", ex);
+                }
+            }
+        }
     }
 
     /**
@@ -59,7 +159,13 @@ public class PcSetManagerImplTest {
     @Test
     public void testCreatePcSet() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        ConfigurationManagerImpl confManager = new ConfigurationManagerImpl(dataSource);
+        confManager.createConfiguration(config);
+        
+        Component comp = new Component("Intel", (new BigDecimal("25.50")).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        ComponentManagerImpl compManager = new ComponentManagerImpl(dataSource);
+        compManager.createComponent(comp);
+        
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
         PcSet result = pcSetManager.getPcSet(config, comp);
@@ -67,11 +173,11 @@ public class PcSetManagerImplTest {
         assertNotSame("PcSets are the same objects",expected,result);
         assertEquals("PcSets does not equal",expected, result);
         
-        try{
+        try {
             PcSet wrongPcSet = new PcSet(comp, config, 5);
-            pcSetManager.createPcSet(result);
+            pcSetManager.createPcSet(wrongPcSet);
             fail("You can't add 5 motherboards");
-        }catch(IllegalArgumentException ex){            
+        } catch(IllegalArgumentException ex){            
         }
     }
 

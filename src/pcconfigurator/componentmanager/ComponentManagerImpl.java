@@ -97,7 +97,7 @@ public class ComponentManagerImpl implements ComponentManager {
                 
                 return component;
             }
-            else throw new InternalFailureException("this ID does not exist");
+            else throw new SQLException("this ID does not exist");
         } catch (SQLException | IllegalArgumentException ex)
         {
             LOGGER.log(Level.SEVERE, "Getting of component from database failed: ", ex);
