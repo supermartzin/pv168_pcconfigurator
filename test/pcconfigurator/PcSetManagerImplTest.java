@@ -187,7 +187,13 @@ public class PcSetManagerImplTest {
     @Test
     public void testGetPcSet() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        ConfigurationManagerImpl confManager = new ConfigurationManagerImpl(dataSource);
+        confManager.createConfiguration(config);
+        
+        Component comp = new Component("Intel", (new BigDecimal("25.50")).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");
+        ComponentManagerImpl compManager = new ComponentManagerImpl(dataSource);
+        compManager.createComponent(comp);
+        
         PcSet expected = new PcSet(comp, config);
         pcSetManager.createPcSet(expected);
         PcSet result = pcSetManager.getPcSet(config, comp);

@@ -263,7 +263,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-    private void testConfiguration(Configuration configuration) throws IllegalArgumentException {
+    public static void testConfiguration(Configuration configuration) throws IllegalArgumentException {
         if (configuration == null) {
             throw new IllegalArgumentException("Configuration argument is null");
         }

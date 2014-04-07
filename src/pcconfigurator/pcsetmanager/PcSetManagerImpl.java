@@ -2,6 +2,7 @@ package pcconfigurator.pcsetmanager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -9,7 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import pcconfigurator.exception.InternalFailureException;
 
 public class PcSetManagerImpl implements PcSetManager {
@@ -65,8 +68,45 @@ public class PcSetManagerImpl implements PcSetManager {
      */
     @Override
     public PcSet getPcSet(Configuration configuration, Component component) {
-        // TODO - implement PcSetManagerImp.getPcSet
-        throw new InternalFailureException("--not implemented yet--");
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        
+        ComponentManagerImpl.checkComponent(component);
+        ConfigurationManagerImpl.testConfiguration(configuration);
+        if (component.getId() == null) throw new IllegalArgumentException("id of component is null");
+        if (configuration.getId() == null) throw new IllegalArgumentException("id of configuration is null");
+        
+        Connection connection = null;
+        PreparedStatement st = null;
+        try {
+            connection = dataSource.getConnection();
+            st = connection.prepareStatement("SELECT comp_id, conf_id, quantity FROM database.pcset WHERE comp_id=? AND conf_id=?");
+            st.setLong(1, component.getId());
+            st.setLong(2, configuration.getId());
+            
+            ResultSet rs = st.executeQuery();
+            if (rs.next())
+            {
+                ComponentManagerImpl compManager = new ComponentManagerImpl(dataSource);
+                Long comp_id = rs.getLong("comp_id");
+                Component comp = compManager.getComponentById(comp_id);
+                
+                ConfigurationManagerImpl confManager = new ConfigurationManagerImpl(dataSource);
+                Long conf_id = rs.getLong("conf_id");
+                Configuration conf = confManager.getConfigurationById(conf_id);
+                
+                PcSet pcSet = new PcSet(comp, conf, rs.getInt("quantity"));
+                
+                if (rs.next()) throw new InternalFailureException("more PC Sets found");
+                
+                return pcSet;                
+            }
+            else throw new SQLException("this PC Set does not exists");
+        } catch (SQLException | InternalFailureException ex) {
+            LOGGER.log(Level.SEVERE, "Getting PC Set from database failed: ", ex);
+            throw new InternalFailureException("Getting PC Set from database failed: ");
+        } finally {
+            closeSources(connection, st);
+        }
     }
 
     /**

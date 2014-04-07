@@ -98,10 +98,10 @@ public class ComponentManagerImpl implements ComponentManager {
                 return component;
             }
             else throw new SQLException("this ID does not exist");
-        } catch (SQLException | IllegalArgumentException ex)
+        } catch (SQLException | InternalFailureException ex)
         {
-            LOGGER.log(Level.SEVERE, "Getting of component from database failed: ", ex);
-            throw new InternalFailureException("Getting of component from database failed: ", ex);
+            LOGGER.log(Level.SEVERE, "Getting component from database failed: ", ex);
+            throw new InternalFailureException("Getting component from database failed: ", ex);
         } finally
         {
             closeSources(connection, st);
@@ -235,7 +235,7 @@ public class ComponentManagerImpl implements ComponentManager {
         return components;
     }
         
-    private void checkComponent(Component component) throws IllegalArgumentException
+    public static void checkComponent(Component component) throws IllegalArgumentException
     {
         if                   (component == null) throw new IllegalArgumentException("Component is null");
         if         (component.getName() == null) throw new IllegalArgumentException("Name of component is null");
