@@ -1,8 +1,9 @@
 package pcconfigurator.pcsetmanager;
 
-import pcconfigurator.configurationmanager.Configuration;
-import pcconfigurator.componentmanager.Component;
 import java.util.List;
+import java.util.Set;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.configurationmanager.Configuration;
 
 public interface PcSetManager {
 
@@ -35,7 +36,7 @@ public interface PcSetManager {
      *
      * @param Component
      */
-    List<Configuration> findConfigByComponent(Component component);
+    Set<Configuration> findConfigByComponent(Component component);
 
     /**
      *

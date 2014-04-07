@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -30,9 +32,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import pcconfigurator.exception.InternalFailureException;
 import pcconfigurator.pcsetmanager.PcSet;
@@ -214,7 +218,13 @@ public class PcSetManagerImplTest {
     @Test
     public void testUpdatePcSet() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");     
+        Component comp = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel");     
+        
+        ConfigurationManager configManager = new ConfigurationManagerImpl(dataSource);
+        configManager.createConfiguration(config);
+        ComponentManager compManager = new ComponentManagerImpl(dataSource);
+        compManager.createComponent(comp);
+        
         PcSet expected = new PcSet(comp, config);
         
         try{
@@ -223,8 +233,9 @@ public class PcSetManagerImplTest {
         } catch (IllegalArgumentException ex){
         }
         
-        pcSetManager.createPcSet(expected);        
-        expected.setConfiguration(new Configuration("Test configuration","Chuck Norris"));
+        pcSetManager.createPcSet(expected);    
+        config.setCreator("Chuck Norris");        
+        configManager.updateConfiguration(config);
         pcSetManager.updatePcSet(expected);     
         PcSet result = pcSetManager.getPcSet(config, comp);
         
@@ -237,9 +248,15 @@ public class PcSetManagerImplTest {
     @Test
     public void testDeletePcSet() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
+        Component comp = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
         Configuration config2 = new Configuration("New configuration","Chuck Norris");
-        Component comp2 = new Component("Asus", new BigDecimal("50.50"), ComponentTypes.MOTHERBOARD, 35, "Zakladna doska Asus");  
+        Component comp2 = new Component("Asus", new BigDecimal("50.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 35, "Zakladna doska Asus");  
+        
+        ConfigurationManager configManager = new ConfigurationManagerImpl(dataSource);
+        configManager.createConfiguration(config);        
+        ComponentManager compManager = new ComponentManagerImpl(dataSource);
+        compManager.createComponent(comp);        
+        
         PcSet expected = new PcSet(comp, config);
         PcSet expected2 = new PcSet(comp2,config2);
         
@@ -249,7 +266,7 @@ public class PcSetManagerImplTest {
         try{
             pcSetManager.getPcSet(config, comp);
             fail("This PCSet should be deleted!");
-        } catch (IllegalArgumentException ex){
+        } catch (InternalFailureException ex){
         }
         
         try{
@@ -265,16 +282,26 @@ public class PcSetManagerImplTest {
     @Test
     public void testFindConfigByComponent() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
+        Component comp = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
         Configuration config2 = new Configuration("Test configuration","David Kaya");
-        Component comp2 = new Component("Asus", new BigDecimal("50.50"), ComponentTypes.MOTHERBOARD, 35, "Zakladna doska Asus");  
-        Component comp3 = new Component("Samsung",new BigDecimal("20.20"),ComponentTypes.MOTHERBOARD,26, "Zakladna doska Samsung");
+        Component comp2 = new Component("Asus", new BigDecimal("50.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 35, "Zakladna doska Asus");  
+        Component comp3 = new Component("Samsung",new BigDecimal("20.20").setScale(2, BigDecimal.ROUND_HALF_UP),ComponentTypes.MOTHERBOARD,26, "Zakladna doska Samsung");
+        
+        ConfigurationManager configManager = new ConfigurationManagerImpl(dataSource);
+        configManager.createConfiguration(config);        
+        configManager.createConfiguration(config2);  
+        ComponentManager compManager = new ComponentManagerImpl(dataSource);
+        compManager.createComponent(comp);  
+        compManager.createComponent(comp2);  
+        
+        Set<Configuration> expected = new TreeSet<>(Configuration.idComparator);
+        expected.add(config2);
         PcSet exp = new PcSet(comp, config);
         PcSet exp2 = new PcSet(comp2, config2);
         pcSetManager.createPcSet(exp);
         pcSetManager.createPcSet(exp2);
         
-        assertEquals("Should be equal",config2,pcSetManager.findConfigByComponent(comp2));
+        assertEquals("Should be equal",expected,pcSetManager.findConfigByComponent(comp2));
         try{
             pcSetManager.findConfigByComponent(comp3);
             fail("Component is not in any configuration!");
@@ -289,9 +316,9 @@ public class PcSetManagerImplTest {
     @Test
     public void testListCompsInConfiguration() {
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50"), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
-        Component comp2 = new Component("Asus", new BigDecimal("50.50"), ComponentTypes.CPU, 35, "CPU");  
-        Component comp3 = new Component("Samsung",new BigDecimal("20.20"),ComponentTypes.GPU,26, "GPU");
+        Component comp = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
+        Component comp2 = new Component("Asus", new BigDecimal("50.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.CPU, 35, "CPU");  
+        Component comp3 = new Component("Samsung",new BigDecimal("20.20").setScale(2, BigDecimal.ROUND_HALF_UP),ComponentTypes.GPU,26, "GPU");
         pcSetManager.createPcSet(new PcSet(comp,config));
         pcSetManager.createPcSet(new PcSet(comp2,config));
         pcSetManager.createPcSet(new PcSet(comp3,config));

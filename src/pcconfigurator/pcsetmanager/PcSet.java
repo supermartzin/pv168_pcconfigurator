@@ -1,5 +1,6 @@
 package pcconfigurator.pcsetmanager;
 
+import java.util.Comparator;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.componentmanager.Component;
 import java.util.Objects;
@@ -68,4 +69,9 @@ public class PcSet {
         }
         return Objects.equals(this.configuration, other.configuration);
     }
+    
+    public static final Comparator<PcSet> idComparator = (PcSet o1, PcSet o2) 
+            -> o1.getComponent().getId().compareTo(o2.getComponent().getId())*o1.getConfiguration().getId().compareTo(o2.getConfiguration().getId());
+    
+    
 }

@@ -5,13 +5,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 import pcconfigurator.exception.InternalFailureException;
 
@@ -103,7 +110,7 @@ public class PcSetManagerImpl implements PcSetManager {
             else throw new SQLException("this PC Set does not exists");
         } catch (SQLException | InternalFailureException ex) {
             LOGGER.log(Level.SEVERE, "Getting PC Set from database failed: ", ex);
-            throw new InternalFailureException("Getting PC Set from database failed: ");
+            throw new InternalFailureException("Getting PC Set from database failed: ",ex);
         } finally {
             closeSources(connection, st);
         }
@@ -115,8 +122,30 @@ public class PcSetManagerImpl implements PcSetManager {
      */
     @Override
     public void updatePcSet(PcSet pcSet) {
-        // TODO - implement PcSetManagerImp.updatePcSet
-        throw new UnsupportedOperationException();
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        checkPcSet(pcSet);
+        
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            st = conn.prepareStatement("UPDATE database.pcset "
+                                     + "SET quantity=? "
+                                     + "WHERE conf_id=? AND comp_id=?");            
+            st.setLong(1, pcSet.getNumberOfComponents());
+            st.setLong(2, pcSet.getConfiguration().getId());
+            st.setLong(3, pcSet.getComponent().getId());
+            if (st.executeUpdate() != 1) {
+                throw new InternalFailureException("Updated more than 1 record");
+            }
+            conn.commit();
+        } catch (SQLException | InternalFailureException ex) {
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Updating PCSET in database failed: ", ex);
+        } finally {
+            closeSources(conn, st);
+        }
     }
 
     /**
@@ -125,8 +154,28 @@ public class PcSetManagerImpl implements PcSetManager {
      */
     @Override
     public void deletePcSet(PcSet pcSet) {
-        // TODO - implement PcSetManagerImp.deletePcSet
-        throw new UnsupportedOperationException();
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        checkPcSet(pcSet);
+        
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            st = conn.prepareStatement("DELETE FROM database.pcset "                                     
+                                     + "WHERE conf_id=? AND comp_id=?");                        
+            st.setLong(1, pcSet.getConfiguration().getId());
+            st.setLong(2, pcSet.getComponent().getId());
+            if (st.executeUpdate() != 1) {
+                throw new InternalFailureException("Updated more than 1 record");
+            }
+            conn.commit();
+        } catch (SQLException | InternalFailureException ex) {
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Deleting PCSET in database failed: ", ex);
+        } finally {
+            closeSources(conn, st);
+        }
     }
 
     /**
@@ -134,9 +183,36 @@ public class PcSetManagerImpl implements PcSetManager {
      * @param Component
      */
     @Override
-    public List<Configuration> findConfigByComponent(Component component) {
-        // TODO - implement PcSetManagerImp.findConfigByComponent ava
-        throw new UnsupportedOperationException();
+    public Set<Configuration> findConfigByComponent(Component component) {
+        if (this.dataSource == null) 
+            throw new IllegalStateException("DataSource is not set.");
+        if (component.getId() == null) 
+            throw new IllegalArgumentException("id of component is null");
+        ComponentManagerImpl.checkComponent(component);
+        
+        Set<Configuration> result = new TreeSet<>(Configuration.idComparator);
+        
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
+            conn = dataSource.getConnection();
+            st = conn.prepareStatement("SELECT * "
+                                     + "FROM database.pcset "
+                                     + "WHERE comp_id=? ");
+            st.setLong(1, component.getId());
+            ResultSet resultSet = st.executeQuery();
+            while(resultSet.next()){
+                ConfigurationManager configManager = new ConfigurationManagerImpl(dataSource);                
+                Configuration configuration = configManager.getConfigurationById(resultSet.getLong("conf_id"));                
+                result.add(configuration);
+            }
+        } catch (SQLException ex){
+            LOGGER.log(Level.SEVERE,"Error during getting configurations from database: ",ex);
+        } finally {
+            closeSources(conn, st);
+        }
+        
+        return result;
     }
 
     /**
