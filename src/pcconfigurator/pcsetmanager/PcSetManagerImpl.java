@@ -5,17 +5,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
@@ -101,7 +99,8 @@ public class PcSetManagerImpl implements PcSetManager {
                 Long conf_id = rs.getLong("conf_id");
                 Configuration conf = confManager.getConfigurationById(conf_id);
                 
-                PcSet pcSet = new PcSet(comp, conf, rs.getInt("quantity"));
+                int quantity = rs.getInt("quantity");
+                PcSet pcSet = new PcSet(comp, conf, quantity);
                 
                 if (rs.next()) throw new InternalFailureException("more PC Sets found");
                 
@@ -220,9 +219,39 @@ public class PcSetManagerImpl implements PcSetManager {
      * @param Configuration
      */
     @Override
-    public List<Component> listCompsInConfiguration(Configuration configuration) {
-        // TODO - implement PcSetManagerImp.listCompsInConfiguration
-        throw new UnsupportedOperationException();
+    public Map<Component,Integer> listCompsInConfiguration(Configuration configuration) {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        
+        ConfigurationManagerImpl.testConfiguration(configuration);
+        if (configuration.getId() == null) throw new IllegalArgumentException("id of configuration is null");
+        
+        Map<Component,Integer> components = new TreeMap<>(Component.idComparator);
+        
+        Connection connection = null;
+        PreparedStatement st = null;
+        try {
+            connection = dataSource.getConnection();
+            st = connection.prepareStatement("SELECT comp_id, quantity FROM database.pcset WHERE conf_id=?");
+            st.setLong(1, configuration.getId());
+            
+            ResultSet rs = st.executeQuery();
+            while(rs.next())
+            {
+                Long comp_id = rs.getLong("comp_id");
+                ComponentManager compManager = new ComponentManagerImpl(dataSource);
+                Component component = compManager.getComponentById(comp_id);
+                
+                int quantity = rs.getInt("quantity");
+                
+                components.put(component, quantity);
+            }
+        } catch (SQLException | InternalFailureException ex) {
+            LOGGER.log(Level.SEVERE, "Error during getting components in selected configuration: ", ex);
+        } finally {
+            closeSources(connection, st);
+        }
+        
+        return components;
     }
     
     private void checkPcSet(PcSet pcSet) throws IllegalArgumentException
@@ -252,6 +281,16 @@ public class PcSetManagerImpl implements PcSetManager {
         if       (pcSet.getConfiguration().getName().isEmpty()) throw new IllegalArgumentException("Configuration does not have a name.");        
         if (pcSet.getConfiguration().getCreationTime() == null) throw new IllegalArgumentException("Time is null");
         if   (pcSet.getConfiguration().getLastUpdate() == null) throw new IllegalArgumentException("Last update time is null");
+        
+        // valid quantity of components
+        if (pcSet.getComponent().getType().name().equals("CPU") && pcSet.getNumberOfComponents() > 1) 
+                    throw new IllegalArgumentException("Cannot add more CPUs to one configuration");
+        if (pcSet.getComponent().getType().name().equals("MOTHERBOARD") && pcSet.getNumberOfComponents() > 1)
+                    throw new IllegalArgumentException("Cannot add more motherboards to one configuration");
+        if (pcSet.getComponent().getType().name().equals("CASE") && pcSet.getNumberOfComponents() > 1)
+                    throw new IllegalArgumentException("Cannot add more cases to one configuration");
+        if (pcSet.getComponent().getType().name().equals("POWER_SUPPLY") && pcSet.getNumberOfComponents() > 1)
+                    throw new IllegalArgumentException("Cannot add more power supplies to one configuration");
     }
     
     private void closeSources(Connection connection, Statement statement)

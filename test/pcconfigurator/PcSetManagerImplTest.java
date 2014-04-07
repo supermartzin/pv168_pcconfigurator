@@ -14,12 +14,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -178,7 +177,11 @@ public class PcSetManagerImplTest {
         assertEquals("PcSets does not equal",expected, result);
         
         try {
-            PcSet wrongPcSet = new PcSet(comp, config, 5);
+            Component comp2 = new Component("AMD", (new BigDecimal("48.3")).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 36, "Zakladna doska AMD");
+            compManager.createComponent(comp2);
+            Configuration conf2 = new Configuration("Test configuration 2", "David Kaya & Martin Vrabel");
+            confManager.createConfiguration(conf2);
+            PcSet wrongPcSet = new PcSet(comp2, conf2, 5);
             pcSetManager.createPcSet(wrongPcSet);
             fail("You can't add 5 motherboards");
         } catch(IllegalArgumentException ex){            
@@ -315,27 +318,38 @@ public class PcSetManagerImplTest {
      */
     @Test
     public void testListCompsInConfiguration() {
+        ConfigurationManager confManager = new ConfigurationManagerImpl(dataSource);
         Configuration config = new Configuration("Test configuration","David Kaya");
-        Component comp = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
+        confManager.createConfiguration(config);
+        
+        ComponentManager compManager = new ComponentManagerImpl(dataSource);
+        Component comp1 = new Component("Intel", new BigDecimal("25.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.MOTHERBOARD, 45, "Zakladna doska Intel"); 
         Component comp2 = new Component("Asus", new BigDecimal("50.50").setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.CPU, 35, "CPU");  
         Component comp3 = new Component("Samsung",new BigDecimal("20.20").setScale(2, BigDecimal.ROUND_HALF_UP),ComponentTypes.GPU,26, "GPU");
-        pcSetManager.createPcSet(new PcSet(comp,config));
+        compManager.createComponent(comp1);
+        compManager.createComponent(comp2);
+        compManager.createComponent(comp3);
+        
+        pcSetManager.createPcSet(new PcSet(comp1,config));
         pcSetManager.createPcSet(new PcSet(comp2,config));
-        pcSetManager.createPcSet(new PcSet(comp3,config));
-        List<Component> compList = new ArrayList<>();
-        Collections.sort(compList, idComparator);
-        compList.add(comp);
-        compList.add(comp2);
-        compList.add(comp3);
-        List<Component> result = pcSetManager.listCompsInConfiguration(config);
-        Collections.sort(result, idComparator);
+        pcSetManager.createPcSet(new PcSet(comp3,config, 3));
         
-        assertEquals("List of components are not the same!",compList,result);
+        Map<Component,Integer> components = new TreeMap<>(Component.idComparator);
+        components.put(comp1, 1);
+        components.put(comp2, 1);
+        components.put(comp3, 3);
         
-        
-        
+        Map<Component,Integer> result = pcSetManager.listCompsInConfiguration(config);
+                
+        assertEquals("List of components are not the same!", components.keySet(), result.keySet()); 
+        int number = result.get(comp1);
+        assertEquals("Number of components in PC Set do not match.", 1, number);
+        number = result.get(comp2);
+        assertEquals("Number of components in PC Set do not match.", 1, number);
+        number = result.get(comp3);
+        assertEquals("Number of components in PC Set do not match.", 3, number);
     }
     
         private static final Comparator<Component> idComparator = (Component o1, Component o2) 
-            -> Long.valueOf(o1.getId()).compareTo(o2.getId());
+            -> o1.getId().compareTo(o2.getId());
 }

@@ -13,12 +13,12 @@ public class PcSet {
 
   
     public PcSet(Component component, Configuration configuration) {
-        this.component = component;
-        this.configuration = configuration;
+        this(component, configuration, 1);
     }
 
     public PcSet(Component component, Configuration configuration, int numberOfComponents) {
-        this(component,configuration);
+        this.component = component;
+        this.configuration = configuration;
         this.numberOfComponents = numberOfComponents;
     }
 

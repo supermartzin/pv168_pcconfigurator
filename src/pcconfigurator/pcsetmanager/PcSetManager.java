@@ -1,6 +1,7 @@
 package pcconfigurator.pcsetmanager;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.configurationmanager.Configuration;
@@ -42,6 +43,6 @@ public interface PcSetManager {
      *
      * @param Configuration
      */
-    List<Component> listCompsInConfiguration(Configuration configuration);
+    Map<Component,Integer> listCompsInConfiguration(Configuration configuration);
 
 }
