@@ -29,11 +29,7 @@ public class PcSetManagerImpl implements PcSetManager {
     {
         this.dataSource = dataSource;
     }
-    
-    /**
-     *
-     * @param PcSet
-     */
+
     @Override
     public void createPcSet(PcSet pcSet) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -66,11 +62,6 @@ public class PcSetManagerImpl implements PcSetManager {
         }
     }
 
-    /**
-     *
-     * @param Configuration
-     * @param Component
-     */
     @Override
     public PcSet getPcSet(Configuration configuration, Component component) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -115,10 +106,6 @@ public class PcSetManagerImpl implements PcSetManager {
         }
     }
 
-    /**
-     *
-     * @param PcSet
-     */
     @Override
     public void updatePcSet(PcSet pcSet) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -147,10 +134,6 @@ public class PcSetManagerImpl implements PcSetManager {
         }
     }
 
-    /**
-     *
-     * @param PcSet
-     */
     @Override
     public void deletePcSet(PcSet pcSet) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -177,10 +160,6 @@ public class PcSetManagerImpl implements PcSetManager {
         }
     }
 
-    /**
-     *
-     * @param Component
-     */
     @Override
     public Set<Configuration> findConfigByComponent(Component component) {
         if (this.dataSource == null) 
@@ -214,10 +193,6 @@ public class PcSetManagerImpl implements PcSetManager {
         return result;
     }
 
-    /**
-     *
-     * @param Configuration
-     */
     @Override
     public Map<Component,Integer> listCompsInConfiguration(Configuration configuration) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");

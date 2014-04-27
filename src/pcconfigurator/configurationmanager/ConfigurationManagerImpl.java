@@ -25,10 +25,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         this.dataSource = dataSource;
     }
 
-    /**
-     *
-     * @param configuration
-     */
     @Override
     public void createConfiguration(Configuration configuration) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -71,11 +67,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-
-    /**
-     *
-     * @param id
-     */
     @Override
     public Configuration getConfigurationById(Long id) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -142,10 +133,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         return configSet;
     }
 
-    /**
-     *
-     * @param configuration
-     */
     @Override
     public void updateConfiguration(Configuration configuration) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -176,10 +163,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-    /**
-     *
-     * @param Configuration
-     */
     @Override
     public void deleteConfiguration(Configuration configuration) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
@@ -206,11 +189,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-    /**
-     *
-     * @param name
-     * @return
-     */
     @Override
     public Set<Configuration> findConfigurationByName(String name) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
