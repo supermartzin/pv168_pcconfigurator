@@ -32,12 +32,6 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        componentManager = new javax.swing.JFrame();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
         addComponentWindow = new javax.swing.JFrame();
         jLabel19 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
@@ -144,114 +138,9 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
-        componentManager.setSize(650, 450);
-        componentManager.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
-        componentManager.setTitle(bundle.getString("componentManager")); // NOI18N
-        componentManager.setLocationByPlatform(true);
-        componentManager.setName("componentManager"); // NOI18N
-        componentManager.setResizable(false);
-
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Vendor", "Name", "Price", "Power"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable3.getTableHeader().setReorderingAllowed(false);
-        jScrollPane3.setViewportView(jTable3);
-        if (jTable3.getColumnModel().getColumnCount() > 0) {
-            jTable3.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("vendor")); // NOI18N
-            jTable3.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("name")); // NOI18N
-            jTable3.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("price")); // NOI18N
-            jTable3.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("power")); // NOI18N
-        }
-
-        jButton9.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        jButton9.setText(bundle.getString("addComponent")); // NOI18N
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
-            }
-        });
-
-        jButton10.setText(bundle.getString("edit")); // NOI18N
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
-            }
-        });
-
-        jButton11.setText(bundle.getString("delete")); // NOI18N
-        jButton11.setEnabled(false);
-
-        javax.swing.GroupLayout componentManagerLayout = new javax.swing.GroupLayout(componentManager.getContentPane());
-        componentManager.getContentPane().setLayout(componentManagerLayout);
-        componentManagerLayout.setHorizontalGroup(
-            componentManagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(componentManagerLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(componentManagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3)
-                    .addGroup(componentManagerLayout.createSequentialGroup()
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
-                        .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        componentManagerLayout.setVerticalGroup(
-            componentManagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(componentManagerLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(componentManagerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
-                    .addComponent(jButton10)
-                    .addComponent(jButton11))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44))
-        );
-
         addComponentWindow.setSize(310, 260);
         addComponentWindow.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         addComponentWindow.setTitle(bundle.getString("addComponent")); // NOI18N
         addComponentWindow.setName("addComponentWindow"); // NOI18N
         addComponentWindow.setResizable(false);
@@ -511,7 +400,6 @@ public class MainWindow extends javax.swing.JFrame {
         editConfigurationWindow.setSize(300, 160);
         editConfigurationWindow.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         editConfigurationWindow.setTitle(bundle.getString("editConfiguration")); // NOI18N
-        editConfigurationWindow.setPreferredSize(new java.awt.Dimension(292, 149));
         editConfigurationWindow.setResizable(false);
 
         jButton17.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
@@ -1216,16 +1104,13 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenu2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu2MouseClicked
-        componentManager.setVisible(true);
+        ComponentManagerFrame compFrame = new ComponentManagerFrame();
+        compFrame.setVisible(true);
     }//GEN-LAST:event_jMenu2MouseClicked
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        addComponentWindow.setVisible(true);
-    }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         addComponentWindow.dispose();
@@ -1275,10 +1160,6 @@ public class MainWindow extends javax.swing.JFrame {
         editComponentWindow.dispose();
     }//GEN-LAST:event_jButton24ActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        editComponentWindow.setVisible(true);
-    }//GEN-LAST:event_jButton10ActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -1310,14 +1191,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JFrame aboutApp;
     private javax.swing.JFrame addCompToConfWindow;
     private javax.swing.JFrame addComponentWindow;
-    private javax.swing.JFrame componentManager;
     private javax.swing.JFrame createConfigurationWindow;
     private javax.swing.JFrame editAmountWindow;
     private javax.swing.JFrame editComponentWindow;
     private javax.swing.JFrame editConfigurationWindow;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
@@ -1338,7 +1216,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JLabel jLabel1;
@@ -1394,7 +1271,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -1407,7 +1283,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner6;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
