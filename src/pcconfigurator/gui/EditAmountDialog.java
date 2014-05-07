@@ -37,6 +37,7 @@ public class EditAmountDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("editAmount")); // NOI18N
+        setResizable(false);
 
         jSpinner3.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));

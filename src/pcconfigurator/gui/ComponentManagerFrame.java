@@ -6,6 +6,8 @@
 
 package pcconfigurator.gui;
 
+import javax.swing.JDialog;
+
 /**
  *
  * @author Martin
@@ -37,6 +39,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("componentManager")); // NOI18N
+        setResizable(false);
 
         deleteComponentButton.setText(bundle.getString("delete")); // NOI18N
         deleteComponentButton.setEnabled(false);
@@ -83,6 +86,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         componentsTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(componentsTable);
         if (componentsTable.getColumnModel().getColumnCount() > 0) {
@@ -95,8 +99,18 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
 
         addComponentButton.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         addComponentButton.setText(bundle.getString("addComponent")); // NOI18N
+        addComponentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addComponentButtonActionPerformed(evt);
+            }
+        });
 
         editComponentButton.setText(bundle.getString("edit")); // NOI18N
+        editComponentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editComponentButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -129,6 +143,16 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void addComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addComponentButtonActionPerformed
+        JDialog addComponent = new AddComponentDialog(this, true);
+        addComponent.setVisible(true);
+    }//GEN-LAST:event_addComponentButtonActionPerformed
+
+    private void editComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editComponentButtonActionPerformed
+        JDialog editComponent = new EditComponentDialog(this, true);
+        editComponent.setVisible(true);
+    }//GEN-LAST:event_editComponentButtonActionPerformed
 
     /**
      * @param args the command line arguments

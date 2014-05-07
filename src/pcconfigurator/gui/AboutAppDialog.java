@@ -41,6 +41,7 @@ public class AboutAppDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("about")); // NOI18N
+        setResizable(false);
 
         jLabel28.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel28.setText(bundle.getString("pcconfigurator")); // NOI18N
