@@ -9,6 +9,7 @@ package pcconfigurator.gui;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 
 /**
  *
@@ -47,15 +48,6 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel25 = new javax.swing.JLabel();
         jButton12 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
-        aboutApp = new javax.swing.JFrame();
-        jLabel28 = new javax.swing.JLabel();
-        jButton14 = new javax.swing.JButton();
-        jLabel29 = new javax.swing.JLabel();
-        jLabel30 = new javax.swing.JLabel();
-        jLabel31 = new javax.swing.JLabel();
-        jLabel32 = new javax.swing.JLabel();
-        jLabel33 = new javax.swing.JLabel();
-        jLabel34 = new javax.swing.JLabel();
         createConfigurationWindow = new javax.swing.JFrame();
         jLabel35 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
@@ -70,11 +62,6 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel37 = new javax.swing.JLabel();
         jTextField7 = new javax.swing.JTextField();
         jLabel38 = new javax.swing.JLabel();
-        editAmountWindow = new javax.swing.JFrame();
-        jSpinner3 = new javax.swing.JSpinner();
-        jButton19 = new javax.swing.JButton();
-        jLabel39 = new javax.swing.JLabel();
-        jButton20 = new javax.swing.JButton();
         addCompToConfWindow = new javax.swing.JFrame();
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable4 = new javax.swing.JTable();
@@ -248,94 +235,6 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap(37, Short.MAX_VALUE))
         );
 
-        aboutApp.setSize(440, 240);
-        aboutApp.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        aboutApp.setTitle(bundle.getString("about")); // NOI18N
-        aboutApp.setName("aboutApp"); // NOI18N
-        aboutApp.setResizable(false);
-
-        jLabel28.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
-        jLabel28.setText(bundle.getString("pcconfigurator")); // NOI18N
-
-        jButton14.setText(bundle.getString("close")); // NOI18N
-        jButton14.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton14ActionPerformed(evt);
-            }
-        });
-
-        jLabel29.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        jLabel29.setText(bundle.getString("version")); // NOI18N
-
-        jLabel30.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        jLabel30.setText(bundle.getString("createdBy")); // NOI18N
-
-        jLabel31.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
-        jLabel31.setText("Dávid Kaya & Martin Vrábel");
-
-        jLabel32.setText(bundle.getString("homepage")); // NOI18N
-
-        jLabel33.setFont(new java.awt.Font("sansserif", 2, 12)); // NOI18N
-        jLabel33.setForeground(new java.awt.Color(0, 153, 153));
-        jLabel33.setText("github.com/davidkaya/pv168_pcconfigurator/");
-
-        jLabel34.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        jLabel34.setText(bundle.getString("year")); // NOI18N
-
-        javax.swing.GroupLayout aboutAppLayout = new javax.swing.GroupLayout(aboutApp.getContentPane());
-        aboutApp.getContentPane().setLayout(aboutAppLayout);
-        aboutAppLayout.setHorizontalGroup(
-            aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(aboutAppLayout.createSequentialGroup()
-                .addGap(82, 82, 82)
-                .addComponent(jLabel30)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel31)
-                .addGap(0, 65, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutAppLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutAppLayout.createSequentialGroup()
-                        .addComponent(jLabel28)
-                        .addGap(120, 120, 120))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutAppLayout.createSequentialGroup()
-                        .addComponent(jLabel29)
-                        .addGap(165, 165, 165))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutAppLayout.createSequentialGroup()
-                        .addComponent(jLabel34)
-                        .addGap(197, 197, 197))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, aboutAppLayout.createSequentialGroup()
-                        .addComponent(jLabel32)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(aboutAppLayout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(32, 32, 32))))
-        );
-        aboutAppLayout.setVerticalGroup(
-            aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(aboutAppLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel28)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel29)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel34)
-                .addGap(18, 18, 18)
-                .addGroup(aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jLabel31))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(aboutAppLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel32)
-                    .addComponent(jLabel33))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton14)
-                .addContainerGap(18, Short.MAX_VALUE))
-        );
-
         createConfigurationWindow.setSize(300, 160);
         createConfigurationWindow.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         createConfigurationWindow.setTitle(bundle.getString("addConfiguration")); // NOI18N
@@ -456,59 +355,6 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton18))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        editAmountWindow.setSize(170, 190);
-        editAmountWindow.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        editAmountWindow.setTitle(bundle.getString("editAmount")); // NOI18N
-        editAmountWindow.setResizable(false);
-
-        jSpinner3.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        jSpinner3.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
-
-        jButton19.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
-        jButton19.setText(bundle.getString("confirm")); // NOI18N
-
-        jLabel39.setText(bundle.getString("amount")); // NOI18N
-
-        jButton20.setText(bundle.getString("cancel")); // NOI18N
-        jButton20.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton20ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout editAmountWindowLayout = new javax.swing.GroupLayout(editAmountWindow.getContentPane());
-        editAmountWindow.getContentPane().setLayout(editAmountWindowLayout);
-        editAmountWindowLayout.setHorizontalGroup(
-            editAmountWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, editAmountWindowLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel39)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(editAmountWindowLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(editAmountWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(editAmountWindowLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jButton20, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        editAmountWindowLayout.setVerticalGroup(
-            editAmountWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(editAmountWindowLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(editAmountWindowLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSpinner3, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel39))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton19, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton20)
-                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         addCompToConfWindow.setSize(680, 480);
@@ -1097,7 +943,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(jButton6)
                             .addComponent(jButton7)
                             .addComponent(jButton8))))
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -1117,12 +963,9 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        JDialog aboutApp = new AboutAppDialog(this, true);
         aboutApp.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
-        aboutApp.dispose();
-    }//GEN-LAST:event_jButton14ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         createConfigurationWindow.setVisible(true);
@@ -1141,12 +984,9 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        editAmountWindow.setVisible(true);
+        JDialog editAmount = new EditAmountDialog(this, true);
+        editAmount.setVisible(true);
     }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton20ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton20ActionPerformed
-        editAmountWindow.dispose();
-    }//GEN-LAST:event_jButton20ActionPerformed
 
     private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
         addCompToConfWindow.dispose();
@@ -1188,24 +1028,19 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFrame aboutApp;
     private javax.swing.JFrame addCompToConfWindow;
     private javax.swing.JFrame addComponentWindow;
     private javax.swing.JFrame createConfigurationWindow;
-    private javax.swing.JFrame editAmountWindow;
     private javax.swing.JFrame editComponentWindow;
     private javax.swing.JFrame editConfigurationWindow;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
-    private javax.swing.JButton jButton19;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton20;
     private javax.swing.JButton jButton21;
     private javax.swing.JButton jButton22;
     private javax.swing.JButton jButton23;
@@ -1238,19 +1073,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
-    private javax.swing.JLabel jLabel28;
-    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel31;
-    private javax.swing.JLabel jLabel32;
-    private javax.swing.JLabel jLabel33;
-    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
-    private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
@@ -1277,7 +1104,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
-    private javax.swing.JSpinner jSpinner3;
     private javax.swing.JSpinner jSpinner4;
     private javax.swing.JSpinner jSpinner5;
     private javax.swing.JSpinner jSpinner6;
