@@ -10,6 +10,9 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
+import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.configurationmanager.ConfigurationManager;
+import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
 
 /**
  *
@@ -22,6 +25,12 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
+        ConfigurationManager configManager = new ConfigurationManagerImpl();
+        ConfigurationTableModel configModel = (ConfigurationTableModel) jTable1.getModel();
+        configManager.createConfiguration(new Configuration("Test 1", "David Kaya"));
+        configManager.createConfiguration(new Configuration("Test 2", "Martin Vrabel"));
+        configModel.loadConfigurations(configManager.findAllConfigurations());
+        
     }
 
     /**
@@ -103,46 +112,7 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel5.setText(bundle.getString("configuration")); // NOI18N
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Name", "Creator", "Created on", "Last change on"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        jTable1.setModel(new ConfigurationTableModel());
         jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
