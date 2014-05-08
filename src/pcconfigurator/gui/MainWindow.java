@@ -7,9 +7,12 @@
 package pcconfigurator.gui;
 
 import java.net.URISyntaxException;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
+import javax.swing.SwingWorker;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
@@ -20,15 +23,16 @@ import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private ConfigurationManager configManager;
+    private ConfigurationTableModel configModel;
+    
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
         initComponents();
-        ConfigurationManager configManager = new ConfigurationManagerImpl();
-        ConfigurationTableModel configModel = (ConfigurationTableModel) jTable1.getModel();
-        configManager.createConfiguration(new Configuration("Test 1", "David Kaya"));
-        configManager.createConfiguration(new Configuration("Test 2", "Martin Vrabel"));
+        configManager = new ConfigurationManagerImpl();
+        configModel = (ConfigurationTableModel) jTable1.getModel();
         configModel.loadConfigurations(configManager.findAllConfigurations());
         
     }
@@ -545,4 +549,24 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+    
+    public void createConfiguration(String name, String creator) {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                Configuration conf = new Configuration(name, creator);
+                configManager.createConfiguration(conf);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                configModel.loadConfigurations(configManager.findAllConfigurations());
+                configModel.fireTableDataChanged();
+            }
+        };
+        
+        worker.execute();
+    }
 }

@@ -10,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import pcconfigurator.configurationmanager.Configuration;
 
@@ -21,6 +22,7 @@ public class ConfigurationTableModel extends AbstractTableModel {
     private List<Configuration> configurations = new ArrayList<>();
     
     public void loadConfigurations(Set<Configuration> configurations){
+        this.configurations = new ArrayList<>();
         this.configurations.addAll(configurations);
     }
     
@@ -49,6 +51,6 @@ public class ConfigurationTableModel extends AbstractTableModel {
             default:
                 throw new IllegalArgumentException("columnIndex");
         }
-    }
+    }    
     
 }
