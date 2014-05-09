@@ -6,7 +6,6 @@
 
 package pcconfigurator.gui;
 
-import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -23,8 +22,12 @@ import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
  */
 public class MainWindow extends javax.swing.JFrame {
 
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
     private ConfigurationManager configManager;
     private ConfigurationTableModel configModel;
+    private Configuration configuration;
+    private final MainWindow mainWindow = this;
     
     /**
      * Creates new form MainWindow
@@ -32,9 +35,21 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         configManager = new ConfigurationManagerImpl();
-        configModel = (ConfigurationTableModel) jTable1.getModel();
-        configModel.loadConfigurations(configManager.findAllConfigurations());
-        
+        configModel = (ConfigurationTableModel) configsTable.getModel();
+        SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
+
+            @Override
+            protected Set<Configuration> doInBackground() throws Exception {
+                return configManager.findAllConfigurations();
+            }
+
+            @Override
+            protected void done() {
+                configModel.loadConfigurations(configManager.findAllConfigurations());
+                configModel.fireTableDataChanged();
+            }
+        };
+        worker.execute();
     }
 
     /**
@@ -50,7 +65,7 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        searchNameLabel = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -58,10 +73,10 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        configsTable = new javax.swing.JTable();
+        editConfButton = new javax.swing.JButton();
+        createConfButton = new javax.swing.JButton();
+        deleteConfButton = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -83,6 +98,7 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
+        showAllConfsButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -110,40 +126,51 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel4.setText(bundle.getString("searchByComponent")); // NOI18N
 
         jButton1.setText(bundle.getString("search")); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText(bundle.getString("search")); // NOI18N
 
         jLabel5.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel5.setText(bundle.getString("configuration")); // NOI18N
 
-        jTable1.setModel(new ConfigurationTableModel());
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("name")); // NOI18N
-            jTable1.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("creator")); // NOI18N
-            jTable1.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("created")); // NOI18N
-            jTable1.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("lastChange")); // NOI18N
+        configsTable.setBorder(null);
+        configsTable.setModel(new ConfigurationTableModel());
+        configsTable.setAutoscrolls(false);
+        configsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        configsTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(configsTable);
+        if (configsTable.getColumnModel().getColumnCount() > 0) {
+            configsTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("name")); // NOI18N
+            configsTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("creator")); // NOI18N
+            configsTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("created")); // NOI18N
+            configsTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("lastChange")); // NOI18N
         }
 
-        jButton3.setText(bundle.getString("edit")); // NOI18N
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        editConfButton.setText(bundle.getString("edit")); // NOI18N
+        editConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                editConfButtonActionPerformed(evt);
             }
         });
 
-        jButton5.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
-        jButton5.setText(bundle.getString("createConfiguration")); // NOI18N
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        createConfButton.setFont(new java.awt.Font("sansserif", 0, 18)); // NOI18N
+        createConfButton.setText(bundle.getString("createConfiguration")); // NOI18N
+        createConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                createConfButtonActionPerformed(evt);
             }
         });
 
-        jButton4.setText(bundle.getString("delete")); // NOI18N
-        jButton4.setEnabled(false);
+        deleteConfButton.setText(bundle.getString("delete")); // NOI18N
+        deleteConfButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteConfButtonActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel6.setText(bundle.getString("name")); // NOI18N
@@ -256,6 +283,13 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel27.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         jLabel27.setText("W");
 
+        showAllConfsButton.setText(bundle.getString("showAll")); // NOI18N
+        showAllConfsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showAllConfsButtonActionPerformed(evt);
+            }
+        });
+
         jMenu1.setText(bundle.getString("program")); // NOI18N
 
         jMenuItem1.setText(bundle.getString("about")); // NOI18N
@@ -293,34 +327,38 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(12, 12, 12)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jLabel3)
-                                            .addComponent(jLabel4))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jComboBox1, 0, 280, Short.MAX_VALUE)
-                                            .addComponent(jTextField1))
-                                        .addGap(2, 2, 2)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)))))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(editConfButton, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(jButton5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(deleteConfButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+                        .addComponent(createConfButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(6, 6, 6)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel2)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(12, 12, 12)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addComponent(showAllConfsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(layout.createSequentialGroup()
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(jLabel3)
+                                                        .addComponent(jLabel4))
+                                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jComboBox1, 0, 280, Short.MAX_VALUE)
+                                                        .addComponent(searchNameLabel))
+                                                    .addGap(2, 2, 2)
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)))))))
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jSeparator2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 7, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -367,7 +405,7 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap())))
         );
@@ -378,13 +416,15 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(showAllConfsButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(searchNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -397,10 +437,10 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4))
+                            .addComponent(editConfButton)
+                            .addComponent(deleteConfButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(createConfButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -458,15 +498,27 @@ public class MainWindow extends javax.swing.JFrame {
         aboutApp.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void createConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createConfButtonActionPerformed
         JDialog createConfiguration = new CreateConfigurationDialog(this, true);
         createConfiguration.setVisible(true);
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_createConfButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        JDialog editConfiguration = new EditConfigurationDialog(this, true);
-        editConfiguration.setVisible(true);
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void editConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editConfButtonActionPerformed
+        if (configsTable.getSelectedRow() == - 1)
+        {
+            WarningDialog warningDialog = new WarningDialog(this, true);
+            warningDialog.setSize(365, 140);
+            warningDialog.setWarningLabel(bundle.getString("noConfRowSelected"));
+            warningDialog.setVisible(true);
+        }
+        else
+        {
+            configuration = configModel.getConfiguration(configsTable.getSelectedRow());
+            EditConfigurationDialog editConfiguration = new EditConfigurationDialog(this, true);
+            editConfiguration.setTextFields(configuration.getName(), configuration.getCreator());
+            editConfiguration.setVisible(true);
+        }
+    }//GEN-LAST:event_editConfButtonActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         JDialog editAmount = new EditAmountDialog(this, true);
@@ -477,6 +529,55 @@ public class MainWindow extends javax.swing.JFrame {
         JDialog addCompToConf = new AddCompToConfDialog(this, true);
         addCompToConf.setVisible(true);
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void deleteConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteConfButtonActionPerformed
+        if (configsTable.getSelectedRow() == - 1)
+        {
+            WarningDialog warningDialog = new WarningDialog(this, true);
+            warningDialog.setSize(365, 140);
+            warningDialog.setWarningLabel(bundle.getString("noConfRowSelected"));
+            warningDialog.setVisible(true);
+        }
+        else
+        {
+            configuration = configModel.getConfiguration(configsTable.getSelectedRow());
+            DeleteConfigurationDialog deleteConfiguration = new DeleteConfigurationDialog(this, true);
+            deleteConfiguration.setConfToDelete(configuration);
+            deleteConfiguration.setVisible(true);
+        }
+    }//GEN-LAST:event_deleteConfButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (searchNameLabel.getText().isEmpty() || searchNameLabel.getText() == null)
+        {
+            WarningDialog warningDialog = new WarningDialog(this, true);
+            warningDialog.setSize(365, 140);
+            warningDialog.setWarningLabel(bundle.getString("searchByNameEmpty"));
+            warningDialog.setVisible(true);
+        }
+        else 
+        {
+            findAllConfigurationsByName(searchNameLabel.getText());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void showAllConfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllConfsButtonActionPerformed
+        SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
+
+            @Override
+            protected Set<Configuration> doInBackground() throws Exception {
+                return configManager.findAllConfigurations();
+            }
+
+            @Override
+            protected void done() {
+                configModel.loadConfigurations(configManager.findAllConfigurations());
+                configModel.fireTableDataChanged();
+            }
+        };
+        
+        worker.execute();
+    }//GEN-LAST:event_showAllConfsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -506,11 +607,12 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable configsTable;
+    private javax.swing.JButton createConfButton;
+    private javax.swing.JButton deleteConfButton;
+    private javax.swing.JButton editConfButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
@@ -545,9 +647,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField searchNameLabel;
+    private javax.swing.JButton showAllConfsButton;
     // End of variables declaration//GEN-END:variables
     
     public void createConfiguration(String name, String creator) {
@@ -568,5 +670,75 @@ public class MainWindow extends javax.swing.JFrame {
         };
         
         worker.execute();
+    }
+    
+    public void updateConfiguration(String name, String creator) {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                configuration.setName(name);
+                configuration.setCreator(creator);
+                configManager.updateConfiguration(configuration);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                configModel.loadConfigurations(configManager.findAllConfigurations());
+                configModel.fireTableDataChanged();
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    public void deleteConfiguration(Configuration configuration) {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                configManager.deleteConfiguration(configuration);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                configModel.loadConfigurations(configManager.findAllConfigurations());
+                configModel.fireTableDataChanged();
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    private void findAllConfigurationsByName(String name) {
+        SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
+
+            @Override
+            protected Set<Configuration> doInBackground() throws Exception {
+                return configManager.findConfigurationByName(name);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (get().isEmpty()) {
+                        WarningDialog warningDialog = new WarningDialog(mainWindow, true);
+                        warningDialog.setSize(365, 140);
+                        warningDialog.setWarningLabel(bundle.getString("noConfigurationFound"));
+                        warningDialog.setVisible(true);
+                    }
+                    else {
+                        configModel.loadConfigurations(get());
+                        configModel.fireTableDataChanged();
+                    }
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        
+        worker.execute();       
     }
 }

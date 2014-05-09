@@ -12,11 +12,15 @@ package pcconfigurator.gui;
  */
 public class EditConfigurationDialog extends javax.swing.JDialog {
 
+    private final MainWindow mainWindow;
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");
+            
     /**
      * Creates new form EditConfigurationDialog
      */
     public EditConfigurationDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        mainWindow = (MainWindow) parent;
         initComponents();
     }
 
@@ -29,11 +33,11 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextField6 = new javax.swing.JTextField();
+        creatorTextField = new javax.swing.JTextField();
         jButton17 = new javax.swing.JButton();
         jButton18 = new javax.swing.JButton();
         jLabel37 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        nameTextField = new javax.swing.JTextField();
         jLabel38 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -43,6 +47,11 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
 
         jButton17.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         jButton17.setText(bundle.getString("edit")); // NOI18N
+        jButton17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton17ActionPerformed(evt);
+            }
+        });
 
         jButton18.setText(bundle.getString("cancel")); // NOI18N
         jButton18.addActionListener(new java.awt.event.ActionListener() {
@@ -71,8 +80,8 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
                             .addComponent(jLabel37))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField7)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(nameTextField)
+                            .addComponent(creatorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -85,11 +94,11 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel37)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel38)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(creatorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -103,6 +112,21 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
     private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton18ActionPerformed
+
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        if (nameTextField.getText() == null || nameTextField.getText().isEmpty() || creatorTextField.getText() == null || creatorTextField.getText().isEmpty()) 
+        {
+            WarningDialog warningDialog = new WarningDialog(this, true);
+            warningDialog.setWarningLabel(bundle.getString("createConfFieldsEmpty"));
+            warningDialog.setSize(365, 140);
+            warningDialog.setVisible(true);
+        }
+        else
+        {
+            mainWindow.updateConfiguration(nameTextField.getText(), creatorTextField.getText());
+            this.dispose();
+        }
+    }//GEN-LAST:event_jButton17ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -147,11 +171,17 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField creatorTextField;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
+    private javax.swing.JTextField nameTextField;
     // End of variables declaration//GEN-END:variables
+    
+    public void setTextFields(String name, String creator)
+    {
+        nameTextField.setText(name);
+        creatorTextField.setText(creator);
+    }
 }

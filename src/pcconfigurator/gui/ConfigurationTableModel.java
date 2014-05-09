@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import pcconfigurator.configurationmanager.Configuration;
 
@@ -20,6 +19,10 @@ import pcconfigurator.configurationmanager.Configuration;
  */
 public class ConfigurationTableModel extends AbstractTableModel {
     private List<Configuration> configurations = new ArrayList<>();
+    
+    public Configuration getConfiguration(int row) {
+        return configurations.get(row);
+    }
     
     public void loadConfigurations(Set<Configuration> configurations){
         this.configurations = new ArrayList<>();
@@ -45,9 +48,11 @@ public class ConfigurationTableModel extends AbstractTableModel {
             case 1:
                 return configuration.getCreator();
             case 2:
-                return configuration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_TIME);
+                return configuration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_TIME) 
+                        + " - " + configuration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_DATE);
             case 3:
-                return configuration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_TIME);
+                return configuration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_TIME)
+                        + " - " + configuration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_DATE);
             default:
                 throw new IllegalArgumentException("columnIndex");
         }

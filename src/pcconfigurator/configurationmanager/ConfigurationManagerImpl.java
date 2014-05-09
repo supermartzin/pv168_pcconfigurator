@@ -7,14 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -157,6 +152,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             throw new IllegalStateException("DataSource is not set.");
         }
         testConfiguration(configuration);
+        configuration.setLastUpdate(LocalDateTime.now());
 
         Connection conn = null;
         PreparedStatement st = null;
@@ -168,8 +164,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                     + "WHERE conf_id=?");
             st.setString(1, configuration.getName());
             st.setString(2, configuration.getCreator());
-            Date updateDate = new Date(configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC) * 1000);
-            st.setDate(3, updateDate);
+            st.setLong(3, configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC));
             st.setLong(4, configuration.getId());
             if (st.executeUpdate() != 1) {
                 throw new InternalFailureException("Updated more than 1 record");
@@ -239,10 +234,10 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 configuration.setId(resultSet.getLong("conf_id"));
                 configuration.setName(resultSet.getString("name"));
                 configuration.setCreator(resultSet.getString("creator"));
-                Instant instant = Instant.ofEpochMilli(resultSet.getDate("creation_time").getTime());
-                configuration.setCreationTime(LocalDateTime.ofInstant(instant, ZoneOffset.UTC));
-                Instant instant2 = Instant.ofEpochMilli(resultSet.getDate("last_update").getTime());
-                configuration.setLastUpdate(LocalDateTime.ofInstant(instant2, ZoneOffset.UTC));
+                LocalDateTime creationTime = LocalDateTime.ofEpochSecond(resultSet.getLong("creation_time"), 0, ZoneOffset.UTC);
+                configuration.setCreationTime(creationTime);
+                LocalDateTime lastUpdateTime = LocalDateTime.ofEpochSecond(resultSet.getLong("last_update"), 0, ZoneOffset.UTC);
+                configuration.setLastUpdate(lastUpdateTime);
                 result.add(configuration);
             }
         } catch (SQLException ex) {
