@@ -6,7 +6,15 @@
 
 package pcconfigurator.gui;
 
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JDialog;
+import javax.swing.SwingWorker;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManager;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
 
 /**
  *
@@ -14,11 +22,19 @@ import javax.swing.JDialog;
  */
 public class ComponentManagerFrame extends javax.swing.JFrame {
 
+    private static final Logger LOGGER = Logger.getLogger(ComponentManagerFrame.class.getName());
+    private ComponentManager compManager;
+    private ComponentTableModel compModel;
+    
     /**
      * Creates new form ComponentManagerFrame
      */
     public ComponentManagerFrame() {
         initComponents();
+        this.compManager = new ComponentManagerImpl();
+        this.compModel = (ComponentTableModel) componentsTable.getModel();
+        
+        findAllComponents();
     }
 
     /**
@@ -44,48 +60,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         deleteComponentButton.setText(bundle.getString("delete")); // NOI18N
         deleteComponentButton.setEnabled(false);
 
-        componentsTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Vendor", "Name", "Type", "Price", "Power"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        componentsTable.setModel(new ComponentTableModel());
         componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         componentsTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane3.setViewportView(componentsTable);
@@ -196,4 +171,32 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     private javax.swing.JButton editComponentButton;
     private javax.swing.JScrollPane jScrollPane3;
     // End of variables declaration//GEN-END:variables
+
+    private void findAllComponents() {
+        SwingWorker<Set<Component>, Void> worker = new SwingWorker<Set<Component>, Void>() {
+
+            @Override
+            protected Set<Component> doInBackground() throws Exception {
+                /*// test
+                Component component1 = new Component("Intel", (new BigDecimal(25.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.CPU, 45, "Pentium IV 4200X");
+                Component component2 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M"); 
+                compManager.createComponent(component1);
+                compManager.createComponent(component2);
+                // end test*/
+                return compManager.findAllComponents();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    compModel.loadComponents(get());
+                    compModel.fireTableDataChanged();
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "Error getting components from database to table: ", ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
 }

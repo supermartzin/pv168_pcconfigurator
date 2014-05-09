@@ -68,13 +68,13 @@ public class ConfigurationManagerImplTest {
             name = prop.getProperty("name");
             password = prop.getProperty("password");
         } catch (IOException ex){
-            LOGGER.log(Level.SEVERE,null,ex);
+            LOGGER.log(Level.SEVERE, "Error opening test credentials file: ", ex);
         } finally{
             if(input!=null){
                 try{
                     input.close();
                 } catch (IOException e){
-                    LOGGER.log(Level.SEVERE,null,e);
+                    LOGGER.log(Level.SEVERE, "Error closing input stream: ", e);
                 }
             }
         }                 

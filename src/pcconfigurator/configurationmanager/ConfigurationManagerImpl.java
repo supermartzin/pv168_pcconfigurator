@@ -1,14 +1,16 @@
 package pcconfigurator.configurationmanager;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -23,15 +25,42 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final DataSource dataSource;
 
     public ConfigurationManagerImpl() {
-        BasicDataSource ds = new BasicDataSource();
-        ds.setUrl("jdbc:derby://localhost:1527/pcconfiguration_test");
-        ds.setUsername("db");
-        ds.setPassword("db");
-        this.dataSource = ds;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("credentials.properties");
+            prop.load(input); 
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error opening credentials file: ", ex);
+        } finally {
+            this.dataSource = setDataSource(prop.getProperty("db_url"), prop.getProperty("name"), prop.getProperty("password"));
+            if (input != null)
+            {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing input stream: ", ex);
+                }
+            }
+        }
     }
 
     public ConfigurationManagerImpl(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+    
+    private DataSource setDataSource(final String dbUrl, final String name, final String password)
+    {
+        BasicDataSource ds = new BasicDataSource();
+        if (name != null && password != null && dbUrl != null) 
+        {
+            ds.setUrl(dbUrl);
+            ds.setUsername(name);
+            ds.setPassword(password);
+        }
+        else throw new InternalFailureException("Cannot create DataSource, properties are empty!");
+        
+        return ds;
     }
 
     @Override
