@@ -73,14 +73,6 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         componentsTable.setModel(new ComponentTableModel());
         componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         componentsTable.getTableHeader().setReorderingAllowed(false);
-        componentsTable.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                componentsTableFocusGained(evt);
-            }
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                componentsTableFocusLost(evt);
-            }
-        });
         componentsTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 componentsTableMouseClicked(evt);
@@ -154,19 +146,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_editComponentButtonActionPerformed
 
     private void deleteComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteComponentButtonActionPerformed
-        Component component = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
-        if(component != null){
-            deleteComponent(component);
-        }
+        deleteComponent(currentComponent);
     }//GEN-LAST:event_deleteComponentButtonActionPerformed
-
-    private void componentsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_componentsTableFocusGained
-        deleteComponentButton.setEnabled(true);
-    }//GEN-LAST:event_componentsTableFocusGained
-
-    private void componentsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_componentsTableFocusLost
-        deleteComponentButton.setEnabled(false);
-    }//GEN-LAST:event_componentsTableFocusLost
 
     private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
         deleteComponentButton.setEnabled(true);
