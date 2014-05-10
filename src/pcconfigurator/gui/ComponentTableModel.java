@@ -43,8 +43,8 @@ public class ComponentTableModel extends AbstractTableModel {
             case 0: return component.getVendor();
             case 1: return component.getName();
             case 2: return component.getType().getName();
-            case 3: return component.getPrice();
-            case 4: return component.getPower();
+            case 3: return component.getPrice().toString() + " €";
+            case 4: return component.getPower() + " W";
             default: throw new IllegalArgumentException("columnIndex");
         }
     }

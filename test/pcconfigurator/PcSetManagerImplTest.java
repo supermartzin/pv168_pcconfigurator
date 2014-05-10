@@ -266,12 +266,7 @@ public class PcSetManagerImplTest {
         pcSetManager.createPcSet(expected);
         pcSetManager.deletePcSet(expected);
         
-        try{
-            pcSetManager.getPcSet(config, comp);
-            fail("This PCSet should be deleted!");
-        } catch (InternalFailureException ex){
-        }
-        
+        assertNull("This PCSet should be deleted!", pcSetManager.getPcSet(config, comp));        
         try{
             pcSetManager.deletePcSet(expected2);
             fail("This pc set does not exist!");

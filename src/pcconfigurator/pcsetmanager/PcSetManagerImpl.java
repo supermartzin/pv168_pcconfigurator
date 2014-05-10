@@ -75,10 +75,8 @@ public class PcSetManagerImpl implements PcSetManager {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         
         checkPcSet(pcSet);
-        try {
-            this.getPcSet(pcSet.getConfiguration(), pcSet.getComponent());
+        if (this.getPcSet(pcSet.getConfiguration(), pcSet.getComponent()) != null) {
             throw new IllegalArgumentException("This PC Set already exists.");
-        } catch (InternalFailureException ex) {            
         }
         
         PreparedStatement st = null;
@@ -137,7 +135,7 @@ public class PcSetManagerImpl implements PcSetManager {
                 
                 return pcSet;                
             }
-            else throw new SQLException("this PC Set does not exists");
+            else return null;
         } catch (SQLException | InternalFailureException ex) {
             LOGGER.log(Level.SEVERE, "Getting PC Set from database failed: ", ex);
             throw new InternalFailureException("Getting PC Set from database failed: ",ex);

@@ -96,6 +96,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         });
 
         editComponentButton.setText(bundle.getString("edit")); // NOI18N
+        editComponentButton.setEnabled(false);
         editComponentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editComponentButtonActionPerformed(evt);
@@ -151,6 +152,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
 
     private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
         deleteComponentButton.setEnabled(true);
+        editComponentButton.setEnabled(true);
         currentComponent = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
     }//GEN-LAST:event_componentsTableMouseClicked
 
@@ -170,22 +172,14 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ComponentManagerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ComponentManagerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ComponentManagerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ComponentManagerFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            LOGGER.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ComponentManagerFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new ComponentManagerFrame().setVisible(true);
         });
     }
 
@@ -246,7 +240,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                     compModel.loadComponents(get());
                     compModel.fireTableDataChanged();
                 } catch (InterruptedException | ExecutionException ex){
-                    LOGGER.log(Level.SEVERE, "Erro getting components from database to table:",ex);
+                    LOGGER.log(Level.SEVERE, "Erro getting components from database to table: ",ex);
                 }
             }
         };

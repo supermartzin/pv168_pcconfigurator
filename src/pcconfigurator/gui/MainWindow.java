@@ -7,6 +7,7 @@
 package pcconfigurator.gui;
 
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
-import javax.swing.table.TableColumn;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
@@ -92,9 +92,9 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         compsInCofigTable = new javax.swing.JTable();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
+        addCompToConfButton = new javax.swing.JButton();
+        deleteCompInConfButton = new javax.swing.JButton();
+        editAmountButton = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
         totalPriceLabel = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -158,6 +158,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
 
         editConfButton.setText(bundle.getString("edit")); // NOI18N
+        editConfButton.setEnabled(false);
         editConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editConfButtonActionPerformed(evt);
@@ -173,6 +174,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         deleteConfButton.setText(bundle.getString("delete")); // NOI18N
+        deleteConfButton.setEnabled(false);
         deleteConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteConfButtonActionPerformed(evt);
@@ -190,14 +192,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel9.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel9.setText(bundle.getString("lastChange")); // NOI18N
-
-        confNameTextBox.setText("-- name --");
-
-        confCreatorTextBox.setText("-- creator --");
-
-        createdOnTextBox.setText("-- created on --");
-
-        lastChangeOnTextBox.setText("-- last change on --");
 
         jLabel14.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
         jLabel14.setText(bundle.getString("listOfComponents")); // NOI18N
@@ -220,25 +214,27 @@ public class MainWindow extends javax.swing.JFrame {
             compsInCofigTable.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("amount")); // NOI18N
         }
 
-        jButton6.setText(bundle.getString("addComponent")); // NOI18N
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        addCompToConfButton.setText(bundle.getString("addComponent")); // NOI18N
+        addCompToConfButton.setEnabled(false);
+        addCompToConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                addCompToConfButtonActionPerformed(evt);
             }
         });
 
-        jButton7.setText(bundle.getString("deleteComponent")); // NOI18N
-        jButton7.setEnabled(false);
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        deleteCompInConfButton.setText(bundle.getString("deleteComponent")); // NOI18N
+        deleteCompInConfButton.setEnabled(false);
+        deleteCompInConfButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                deleteCompInConfButtonActionPerformed(evt);
             }
         });
 
-        jButton8.setText(bundle.getString("editAmount")); // NOI18N
-        jButton8.addActionListener(new java.awt.event.ActionListener() {
+        editAmountButton.setText(bundle.getString("editAmount")); // NOI18N
+        editAmountButton.setEnabled(false);
+        editAmountButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton8ActionPerformed(evt);
+                editAmountButtonActionPerformed(evt);
             }
         });
 
@@ -246,13 +242,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel15.setText(bundle.getString("totalPrice")); // NOI18N
 
         totalPriceLabel.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        totalPriceLabel.setText("-- 1000 --");
 
         jLabel17.setFont(new java.awt.Font("sansserif", 2, 13)); // NOI18N
         jLabel17.setText(bundle.getString("totalPower")); // NOI18N
 
         totalPowerLabel.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        totalPowerLabel.setText("-- 560 --");
 
         jLabel26.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         jLabel26.setText("€");
@@ -378,11 +372,11 @@ public class MainWindow extends javax.swing.JFrame {
                                             .addComponent(lastChangeOnTextBox))))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(addCompToConfButton, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(deleteCompInConfButton, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(editAmountButton, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap())))
         );
         layout.setVerticalGroup(
@@ -451,9 +445,9 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(jLabel27))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton6)
-                            .addComponent(jButton7)
-                            .addComponent(jButton8))))
+                            .addComponent(addCompToConfButton)
+                            .addComponent(deleteCompInConfButton)
+                            .addComponent(editAmountButton))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -480,50 +474,30 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_createConfButtonActionPerformed
 
     private void editConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editConfButtonActionPerformed
-        if (configsTable.getSelectedRow() == - 1)
-        {
-            WarningDialog warningDialog = new WarningDialog(this, true);
-            warningDialog.setSize(365, 140);
-            warningDialog.setWarningLabel(bundle.getString("noConfRowSelected"));
-            warningDialog.setVisible(true);
-        }
-        else
-        {
-            configuration = configModel.getConfiguration(configsTable.getSelectedRow());
-            EditConfigurationDialog editConfiguration = new EditConfigurationDialog(this, true);
-            editConfiguration.setTextFields(configuration.getName(), configuration.getCreator());
-            editConfiguration.setVisible(true);
-        }
+        configuration = configModel.getConfiguration(configsTable.getSelectedRow());
+        EditConfigurationDialog editConfiguration = new EditConfigurationDialog(this, true);
+        editConfiguration.setTextFields(configuration.getName(), configuration.getCreator());
+        editConfiguration.setVisible(true);
     }//GEN-LAST:event_editConfButtonActionPerformed
 
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+    private void editAmountButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editAmountButtonActionPerformed
         JDialog editAmount = new EditAmountDialog(this, true);
         editAmount.setVisible(true);
-    }//GEN-LAST:event_jButton8ActionPerformed
+    }//GEN-LAST:event_editAmountButtonActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void addCompToConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompToConfButtonActionPerformed
         AddCompToConfDialog addCompToConf = new AddCompToConfDialog(this, true);
         Component returnedComponent = addCompToConf.showDialog();
         addCompToConf.setVisible(false);
         pcSetManager.createPcSet(new PcSet(returnedComponent, currentConfiguration));      
         findAllComponentsInConfiguration();
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_addCompToConfButtonActionPerformed
 
     private void deleteConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteConfButtonActionPerformed
-        if (configsTable.getSelectedRow() == - 1)
-        {
-            WarningDialog warningDialog = new WarningDialog(this, true);
-            warningDialog.setSize(365, 140);
-            warningDialog.setWarningLabel(bundle.getString("noConfRowSelected"));
-            warningDialog.setVisible(true);
-        }
-        else
-        {
-            configuration = configModel.getConfiguration(configsTable.getSelectedRow());
-            DeleteConfigurationDialog deleteConfiguration = new DeleteConfigurationDialog(this, true);
-            deleteConfiguration.setConfToDelete(configuration);
-            deleteConfiguration.setVisible(true);
-        }
+        configuration = configModel.getConfiguration(configsTable.getSelectedRow());
+        DeleteConfigurationDialog deleteConfiguration = new DeleteConfigurationDialog(this, true);
+        deleteConfiguration.setConfToDelete(configuration);
+        deleteConfiguration.setVisible(true);
     }//GEN-LAST:event_deleteConfButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -573,24 +547,28 @@ public class MainWindow extends javax.swing.JFrame {
     private void configsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_configsTableMouseClicked
         currentConfiguration = configModel.getConfigurationAt(configsTable.convertRowIndexToModel(configsTable.getSelectedRow()));
         confNameTextBox.setText(currentConfiguration.getName());
-        createdOnTextBox.setText(currentConfiguration.getCreationTime().toString());
+        createdOnTextBox.setText(currentConfiguration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_TIME) + " - " + currentConfiguration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
         confCreatorTextBox.setText(currentConfiguration.getCreator());
-        lastChangeOnTextBox.setText(currentConfiguration.getLastUpdate().toString());
+        lastChangeOnTextBox.setText(currentConfiguration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_TIME) + " - " + currentConfiguration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        addCompToConfButton.setEnabled(true);
+        editConfButton.setEnabled(true);
+        deleteConfButton.setEnabled(true);
         
         findAllComponentsInConfiguration();
         refreshPriceAndPower();
     }//GEN-LAST:event_configsTableMouseClicked
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+    private void deleteCompInConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCompInConfButtonActionPerformed
         if(currentComponent != null){
-            pcSetManager.deletePcSet(new PcSet(currentComponent, currentConfiguration));
+            deleteComponentInConfiguration(currentComponent, currentConfiguration);
         }
         findAllComponentsInConfiguration();
         refreshPriceAndPower();
-    }//GEN-LAST:event_jButton7ActionPerformed
+    }//GEN-LAST:event_deleteCompInConfButtonActionPerformed
 
     private void compsInCofigTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compsInCofigTableMouseClicked
-        jButton7.setEnabled(true);
+        deleteCompInConfButton.setEnabled(true);
+        editAmountButton.setEnabled(true);
         currentComponent = compModel.getComponentAt(compsInCofigTable.convertRowIndexToModel(compsInCofigTable.getSelectedRow()));
     }//GEN-LAST:event_compsInCofigTableMouseClicked
 
@@ -622,19 +600,19 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addCompToConfButton;
     private javax.swing.JTable compsInCofigTable;
     private javax.swing.JLabel confCreatorTextBox;
     private javax.swing.JLabel confNameTextBox;
     private javax.swing.JTable configsTable;
     private javax.swing.JButton createConfButton;
     private javax.swing.JLabel createdOnTextBox;
+    private javax.swing.JButton deleteCompInConfButton;
     private javax.swing.JButton deleteConfButton;
+    private javax.swing.JButton editAmountButton;
     private javax.swing.JButton editConfButton;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
@@ -801,6 +779,24 @@ public class MainWindow extends javax.swing.JFrame {
                 } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.SEVERE, "Error getting components from database to table: ", ex);
                 }
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    private void deleteComponentInConfiguration(Component component, Configuration configuration) {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                pcSetManager.deletePcSet(pcSetManager.getPcSet(configuration, component));
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                super.done(); //To change body of generated methods, choose Tools | Templates.
             }
         };
         
