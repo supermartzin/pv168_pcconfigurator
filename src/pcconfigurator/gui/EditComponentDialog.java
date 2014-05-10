@@ -7,15 +7,12 @@
 package pcconfigurator.gui;
 
 import java.math.BigDecimal;
-import pcconfigurator.componentmanager.Component;
-import pcconfigurator.componentmanager.ComponentTypes;
 
 /**
  *
  * @author Martin
  */
 public class EditComponentDialog extends javax.swing.JDialog {
-    private Component component;
     private ComponentManagerFrame parent;
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");  
     
@@ -24,16 +21,8 @@ public class EditComponentDialog extends javax.swing.JDialog {
      */
     public EditComponentDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.parent = (ComponentManagerFrame) parent;
-        //TODO NACITAT COMPONENT
-        
-        vendorTextField.setText(component.getVendor());
-        nameTextField.setText(component.getName());
-        priceSpinner.setValue(component.getPrice());
-        powerSpinner.setValue(component.getPower());
-        
-        
         initComponents();
+        this.parent = (ComponentManagerFrame) parent;
     }
 
     /**
@@ -174,12 +163,8 @@ public class EditComponentDialog extends javax.swing.JDialog {
             warningDialog.setWarningLabel(bundle.getString("createCompFieldsEmpty"));
             warningDialog.setSize(365, 140);
             warningDialog.setVisible(true);
-        } else {
-            component.setName(nameTextField.getText());
-            component.setVendor(vendorTextField.getText());
-            component.setPrice(new BigDecimal((Double) priceSpinner.getValue()));
-            component.setPower((Integer) powerSpinner.getValue());
-            parent.updateComponent(component);
+        } else {  
+            parent.updateComponent(vendorTextField.getText(),nameTextField.getText(),new BigDecimal((Double)priceSpinner.getValue()),(Integer)powerSpinner.getValue());
             this.dispose();
         }
     }//GEN-LAST:event_jButton23ActionPerformed
@@ -240,4 +225,12 @@ public class EditComponentDialog extends javax.swing.JDialog {
     private javax.swing.JSpinner priceSpinner;
     private javax.swing.JTextField vendorTextField;
     // End of variables declaration//GEN-END:variables
+    
+    public void setTextFields(String name, String vendor, BigDecimal price, int power) {
+        nameTextField.setText(name);
+        vendorTextField.setText(vendor);
+        priceSpinner.setValue(price);
+        powerSpinner.setValue(power);
+    }
+
 }

@@ -1,17 +1,22 @@
 package pcconfigurator.pcsetmanager;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import org.apache.commons.dbcp.BasicDataSource;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
@@ -25,11 +30,46 @@ public class PcSetManagerImpl implements PcSetManager {
     public static final Logger LOGGER = Logger.getLogger(PcSetManagerImpl.class.getName());
     private final DataSource dataSource;
     
-    public PcSetManagerImpl(DataSource dataSource)
+    public PcSetManagerImpl()
     {
-        this.dataSource = dataSource;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("credentials.properties");
+            prop.load(input); 
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "Error opening credentials file: ", ex);
+        } finally {
+            this.dataSource = setDataSource(prop.getProperty("db_url"), prop.getProperty("name"), prop.getProperty("password"));
+            if (input != null)
+            {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Error closing input stream: ", ex);
+                }
+            }
+        }
     }
-
+    
+    public PcSetManagerImpl(DataSource ds){
+        this.dataSource = ds;
+    }
+    
+    private DataSource setDataSource(final String dbUrl, final String name, final String password)
+    {
+        BasicDataSource ds = new BasicDataSource();
+        if (name != null && password != null && dbUrl != null) 
+        {
+            ds.setUrl(dbUrl);
+            ds.setUsername(name);
+            ds.setPassword(password);
+        }
+        else throw new InternalFailureException("Cannot create DataSource, properties are empty!");
+        
+        return ds;
+    }
+    
     @Override
     public void createPcSet(PcSet pcSet) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");

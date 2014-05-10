@@ -28,6 +28,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     private static final Logger LOGGER = Logger.getLogger(ComponentManagerFrame.class.getName());
     private final ComponentManager compManager;
     private final ComponentTableModel compModel;
+    private Component currentComponent;
     
     private final Window thisWindow = this;
     /**
@@ -78,6 +79,11 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 componentsTableFocusLost(evt);
+            }
+        });
+        componentsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                componentsTableMouseClicked(evt);
             }
         });
         jScrollPane3.setViewportView(componentsTable);
@@ -142,7 +148,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addComponentButtonActionPerformed
 
     private void editComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editComponentButtonActionPerformed
-        JDialog editComponent = new EditComponentDialog(this, true);
+        EditComponentDialog editComponent = new EditComponentDialog(this, true);
+        editComponent.setTextFields(currentComponent.getName(),currentComponent.getVendor(),currentComponent.getPrice(),currentComponent.getPower());
         editComponent.setVisible(true);
     }//GEN-LAST:event_editComponentButtonActionPerformed
 
@@ -160,6 +167,11 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     private void componentsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_componentsTableFocusLost
         deleteComponentButton.setEnabled(false);
     }//GEN-LAST:event_componentsTableFocusLost
+
+    private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
+        deleteComponentButton.setEnabled(true);
+        currentComponent = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
+    }//GEN-LAST:event_componentsTableMouseClicked
 
     /**
      * @param args the command line arguments
@@ -300,12 +312,16 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         worker.execute();
     }
     
-    public void updateComponent(Component component){
+    public void updateComponent(String vendor, String name, BigDecimal price, Integer power){
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
             @Override
             protected Void doInBackground() throws Exception {
-                compManager.updateComponent(component);
+                currentComponent.setName(name);
+                currentComponent.setVendor(vendor);
+                currentComponent.setPower(power);
+                currentComponent.setPrice(price);
+                compManager.updateComponent(currentComponent);
                 return null;
             }
             

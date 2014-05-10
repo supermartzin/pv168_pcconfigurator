@@ -95,18 +95,12 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="jTable4">
+        <Component class="javax.swing.JTable" name="componentsTable">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="5" rowCount="22">
-                <Column editable="false" title="Vendor" type="java.lang.String"/>
-                <Column editable="false" title="Name" type="java.lang.String"/>
-                <Column editable="false" title="Type" type="java.lang.String"/>
-                <Column editable="false" title="Price" type="java.lang.Object"/>
-                <Column editable="false" title="Power" type="java.lang.Integer"/>
-              </Table>
+            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new ComponentTableModel()" type="code"/>
             </Property>
-            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
+            <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor" postCode="if (componentsTable.getColumnModel().getColumnCount() &gt; 0) {&#xa;    componentsTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString(&quot;vendor&quot;)); // NOI18N&#xa;    componentsTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString(&quot;name&quot;)); // NOI18N&#xa;    componentsTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString(&quot;type&quot;)); // NOI18N&#xa;    componentsTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString(&quot;price&quot;)); // NOI18N&#xa;    componentsTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString(&quot;power&quot;)); // NOI18N&#xa;}">
               <TableColumnModel selectionModel="0">
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
@@ -142,6 +136,9 @@
               <TableHeader reorderingAllowed="false" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="componentsTableMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -154,6 +151,9 @@
           <ResourceString bundle="pcconfigurator/gui/Strings.properties" key="addComponent" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton21ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

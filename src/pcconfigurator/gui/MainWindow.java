@@ -7,19 +7,22 @@
 package pcconfigurator.gui;
 
 import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
+import javax.swing.table.TableColumn;
 import pcconfigurator.componentmanager.Component;
-import pcconfigurator.componentmanager.ComponentManager;
-import pcconfigurator.componentmanager.ComponentManagerImpl;
-import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
+import pcconfigurator.pcsetmanager.PcSet;
+import pcconfigurator.pcsetmanager.PcSetManager;
+import pcconfigurator.pcsetmanager.PcSetManagerImpl;
 
 /**
  *
@@ -31,7 +34,13 @@ public class MainWindow extends javax.swing.JFrame {
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
     private final ConfigurationManager configManager;
     private final ConfigurationTableModel configModel;
+    private final ComponentsInConfigTableModel compModel;
+    
+    private final PcSetManager pcSetManager;
+    
+    private Component currentComponent;
     private Configuration configuration;
+    private Configuration currentConfiguration;
     private final MainWindow mainWindow = this;
     
     /**
@@ -39,9 +48,10 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public MainWindow() {
         initComponents();
+        pcSetManager = new PcSetManagerImpl();
         configManager = new ConfigurationManagerImpl();
         configModel = (ConfigurationTableModel) configsTable.getModel();
-        
+        compModel = (ComponentsInConfigTableModel) compsInCofigTable.getModel();
         findAllConfigurations();
     }
 
@@ -75,20 +85,20 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
+        confNameTextBox = new javax.swing.JLabel();
+        confCreatorTextBox = new javax.swing.JLabel();
+        createdOnTextBox = new javax.swing.JLabel();
+        lastChangeOnTextBox = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        compsInCofigTable = new javax.swing.JTable();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
+        totalPriceLabel = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
+        totalPowerLabel = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
         showAllConfsButton = new javax.swing.JButton();
@@ -130,11 +140,15 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel5.setText(bundle.getString("configuration")); // NOI18N
 
-        configsTable.setBorder(null);
         configsTable.setModel(new ConfigurationTableModel());
         configsTable.setAutoscrolls(false);
         configsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         configsTable.getTableHeader().setReorderingAllowed(false);
+        configsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                configsTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(configsTable);
         if (configsTable.getColumnModel().getColumnCount() > 0) {
             configsTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("name")); // NOI18N
@@ -177,68 +191,33 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel9.setText(bundle.getString("lastChange")); // NOI18N
 
-        jLabel10.setText("-- name --");
+        confNameTextBox.setText("-- name --");
 
-        jLabel11.setText("-- creator --");
+        confCreatorTextBox.setText("-- creator --");
 
-        jLabel12.setText("-- created on --");
+        createdOnTextBox.setText("-- created on --");
 
-        jLabel13.setText("-- last change on --");
+        lastChangeOnTextBox.setText("-- last change on --");
 
         jLabel14.setFont(new java.awt.Font("sansserif", 1, 15)); // NOI18N
         jLabel14.setText(bundle.getString("listOfComponents")); // NOI18N
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "Vendor", "Name", "Type", "Price", "Power", "Amount"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        compsInCofigTable.setModel(new ComponentsInConfigTableModel());
+        compsInCofigTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        compsInCofigTable.getTableHeader().setReorderingAllowed(false);
+        compsInCofigTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                compsInCofigTableMouseClicked(evt);
             }
         });
-        jTable2.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jTable2.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("vendor")); // NOI18N
-            jTable2.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("name")); // NOI18N
-            jTable2.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("type")); // NOI18N
-            jTable2.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("price")); // NOI18N
-            jTable2.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("power")); // NOI18N
-            jTable2.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("amount")); // NOI18N
+        jScrollPane2.setViewportView(compsInCofigTable);
+        if (compsInCofigTable.getColumnModel().getColumnCount() > 0) {
+            compsInCofigTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("vendor")); // NOI18N
+            compsInCofigTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("name")); // NOI18N
+            compsInCofigTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("type")); // NOI18N
+            compsInCofigTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("price")); // NOI18N
+            compsInCofigTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("power")); // NOI18N
+            compsInCofigTable.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("amount")); // NOI18N
         }
 
         jButton6.setText(bundle.getString("addComponent")); // NOI18N
@@ -250,6 +229,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         jButton7.setText(bundle.getString("deleteComponent")); // NOI18N
         jButton7.setEnabled(false);
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton8.setText(bundle.getString("editAmount")); // NOI18N
         jButton8.addActionListener(new java.awt.event.ActionListener() {
@@ -261,14 +245,14 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("sansserif", 2, 13)); // NOI18N
         jLabel15.setText(bundle.getString("totalPrice")); // NOI18N
 
-        jLabel16.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        jLabel16.setText("-- 1000 --");
+        totalPriceLabel.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
+        totalPriceLabel.setText("-- 1000 --");
 
         jLabel17.setFont(new java.awt.Font("sansserif", 2, 13)); // NOI18N
         jLabel17.setText(bundle.getString("totalPower")); // NOI18N
 
-        jLabel18.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        jLabel18.setText("-- 560 --");
+        totalPowerLabel.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
+        totalPowerLabel.setText("-- 560 --");
 
         jLabel26.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         jLabel26.setText("€");
@@ -366,13 +350,13 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel15)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel16)
+                                .addComponent(totalPriceLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel26)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel17)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel18)
+                                .addComponent(totalPowerLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel27)
                                 .addGap(11, 11, 11))
@@ -388,10 +372,10 @@ public class MainWindow extends javax.swing.JFrame {
                                             .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel10)
-                                            .addComponent(jLabel11)
-                                            .addComponent(jLabel12)
-                                            .addComponent(jLabel13))))
+                                            .addComponent(confNameTextBox)
+                                            .addComponent(confCreatorTextBox)
+                                            .addComponent(createdOnTextBox)
+                                            .addComponent(lastChangeOnTextBox))))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -438,19 +422,19 @@ public class MainWindow extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jLabel10))
+                            .addComponent(confNameTextBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel11))
+                            .addComponent(confCreatorTextBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
-                            .addComponent(jLabel12))
+                            .addComponent(createdOnTextBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
-                            .addComponent(jLabel13))
+                            .addComponent(lastChangeOnTextBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 4, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -460,9 +444,9 @@ public class MainWindow extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel15)
-                            .addComponent(jLabel16)
+                            .addComponent(totalPriceLabel)
                             .addComponent(jLabel17)
-                            .addComponent(jLabel18)
+                            .addComponent(totalPowerLabel)
                             .addComponent(jLabel26)
                             .addComponent(jLabel27))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -518,8 +502,11 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        JDialog addCompToConf = new AddCompToConfDialog(this, true);
-        addCompToConf.setVisible(true);
+        AddCompToConfDialog addCompToConf = new AddCompToConfDialog(this, true);
+        Component returnedComponent = addCompToConf.showDialog();
+        addCompToConf.setVisible(false);
+        pcSetManager.createPcSet(new PcSet(returnedComponent, currentConfiguration));      
+        findAllComponentsInConfiguration();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void deleteConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteConfButtonActionPerformed
@@ -583,6 +570,30 @@ public class MainWindow extends javax.swing.JFrame {
         worker.execute();
     }//GEN-LAST:event_showAllConfsButtonActionPerformed
 
+    private void configsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_configsTableMouseClicked
+        currentConfiguration = configModel.getConfigurationAt(configsTable.convertRowIndexToModel(configsTable.getSelectedRow()));
+        confNameTextBox.setText(currentConfiguration.getName());
+        createdOnTextBox.setText(currentConfiguration.getCreationTime().toString());
+        confCreatorTextBox.setText(currentConfiguration.getCreator());
+        lastChangeOnTextBox.setText(currentConfiguration.getLastUpdate().toString());
+        
+        findAllComponentsInConfiguration();
+        refreshPriceAndPower();
+    }//GEN-LAST:event_configsTableMouseClicked
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        if(currentComponent != null){
+            pcSetManager.deletePcSet(new PcSet(currentComponent, currentConfiguration));
+        }
+        findAllComponentsInConfiguration();
+        refreshPriceAndPower();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void compsInCofigTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compsInCofigTableMouseClicked
+        jButton7.setEnabled(true);
+        currentComponent = compModel.getComponentAt(compsInCofigTable.convertRowIndexToModel(compsInCofigTable.getSelectedRow()));
+    }//GEN-LAST:event_compsInCofigTableMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -611,8 +622,12 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable compsInCofigTable;
+    private javax.swing.JLabel confCreatorTextBox;
+    private javax.swing.JLabel confNameTextBox;
     private javax.swing.JTable configsTable;
     private javax.swing.JButton createConfButton;
+    private javax.swing.JLabel createdOnTextBox;
     private javax.swing.JButton deleteConfButton;
     private javax.swing.JButton editConfButton;
     private javax.swing.JButton jButton1;
@@ -622,15 +637,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -651,10 +660,13 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JLabel lastChangeOnTextBox;
     private javax.swing.JTextField searchNameLabel;
     private javax.swing.JButton showAllConfsButton;
+    private javax.swing.JLabel totalPowerLabel;
+    private javax.swing.JLabel totalPriceLabel;
     // End of variables declaration//GEN-END:variables
+    
     
     public void createConfiguration(String name, String creator) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -765,5 +777,52 @@ public class MainWindow extends javax.swing.JFrame {
             }
         };
         worker.execute();
+    }
+    
+    private void findAllComponentsInConfiguration() {
+        SwingWorker<Map<Component,Integer>, Void> worker = new SwingWorker<Map<Component,Integer>, Void>() {
+
+            @Override
+            protected Map<Component,Integer> doInBackground() throws Exception {
+                /*// test
+                Component component1 = new Component("Intel", (new BigDecimal(25.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.CPU, 45, "Pentium IV 4200X");
+                Component component2 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M"); 
+                compManager.createComponent(component1);
+                compManager.createComponent(component2);
+                // end test*/
+                return pcSetManager.listCompsInConfiguration(currentConfiguration);
+            }
+
+            @Override
+            protected void done() {
+                try {                   
+                    compModel.loadComponents(get());
+                    compModel.fireTableDataChanged();
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "Error getting components from database to table: ", ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    private void refreshPriceAndPower() {
+        BigDecimal price = BigDecimal.ZERO;
+        Integer power = 0;
+        Iterator it = pcSetManager.listCompsInConfiguration(currentConfiguration).entrySet().iterator();
+        
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            Component tempComponent = (Component) pairs.getKey();
+            
+            Integer count = ((Integer) pairs.getValue())==0 ? 1 : ((Integer) pairs.getValue());
+            price.add(tempComponent.getPrice().multiply(new BigDecimal(count)));
+            power += tempComponent.getPower();
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        totalPriceLabel.setText(price.toString());
+        totalPowerLabel.setText(power.toString());
     }
 }

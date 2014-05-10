@@ -58,4 +58,7 @@ public class ConfigurationTableModel extends AbstractTableModel {
         }
     }    
     
+    public Configuration getConfigurationAt(int rowIndex){
+        return configurations.get(rowIndex);
+    }
 }

@@ -6,19 +6,41 @@
 
 package pcconfigurator.gui;
 
+import java.awt.Window;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingWorker;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentManager;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
+
 /**
  *
  * @author Martin
  */
 public class AddCompToConfDialog extends javax.swing.JDialog {
 
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
+    private final ComponentManager compManager;
+    private final ComponentTableModel compModel;
+    private final Window thisWindow = this;
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");   
+    private Component component;
     /**
      * Creates new form AddCompToConfDialog
      */
     public AddCompToConfDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+        super(parent, modal);        
         initComponents();
+        
+        compManager = new ComponentManagerImpl();
+        this.compModel = (ComponentTableModel) componentsTable.getModel();
+        findAllComponents();
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -33,7 +55,7 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
         jLabel40 = new javax.swing.JLabel();
         jSpinner4 = new javax.swing.JSpinner();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
+        componentsTable = new javax.swing.JTable();
         jButton21 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -53,56 +75,30 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
         jSpinner4.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
         jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
 
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Vendor", "Name", "Type", "Price", "Power"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+        componentsTable.setModel(new ComponentTableModel());
+        componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        componentsTable.getTableHeader().setReorderingAllowed(false);
+        componentsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                componentsTableMouseClicked(evt);
             }
         });
-        jTable4.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jTable4.getTableHeader().setReorderingAllowed(false);
-        jScrollPane4.setViewportView(jTable4);
+        jScrollPane4.setViewportView(componentsTable);
+        if (componentsTable.getColumnModel().getColumnCount() > 0) {
+            componentsTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("vendor")); // NOI18N
+            componentsTable.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("name")); // NOI18N
+            componentsTable.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("type")); // NOI18N
+            componentsTable.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("price")); // NOI18N
+            componentsTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("power")); // NOI18N
+        }
 
         jButton21.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         jButton21.setText(bundle.getString("addComponent")); // NOI18N
+        jButton21.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton21ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,8 +135,16 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
-        this.dispose();
+       this.dispose();
     }//GEN-LAST:event_jButton22ActionPerformed
+
+    private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
+        component = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
+    }//GEN-LAST:event_componentsTableMouseClicked
+
+    private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_jButton21ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,13 +187,53 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
             }
         });
     }
+    
+    public Component showDialog(){
+        setVisible(true);
+        return component;
+    }
+    
+    private void findAllComponents() {
+        SwingWorker<Set<Component>, Void> worker = new SwingWorker<Set<Component>, Void>() {
 
+            @Override
+            protected Set<Component> doInBackground() throws Exception {
+                /*// test
+                Component component1 = new Component("Intel", (new BigDecimal(25.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.CPU, 45, "Pentium IV 4200X");
+                Component component2 = new Component("Kingston", (new BigDecimal(37.50)).setScale(2, BigDecimal.ROUND_HALF_UP), ComponentTypes.RAM, 15, "DDR3 Memory 1600M"); 
+                compManager.createComponent(component1);
+                compManager.createComponent(component2);
+                // end test*/
+                return compManager.findAllComponents();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    if (get().isEmpty()) {
+                        WarningDialog warningDialog = new WarningDialog(thisWindow, true);
+                        warningDialog.setSize(365, 140);
+                        warningDialog.setWarningLabel(bundle.getString("noConfigurationFound"));
+                        warningDialog.setVisible(true);
+                    }
+                    
+                    compModel.loadComponents(get());
+                    compModel.fireTableDataChanged();
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "Error getting components from database to table: ", ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable componentsTable;
     private javax.swing.JButton jButton21;
     private javax.swing.JButton jButton22;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSpinner jSpinner4;
-    private javax.swing.JTable jTable4;
     // End of variables declaration//GEN-END:variables
 }
