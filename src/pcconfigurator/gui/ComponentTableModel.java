@@ -49,4 +49,7 @@ public class ComponentTableModel extends AbstractTableModel {
         }
     }
     
+    public Component getComponentAt(int rowIndex){
+        return components.get(rowIndex);
+    }
 }

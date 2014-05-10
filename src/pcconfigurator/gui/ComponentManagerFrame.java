@@ -6,6 +6,8 @@
 
 package pcconfigurator.gui;
 
+import java.awt.Window;
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -15,17 +17,19 @@ import javax.swing.SwingWorker;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.componentmanager.ComponentTypes;
 
 /**
  *
  * @author Martin
  */
 public class ComponentManagerFrame extends javax.swing.JFrame {
-
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");   
     private static final Logger LOGGER = Logger.getLogger(ComponentManagerFrame.class.getName());
-    private ComponentManager compManager;
-    private ComponentTableModel compModel;
+    private final ComponentManager compManager;
+    private final ComponentTableModel compModel;
     
+    private final Window thisWindow = this;
     /**
      * Creates new form ComponentManagerFrame
      */
@@ -59,10 +63,23 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
 
         deleteComponentButton.setText(bundle.getString("delete")); // NOI18N
         deleteComponentButton.setEnabled(false);
+        deleteComponentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteComponentButtonActionPerformed(evt);
+            }
+        });
 
         componentsTable.setModel(new ComponentTableModel());
         componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         componentsTable.getTableHeader().setReorderingAllowed(false);
+        componentsTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                componentsTableFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                componentsTableFocusLost(evt);
+            }
+        });
         jScrollPane3.setViewportView(componentsTable);
         if (componentsTable.getColumnModel().getColumnCount() > 0) {
             componentsTable.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("vendor")); // NOI18N
@@ -129,6 +146,21 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         editComponent.setVisible(true);
     }//GEN-LAST:event_editComponentButtonActionPerformed
 
+    private void deleteComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteComponentButtonActionPerformed
+        Component component = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
+        if(component != null){
+            deleteComponent(component);
+        }
+    }//GEN-LAST:event_deleteComponentButtonActionPerformed
+
+    private void componentsTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_componentsTableFocusGained
+        deleteComponentButton.setEnabled(true);
+    }//GEN-LAST:event_componentsTableFocusGained
+
+    private void componentsTableFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_componentsTableFocusLost
+        deleteComponentButton.setEnabled(false);
+    }//GEN-LAST:event_componentsTableFocusLost
+
     /**
      * @param args the command line arguments
      */
@@ -189,11 +221,98 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             @Override
             protected void done() {
                 try {
+                    if (get().isEmpty()) {
+                        WarningDialog warningDialog = new WarningDialog(thisWindow, true);
+                        warningDialog.setSize(365, 140);
+                        warningDialog.setWarningLabel(bundle.getString("noConfigurationFound"));
+                        warningDialog.setVisible(true);
+                    }
+                    
                     compModel.loadComponents(get());
                     compModel.fireTableDataChanged();
                 } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.SEVERE, "Error getting components from database to table: ", ex);
                 }
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    public void findComponentsByType(ComponentTypes type){
+        SwingWorker<Set, Void> worker = new SwingWorker<Set, Void>() {
+
+            @Override
+            protected Set<Component> doInBackground() throws Exception {
+                return compManager.findCompByType(type);
+            }
+            
+            @Override
+            protected void done(){
+                try{
+                    compModel.loadComponents(get());
+                    compModel.fireTableDataChanged();
+                } catch (InterruptedException | ExecutionException ex){
+                    LOGGER.log(Level.SEVERE, "Erro getting components from database to table:",ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    public void createComponent(String vendor, BigDecimal price, ComponentTypes type, int power, String name ) {
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                Component comp = new Component(vendor, price, type, power, name);
+                compManager.createComponent(comp);
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                compModel.loadComponents(compManager.findAllComponents());
+                compModel.fireTableDataChanged();
+            }
+        };
+        
+        worker.execute();
+    }
+    
+    public void deleteComponent(Component component){
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                compManager.deleteComponent(component);
+                return null;
+            }
+            
+            @Override
+            protected void done(){
+                compModel.loadComponents(compManager.findAllComponents());
+                compModel.fireTableDataChanged();
+            }
+        };
+                
+        worker.execute();
+    }
+    
+    public void updateComponent(Component component){
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
+            @Override
+            protected Void doInBackground() throws Exception {
+                compManager.updateComponent(component);
+                return null;
+            }
+            
+            @Override
+            protected void done(){
+                compModel.loadComponents(compManager.findAllComponents());
+                compModel.fireTableDataChanged();
             }
         };
         

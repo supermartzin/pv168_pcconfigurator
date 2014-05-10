@@ -6,13 +6,17 @@
 
 package pcconfigurator.gui;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDialog;
 import javax.swing.SwingWorker;
+import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
+import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
@@ -25,9 +29,8 @@ public class MainWindow extends javax.swing.JFrame {
 
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
-    private ConfigurationManager configManager;
-    private ComponentManager compManager;
-    private ConfigurationTableModel configModel;
+    private final ConfigurationManager configManager;
+    private final ConfigurationTableModel configModel;
     private Configuration configuration;
     private final MainWindow mainWindow = this;
     
@@ -38,6 +41,7 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         configManager = new ConfigurationManagerImpl();
         configModel = (ConfigurationTableModel) configsTable.getModel();
+        
         findAllConfigurations();
     }
 

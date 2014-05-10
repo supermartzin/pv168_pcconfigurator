@@ -1,8 +1,22 @@
-Mon Apr 07 21:00:47 CEST 2014 : Apache Derby Network Server - 10.9.1.0 - (1344872) started and ready to accept connections on port 1527
+Sat May 10 09:48:08 CEST 2014 : Apache Derby Network Server - 10.9.1.0 - (1344872) started and ready to accept connections on port 1527
 ----------------------------------------------------------------
-Mon Apr 07 21:00:47 CEST 2014:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a816c00e-0145-3d90-70dd-fffff515c32d 
-on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration_test  with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
+Sat May 10 09:48:08 CEST 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance a816c00e-0145-e51a-78f3-fffff515c32d 
+on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration  with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
+Loaded from file:/Applications/NetBeans/glassfish-4.0/javadb/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_20-ea-b05
+user.dir=/Applications/NetBeans/glassfish-4.0/javadb
+derby.system.home=/Users/davidkaya/Desktop/pv168_pcconfigurator/db
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sat May 10 09:48:09 CEST 2014:
+Shutting down instance a816c00e-0145-e51a-78f3-fffff515c32d on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
+Sat May 10 09:48:09 CEST 2014 Thread[DRDAConnThread_4,5,main] (DATABASE = pcconfiguration), (DRDAID = {2}), Database 'pcconfiguration' shutdown.
+----------------------------------------------------------------
+Sat May 10 09:48:23 CEST 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.9.1.0 - (1344872): instance 45b300a8-0145-e51a-78f3-fffff515c32d 
+on database directory /Users/davidkaya/Desktop/pv168_pcconfigurator/db/pcconfiguration  with class loader sun.misc.Launcher$AppClassLoader@66d3c617 
 Loaded from file:/Applications/NetBeans/glassfish-4.0/javadb/lib/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_20-ea-b05

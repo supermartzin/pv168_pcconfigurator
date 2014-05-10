@@ -6,17 +6,33 @@
 
 package pcconfigurator.gui;
 
+import java.math.BigDecimal;
+import pcconfigurator.componentmanager.Component;
+import pcconfigurator.componentmanager.ComponentTypes;
+
 /**
  *
  * @author Martin
  */
 public class EditComponentDialog extends javax.swing.JDialog {
-
+    private Component component;
+    private ComponentManagerFrame parent;
+    private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");  
+    
     /**
      * Creates new form EditComponentDialog
      */
     public EditComponentDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        this.parent = (ComponentManagerFrame) parent;
+        //TODO NACITAT COMPONENT
+        
+        vendorTextField.setText(component.getVendor());
+        nameTextField.setText(component.getName());
+        priceSpinner.setValue(component.getPrice());
+        powerSpinner.setValue(component.getPower());
+        
+        
         initComponents();
     }
 
@@ -31,15 +47,15 @@ public class EditComponentDialog extends javax.swing.JDialog {
 
         jLabel45 = new javax.swing.JLabel();
         jLabel46 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        nameTextField = new javax.swing.JTextField();
         jButton23 = new javax.swing.JButton();
         jLabel41 = new javax.swing.JLabel();
         jButton24 = new javax.swing.JButton();
         jLabel42 = new javax.swing.JLabel();
         jLabel43 = new javax.swing.JLabel();
-        jSpinner5 = new javax.swing.JSpinner();
-        jSpinner6 = new javax.swing.JSpinner();
-        jTextField8 = new javax.swing.JTextField();
+        priceSpinner = new javax.swing.JSpinner();
+        powerSpinner = new javax.swing.JSpinner();
+        vendorTextField = new javax.swing.JTextField();
         jLabel44 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -55,6 +71,11 @@ public class EditComponentDialog extends javax.swing.JDialog {
 
         jButton23.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         jButton23.setText(bundle.getString("edit")); // NOI18N
+        jButton23.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton23ActionPerformed(evt);
+            }
+        });
 
         jLabel41.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel41.setText(bundle.getString("price")); // NOI18N
@@ -72,9 +93,9 @@ public class EditComponentDialog extends javax.swing.JDialog {
         jLabel43.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel43.setText(bundle.getString("vendor")); // NOI18N
 
-        jSpinner5.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
+        priceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
 
-        jSpinner6.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
+        powerSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 
         jLabel44.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         jLabel44.setText("€");
@@ -99,12 +120,12 @@ public class EditComponentDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextField8, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                                .addComponent(jTextField9))
+                                .addComponent(vendorTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                                .addComponent(nameTextField))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jSpinner5, javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jSpinner6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
+                                    .addComponent(priceSpinner, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(powerSpinner, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel44)
@@ -118,19 +139,19 @@ public class EditComponentDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel43)
-                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(vendorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel45)
-                    .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel41)
-                    .addComponent(jSpinner5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(priceSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel44))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jSpinner6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(powerSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel46)
                     .addComponent(jLabel42))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -146,6 +167,22 @@ public class EditComponentDialog extends javax.swing.JDialog {
     private void jButton24ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton24ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton24ActionPerformed
+
+    private void jButton23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton23ActionPerformed
+        if (nameTextField.getText() == null || nameTextField.getText().isEmpty() || vendorTextField.getText() == null || vendorTextField.getText().isEmpty()) {
+            WarningDialog warningDialog = new WarningDialog(this, true);
+            warningDialog.setWarningLabel(bundle.getString("createCompFieldsEmpty"));
+            warningDialog.setSize(365, 140);
+            warningDialog.setVisible(true);
+        } else {
+            component.setName(nameTextField.getText());
+            component.setVendor(vendorTextField.getText());
+            component.setPrice(new BigDecimal((Double) priceSpinner.getValue()));
+            component.setPower((Integer) powerSpinner.getValue());
+            parent.updateComponent(component);
+            this.dispose();
+        }
+    }//GEN-LAST:event_jButton23ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,9 +235,9 @@ public class EditComponentDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel44;
     private javax.swing.JLabel jLabel45;
     private javax.swing.JLabel jLabel46;
-    private javax.swing.JSpinner jSpinner5;
-    private javax.swing.JSpinner jSpinner6;
-    private javax.swing.JTextField jTextField8;
-    private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField nameTextField;
+    private javax.swing.JSpinner powerSpinner;
+    private javax.swing.JSpinner priceSpinner;
+    private javax.swing.JTextField vendorTextField;
     // End of variables declaration//GEN-END:variables
 }
