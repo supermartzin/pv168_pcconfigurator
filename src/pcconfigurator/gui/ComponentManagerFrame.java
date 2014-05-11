@@ -18,6 +18,9 @@ import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.componentmanager.ComponentTypes;
+import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.pcsetmanager.PcSetManager;
+import pcconfigurator.pcsetmanager.PcSetManagerImpl;
 
 /**
  *
@@ -26,10 +29,13 @@ import pcconfigurator.componentmanager.ComponentTypes;
 public class ComponentManagerFrame extends javax.swing.JFrame {
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");   
     private static final Logger LOGGER = Logger.getLogger(ComponentManagerFrame.class.getName());
+    
+    private final PcSetManager pcSetManager;
     private final ComponentManager compManager;
     private final ComponentTableModel compModel;
     private Component currentComponent;
     
+    private MainWindow parentWindow;
     private final Window thisWindow = this;
     /**
      * Creates new form ComponentManagerFrame
@@ -37,6 +43,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     public ComponentManagerFrame() {
         initComponents();
         this.compManager = new ComponentManagerImpl();
+        this.pcSetManager = new PcSetManagerImpl();
         this.compModel = (ComponentTableModel) componentsTable.getModel();
         
         findAllComponents();
@@ -262,6 +269,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             protected void done() {
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
+                parentWindow.refreshComponentsComboBox();
+                parentWindow.refreshCompModel();
             }
         };
         
@@ -273,6 +282,13 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
 
             @Override
             protected Void doInBackground() throws Exception {
+                Set<Configuration> configs = pcSetManager.findConfigByComponent(component);
+                if (!configs.isEmpty())
+                {
+                    configs.stream().forEach((config) -> {
+                        pcSetManager.deletePcSet(pcSetManager.getPcSet(config, component));
+                    });
+                }
                 compManager.deleteComponent(component);
                 return null;
             }
@@ -281,6 +297,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             protected void done(){
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
+                parentWindow.refreshComponentsComboBox();
+                parentWindow.refreshCompModel();
             }
         };
                 
@@ -304,9 +322,15 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             protected void done(){
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
+                parentWindow.refreshComponentsComboBox();
+                parentWindow.refreshCompModel();
             }
         };
         
         worker.execute();
+    }
+    
+    public void setParentWindow(MainWindow parent) {
+        this.parentWindow = parent;
     }
 }

@@ -6,8 +6,9 @@
 
 package pcconfigurator.gui;
 
-import java.awt.Window;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import pcconfigurator.componentmanager.ComponentTypes;
 
 /**
@@ -44,7 +45,7 @@ public class AddComponentDialog extends javax.swing.JDialog {
         jButton13 = new javax.swing.JButton();
         nameTextField = new javax.swing.JTextField();
         jLabel21 = new javax.swing.JLabel();
-        typeComboBox = new javax.swing.JComboBox(ComponentTypes.values());
+        typeComboBox = new javax.swing.JComboBox();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         priceSpinner = new javax.swing.JSpinner();
@@ -84,6 +85,8 @@ public class AddComponentDialog extends javax.swing.JDialog {
 
         jLabel21.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel21.setText(bundle.getString("type")); // NOI18N
+
+        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(getComponentTypeNames()));
 
         jLabel22.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel22.setText(bundle.getString("price")); // NOI18N
@@ -179,7 +182,7 @@ public class AddComponentDialog extends javax.swing.JDialog {
         else
         {
             parent.createComponent(vendorTextField.getText(), new BigDecimal((Double)priceSpinner.getValue()), 
-                                   (ComponentTypes)typeComboBox.getSelectedItem(), (Integer)powerSpinner.getValue(), nameTextField.getText());
+                                   ComponentTypes.values()[typeComboBox.getSelectedIndex()], (Integer)powerSpinner.getValue(), nameTextField.getText());
             this.dispose();
         }
     }//GEN-LAST:event_jButton12ActionPerformed
@@ -242,4 +245,16 @@ public class AddComponentDialog extends javax.swing.JDialog {
     private javax.swing.JComboBox typeComboBox;
     private javax.swing.JTextField vendorTextField;
     // End of variables declaration//GEN-END:variables
+
+    private String[] getComponentTypeNames() {
+        List<String> names = new ArrayList<>();
+        for (ComponentTypes type : ComponentTypes.values()) 
+        {
+            names.add(type.getName());
+        }
+        
+        String[] names2 = new String[names.size()];
+        names.toArray(names2);
+        return names2;
+    }
 }
