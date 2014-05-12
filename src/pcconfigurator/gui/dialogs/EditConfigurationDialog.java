@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
+
+import pcconfigurator.gui.frames.MainWindow;
 
 /**
  *
@@ -123,8 +125,7 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
         }
         else
         {
-            mainWindow.updateConfiguration(nameTextField.getText(), creatorTextField.getText());
-            this.dispose();
+            mainWindow.updateConfiguration(this, nameTextField.getText(), creatorTextField.getText());
         }
     }//GEN-LAST:event_jButton17ActionPerformed
 

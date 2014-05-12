@@ -68,7 +68,7 @@ public class ComponentManagerImpl implements ComponentManager {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         
         checkComponent(component);
-        if (component.getId() != null) throw new IllegalArgumentException("Component is already in database");
+        if (component.getId() != null || isInDatabase(component)) throw new IllegalArgumentException("Component is already in database");
         
         PreparedStatement st = null;
         Connection connection = null;
@@ -185,6 +185,7 @@ public class ComponentManagerImpl implements ComponentManager {
     public void updateComponent(Component component) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         checkComponent(component);
+        if (isInDatabase(component)) throw new IllegalArgumentException("Component is already in database.");
         
         Connection connection = null;
         PreparedStatement st = null;        
@@ -324,5 +325,13 @@ public class ComponentManagerImpl implements ComponentManager {
                 LOGGER.log(Level.SEVERE, "Rollback of update failed: ", ex1);
             }
         }
+    }
+
+    private boolean isInDatabase(Component component) {
+        return findAllComponents().stream().anyMatch((comp) -> (comp.getName().equals(component.getName()) && 
+                comp.getVendor().equals(component.getVendor()) &&
+                comp.getType().equals(component.getType()) && 
+                comp.getPower() == component.getPower() &&
+                comp.getPrice().equals(component.getPrice())));
     }
 }

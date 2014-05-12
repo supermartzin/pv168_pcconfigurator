@@ -169,7 +169,7 @@
                                           <Component id="confNameTextBox" min="-2" max="-2" attributes="0"/>
                                           <Component id="confCreatorTextBox" min="-2" max="-2" attributes="0"/>
                                           <Component id="createdOnTextBox" min="-2" max="-2" attributes="0"/>
-                                          <Component id="lastChangeOnTextBox" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lastChangedOnTextBox" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <Component id="jScrollPane2" alignment="0" min="-2" pref="515" max="-2" attributes="0"/>
@@ -240,7 +240,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lastChangeOnTextBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lastChangedOnTextBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jSeparator3" min="-2" pref="4" max="-2" attributes="0"/>
@@ -492,7 +492,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="createdOnTextBox">
     </Component>
-    <Component class="javax.swing.JLabel" name="lastChangeOnTextBox">
+    <Component class="javax.swing.JLabel" name="lastChangedOnTextBox">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel14">
       <Properties>

@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
+
+import pcconfigurator.gui.frames.MainWindow;
 
 /**
  *
@@ -37,8 +39,8 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
         nameTextField = new javax.swing.JTextField();
         jLabel36 = new javax.swing.JLabel();
         creatorTextField = new javax.swing.JTextField();
-        jButton15 = new javax.swing.JButton();
-        jButton16 = new javax.swing.JButton();
+        addConfigurationButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
@@ -51,18 +53,18 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
         jLabel36.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel36.setText(bundle.getString("creator")); // NOI18N
 
-        jButton15.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
-        jButton15.setText(bundle.getString("add")); // NOI18N
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
+        addConfigurationButton.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
+        addConfigurationButton.setText(bundle.getString("add")); // NOI18N
+        addConfigurationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton15ActionPerformed(evt);
+                addConfigurationButtonActionPerformed(evt);
             }
         });
 
-        jButton16.setText(bundle.getString("cancel")); // NOI18N
-        jButton16.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.setText(bundle.getString("cancel")); // NOI18N
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton16ActionPerformed(evt);
+                cancelButtonActionPerformed(evt);
             }
         });
 
@@ -83,9 +85,9 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
                             .addComponent(nameTextField)
                             .addComponent(creatorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(addConfigurationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -101,19 +103,19 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
                     .addComponent(creatorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton16))
+                    .addComponent(addConfigurationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cancelButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispose();
-    }//GEN-LAST:event_jButton16ActionPerformed
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+    private void addConfigurationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addConfigurationButtonActionPerformed
         if (nameTextField.getText() == null || nameTextField.getText().isEmpty() || creatorTextField.getText() == null || creatorTextField.getText().isEmpty()) 
         {
             WarningDialog warningDialog = new WarningDialog(this, true);
@@ -123,10 +125,9 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
         }
         else
         {
-            mainWindow.createConfiguration(nameTextField.getText(), creatorTextField.getText());
-            this.dispose();
+            mainWindow.createConfiguration(this, nameTextField.getText(), creatorTextField.getText());
         }
-    }//GEN-LAST:event_jButton15ActionPerformed
+    }//GEN-LAST:event_addConfigurationButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -171,9 +172,9 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addConfigurationButton;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JTextField creatorTextField;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton16;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
     private javax.swing.JTextField nameTextField;

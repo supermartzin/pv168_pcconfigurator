@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
 
 /**
  *

@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.tablemodels;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 import pcconfigurator.componentmanager.Component;
 
@@ -16,13 +16,15 @@ import pcconfigurator.componentmanager.Component;
  *
  * @author Martin
  */
-public class ComponentTableModel extends AbstractTableModel {
+public class ComponentsInConfigTableModel extends AbstractTableModel {
 
     private List<Component> components = new ArrayList<>();
+    private Map<Component,Integer> count;
     
-    public void loadComponents(Set<Component> components) {
-        this.components = new ArrayList<>();
-        this.components.addAll(components);
+    public void loadComponents(Map<Component,Integer> components) {
+        this.count = components;
+        this.components = new ArrayList();
+        this.components.addAll(components.keySet());
     }
     
     @Override
@@ -32,7 +34,7 @@ public class ComponentTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 5;
+        return 6;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class ComponentTableModel extends AbstractTableModel {
             case 2: return component.getType().getName();
             case 3: return component.getPrice().toString() + " €";
             case 4: return component.getPower() + " W";
+            case 5: return count.get(component).toString();
             default: throw new IllegalArgumentException("columnIndex");
         }
     }

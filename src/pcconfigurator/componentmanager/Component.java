@@ -96,7 +96,7 @@ public class Component {
 
     @Override
     public String toString() {
-        return this.vendor + " " + this.name + " - " + this.power + "W [" + this.price.toString() + " €]";
+        return this.vendor + " " + this.name + " - " + this.power + " W [" + this.price.toString() + " €]";
     }
     
 }

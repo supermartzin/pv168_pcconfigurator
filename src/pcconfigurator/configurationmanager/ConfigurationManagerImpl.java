@@ -70,7 +70,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
 
         testConfiguration(configuration);
-        if (configuration.getId() != null) {
+        if (configuration.getId() != null || isInDatabase(configuration)) {
             throw new IllegalArgumentException("Configuration is already in database");
         }
 
@@ -181,6 +181,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             throw new IllegalStateException("DataSource is not set.");
         }
         testConfiguration(configuration);
+        if (isInDatabase(configuration)) throw new IllegalArgumentException("Configuration is already in database");
         configuration.setLastUpdate(LocalDateTime.now());
 
         Connection conn = null;
@@ -316,7 +317,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
             throw new IllegalArgumentException("Last update time is null");
         }
     }
-
+    
     private void closeSources(Connection connection, Statement statement) {
         if (statement != null) {
             try {
@@ -351,5 +352,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
                 LOGGER.log(Level.SEVERE, "Rollback of update failed: ", ex1);
             }
         }
+    }
+
+    private boolean isInDatabase(Configuration configuration) {
+        return findAllConfigurations().stream().anyMatch((conf) -> (conf.getName().equals(configuration.getName()) && conf.getCreator().equals(configuration.getCreator())));
     }
 }

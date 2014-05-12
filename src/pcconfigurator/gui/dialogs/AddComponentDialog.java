@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
 
+import pcconfigurator.gui.frames.ComponentManagerFrame;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,9 +182,8 @@ public class AddComponentDialog extends javax.swing.JDialog {
         }
         else
         {
-            parent.createComponent(vendorTextField.getText(), (new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP), 
+            parent.createComponent(this, vendorTextField.getText(), (new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP), 
                                    ComponentTypes.values()[typeComboBox.getSelectedIndex()], (Integer)powerSpinner.getValue(), nameTextField.getText());
-            this.dispose();
         }
     }//GEN-LAST:event_jButton12ActionPerformed
 

@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -20,6 +22,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
@@ -78,6 +81,9 @@ public class PcSetManagerImpl implements PcSetManager {
         if (this.getPcSet(pcSet.getConfiguration(), pcSet.getComponent()) != null) {
             throw new InternalFailureException("This PC Set already exists.");
         }
+        ComponentTypes type = pcSet.getComponent().getType();
+        if (type.equals(ComponentTypes.CPU) || type.equals(ComponentTypes.MOTHERBOARD) || type.equals(ComponentTypes.CASE) || type.equals(ComponentTypes.POWER_SUPPLY))
+            thisTypeAlreadyInDatabase(type, pcSet.getConfiguration());
         
         PreparedStatement st = null;
         Connection connection = null;
@@ -92,6 +98,7 @@ public class PcSetManagerImpl implements PcSetManager {
             if (st.executeUpdate() != 1) throw new InternalFailureException("wrong number of inserted items");
             
             connection.commit();
+            setLastUpdateTime(pcSet.getConfiguration());
         } catch (SQLException | InternalFailureException ex) {
             rollbackChanges(connection);
             LOGGER.log(Level.SEVERE, "Inserting PC Set into database failed: ", ex);
@@ -148,6 +155,9 @@ public class PcSetManagerImpl implements PcSetManager {
     public void updatePcSet(PcSet pcSet) {
         if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
         checkPcSet(pcSet);
+        ComponentTypes type = pcSet.getComponent().getType();
+        if (type.equals(ComponentTypes.CPU) || type.equals(ComponentTypes.MOTHERBOARD) || type.equals(ComponentTypes.CASE) || type.equals(ComponentTypes.POWER_SUPPLY))
+            thisTypeAlreadyInDatabase(type, pcSet.getConfiguration());
         
         Connection conn = null;
         PreparedStatement st = null;
@@ -163,7 +173,9 @@ public class PcSetManagerImpl implements PcSetManager {
             if (st.executeUpdate() != 1) {
                 throw new InternalFailureException("Updated more than 1 record");
             }
+            
             conn.commit();
+            setLastUpdateTime(pcSet.getConfiguration());
         } catch (SQLException | InternalFailureException ex) {
             rollbackChanges(conn);
             LOGGER.log(Level.SEVERE, "Updating PCSET in database failed: ", ex);
@@ -190,6 +202,7 @@ public class PcSetManagerImpl implements PcSetManager {
                 throw new InternalFailureException("Updated more than 1 record");
             }
             conn.commit();
+            setLastUpdateTime(pcSet.getConfiguration());
         } catch (SQLException | InternalFailureException ex) {
             rollbackChanges(conn);
             LOGGER.log(Level.SEVERE, "Deleting PCSET in database failed: ", ex);
@@ -306,6 +319,34 @@ public class PcSetManagerImpl implements PcSetManager {
                     throw new IllegalArgumentException("Cannot add more power supplies to one configuration");
     }
     
+    public void setLastUpdateTime(Configuration configuration) {
+        if (this.dataSource == null) throw new IllegalStateException("DataSource is not set.");
+        if (configuration == null) throw new IllegalStateException("Configuration is null.");
+        
+        configuration.setLastUpdate(LocalDateTime.now());
+        
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            st = conn.prepareStatement("UPDATE database.configuration SET last_update=? WHERE conf_id=?");
+            st.setLong(1, configuration.getLastUpdate().toEpochSecond(ZoneOffset.UTC));
+            st.setLong(2, configuration.getId());
+            
+            if (st.executeUpdate() != 1) {
+                throw new InternalFailureException("Updated more than 1 record");
+            }
+            
+            conn.commit();
+        } catch (SQLException | InternalFailureException ex) {
+            rollbackChanges(conn);
+            LOGGER.log(Level.SEVERE, "Updating configuration in database failed: ", ex);
+        } finally {
+            closeSources(conn, st);
+        }
+    }
+    
     private void closeSources(Connection connection, Statement statement)
     {
         if (statement != null)
@@ -341,6 +382,13 @@ public class PcSetManagerImpl implements PcSetManager {
             } catch (SQLException ex1) {
                 LOGGER.log(Level.SEVERE, "Rollback of update failed: ", ex1);
             }
+        }
+    }
+
+    private void thisTypeAlreadyInDatabase(ComponentTypes componentType, Configuration configuration) {
+        for (Component comp : listCompsInConfiguration(configuration).keySet())
+        {
+            if (comp.getType().equals(componentType)) throw new IllegalArgumentException("Cannot add more " + componentType.getName() + "s to one configuration");
         }
     }
 

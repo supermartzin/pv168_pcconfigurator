@@ -4,25 +4,27 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
 
-import pcconfigurator.componentmanager.Component;
+import pcconfigurator.gui.frames.MainWindow;
+import java.time.format.DateTimeFormatter;
+import pcconfigurator.configurationmanager.Configuration;
 
 /**
  *
  * @author Martin
  */
-public class DeleteComponentDialog extends javax.swing.JDialog {
+public class DeleteConfigurationDialog extends javax.swing.JDialog {
 
-    private Component component;
-    private final ComponentManagerFrame parent;
+    private Configuration configuration;
+    private final MainWindow mainWindow;
     /**
-     * Creates new form DeleteComponentDialog
+     * Creates new form DeleteConfigurationDialog
      */
-    public DeleteComponentDialog(java.awt.Frame parent, boolean modal) {
+    public DeleteConfigurationDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.component = null;
-        this.parent = (ComponentManagerFrame) parent;
+        configuration = null;
+        mainWindow = (MainWindow) parent;
         initComponents();
     }
 
@@ -35,32 +37,35 @@ public class DeleteComponentDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        vendorLabel = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         nameLabel = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        creatorLabel = new javax.swing.JLabel();
         confirmButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        typeLabel = new javax.swing.JLabel();
-        priceLabel = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        powerLabel = new javax.swing.JLabel();
+        creationTimeLabel = new javax.swing.JLabel();
+        lastUpdateLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
-        jLabel2.setText(bundle.getString("vendor")); // NOI18N
+        setTitle(bundle.getString("deleteConfiguration")); // NOI18N
+        setResizable(false);
 
-        vendorLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
-        vendorLabel.setText("jLabel3");
+        jLabel1.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
+        jLabel1.setText(bundle.getString("deleteConfirmation")); // NOI18N
 
-        jLabel3.setText(bundle.getString("name")); // NOI18N
+        jLabel2.setText(bundle.getString("name")); // NOI18N
 
         nameLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
-        nameLabel.setText("jLabel4");
+        nameLabel.setText("jLabel3");
+
+        jLabel3.setText(bundle.getString("creator")); // NOI18N
+
+        creatorLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
+        creatorLabel.setText("jLabel4");
 
         confirmButton.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         confirmButton.setText(bundle.getString("confirm")); // NOI18N
@@ -77,55 +82,45 @@ public class DeleteComponentDialog extends javax.swing.JDialog {
             }
         });
 
-        jLabel4.setText(bundle.getString("type")); // NOI18N
+        jLabel4.setText(bundle.getString("created")); // NOI18N
 
-        jLabel5.setText(bundle.getString("price")); // NOI18N
+        jLabel5.setText(bundle.getString("lastChange")); // NOI18N
 
-        typeLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
-        typeLabel.setText("jLabel6");
+        creationTimeLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
+        creationTimeLabel.setText("jLabel6");
 
-        priceLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
-        priceLabel.setText("jLabel7");
-
-        jLabel1.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-        jLabel1.setText(bundle.getString("deleteComponentConfirmation")); // NOI18N
-
-        jLabel6.setText(bundle.getString("power")); // NOI18N
-
-        powerLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
-        powerLabel.setText("jLabel7");
+        lastUpdateLabel.setFont(new java.awt.Font("sansserif", 3, 12)); // NOI18N
+        lastUpdateLabel.setText("jLabel7");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(59, 59, 59)
-                .addComponent(confirmButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(53, 53, 53))
-            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(46, 46, 46)
+                        .addGap(32, 32, 32)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
                             .addComponent(jLabel2)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(vendorLabel)
                             .addComponent(nameLabel)
-                            .addComponent(typeLabel)
-                            .addComponent(priceLabel)
-                            .addComponent(powerLabel))))
-                .addContainerGap(29, Short.MAX_VALUE))
+                            .addComponent(creatorLabel)
+                            .addComponent(creationTimeLabel)
+                            .addComponent(lastUpdateLabel))))
+                .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(59, 59, 59)
+                .addComponent(confirmButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(53, 53, 53))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,41 +130,37 @@ public class DeleteComponentDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(vendorLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
                     .addComponent(nameLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(creatorLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(typeLabel))
+                    .addComponent(creationTimeLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(priceLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(powerLabel)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                    .addComponent(lastUpdateLabel))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton)
                     .addComponent(confirmButton))
-                .addContainerGap())
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
-        parent.deleteComponent(this.component);
-        this.dispose();
-    }//GEN-LAST:event_confirmButtonActionPerformed
-
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
+
+    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
+        mainWindow.deleteConfiguration(this.configuration);
+        this.dispose();
+    }//GEN-LAST:event_confirmButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,19 +179,19 @@ public class DeleteComponentDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DeleteComponentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DeleteConfigurationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DeleteComponentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DeleteConfigurationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DeleteComponentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DeleteConfigurationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DeleteComponentDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DeleteConfigurationDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(() -> {
-            DeleteComponentDialog dialog = new DeleteComponentDialog(new javax.swing.JFrame(), true);
+            DeleteConfigurationDialog dialog = new DeleteConfigurationDialog(new javax.swing.JFrame(), true);
             dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
@@ -214,26 +205,22 @@ public class DeleteComponentDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JButton confirmButton;
+    private javax.swing.JLabel creationTimeLabel;
+    private javax.swing.JLabel creatorLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel lastUpdateLabel;
     private javax.swing.JLabel nameLabel;
-    private javax.swing.JLabel powerLabel;
-    private javax.swing.JLabel priceLabel;
-    private javax.swing.JLabel typeLabel;
-    private javax.swing.JLabel vendorLabel;
     // End of variables declaration//GEN-END:variables
     
-    public void sendCompToDelete(Component component) {
-        this.component = component;
-        vendorLabel.setText(component.getVendor());
-        nameLabel.setText(component.getName());
-        typeLabel.setText(component.getType().getName());
-        priceLabel.setText(component.getPrice().toString() + " €");
-        powerLabel.setText("" + component.getPower() + " W");
+    public void setConfToDelete(Configuration configuration) {
+        this.configuration = configuration;
+        nameLabel.setText(configuration.getName());
+        creatorLabel.setText(configuration.getCreator());
+        creationTimeLabel.setText(configuration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_TIME) + " - " + configuration.getCreationTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        lastUpdateLabel.setText(configuration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_TIME) + " - " + configuration.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
-
 }

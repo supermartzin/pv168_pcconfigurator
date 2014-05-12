@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.frames;
 
 import java.awt.Window;
 import java.math.BigDecimal;
@@ -19,6 +19,11 @@ import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.componentmanager.ComponentTypes;
 import pcconfigurator.configurationmanager.Configuration;
+import pcconfigurator.gui.dialogs.AddComponentDialog;
+import pcconfigurator.gui.tablemodels.ComponentTableModel;
+import pcconfigurator.gui.dialogs.DeleteComponentDialog;
+import pcconfigurator.gui.dialogs.EditComponentDialog;
+import pcconfigurator.gui.dialogs.WarningDialog;
 import pcconfigurator.pcsetmanager.PcSetManager;
 import pcconfigurator.pcsetmanager.PcSetManagerImpl;
 
@@ -30,7 +35,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");   
     private static final Logger LOGGER = Logger.getLogger(ComponentManagerFrame.class.getName());
     
-    private final PcSetManager pcSetManager;
+    private final PcSetManagerImpl pcSetManager;
     private final ComponentManager compManager;
     private final ComponentTableModel compModel;
     private Component currentComponent;
@@ -257,13 +262,21 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         worker.execute();
     }
     
-    public void createComponent(String vendor, BigDecimal price, ComponentTypes type, int power, String name ) {
+    public void createComponent(AddComponentDialog dialog, String vendor, BigDecimal price, ComponentTypes type, int power, String name ) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
             @Override
             protected Void doInBackground() throws Exception {
                 Component comp = new Component(vendor, price, type, power, name);
-                compManager.createComponent(comp);
+                try {
+                    compManager.createComponent(comp);
+                    dialog.dispose();
+                } catch(IllegalArgumentException ex) {
+                    WarningDialog warningDialog = new WarningDialog(thisWindow, true);
+                    warningDialog.setSize(365, 140);
+                    warningDialog.setWarningLabel(bundle.getString("compAlreadyExists"));
+                    warningDialog.setVisible(true);
+                }
                 return null;
             }
 
@@ -272,7 +285,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
                 parentWindow.refreshComponentsComboBox();
-                parentWindow.refreshCompModel();
+                parentWindow.refreshCompAndConfModel();
             }
         };
         
@@ -290,6 +303,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 {
                     configs.stream().forEach((config) -> {
                         pcSetManager.deletePcSet(pcSetManager.getPcSet(config, component));
+                        pcSetManager.setLastUpdateTime(config);
                     });
                 }
                 compManager.deleteComponent(component);
@@ -301,7 +315,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
                 parentWindow.refreshComponentsComboBox();
-                parentWindow.refreshCompModel();
+                parentWindow.refreshCompAndConfModel();
+                parentWindow.refreshPriceAndPower();
             }
         };
                 
@@ -309,7 +324,12 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         setButtonsVisibility();
     }
     
-    public void updateComponent(String vendor, String name, BigDecimal price, Integer power){
+    public void updateComponent(EditComponentDialog dialog, String vendor, String name, BigDecimal price, Integer power){
+        String oldVendor = vendor;
+        String oldName = name;
+        BigDecimal oldPrice = price;
+        int oldPower = power;
+        
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
             @Override
@@ -318,7 +338,19 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 currentComponent.setVendor(vendor);
                 currentComponent.setPower(power);
                 currentComponent.setPrice(price);
+                try {
                 compManager.updateComponent(currentComponent);
+                dialog.dispose();
+                } catch(IllegalArgumentException ex) {
+                    WarningDialog warningDialog = new WarningDialog(thisWindow, true);
+                    warningDialog.setSize(365, 140);
+                    warningDialog.setWarningLabel(bundle.getString("compAlreadyExists"));
+                    warningDialog.setVisible(true);
+                    currentComponent.setName(oldName);
+                    currentComponent.setVendor(oldVendor);
+                    currentComponent.setPower(oldPower);
+                    currentComponent.setPrice(oldPrice);
+                }
                 return null;
             }
             
@@ -327,7 +359,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 compModel.loadComponents(compManager.findAllComponents());
                 compModel.fireTableDataChanged();
                 parentWindow.refreshComponentsComboBox();
-                parentWindow.refreshCompModel();
+                parentWindow.refreshCompAndConfModel();
             }
         };
         

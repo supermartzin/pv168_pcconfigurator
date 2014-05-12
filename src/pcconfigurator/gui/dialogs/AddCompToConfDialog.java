@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
 
+import pcconfigurator.gui.frames.MainWindow;
 import java.awt.Window;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -15,6 +16,7 @@ import javax.swing.SwingWorker;
 import pcconfigurator.componentmanager.Component;
 import pcconfigurator.componentmanager.ComponentManager;
 import pcconfigurator.componentmanager.ComponentManagerImpl;
+import pcconfigurator.gui.tablemodels.ComponentTableModel;
 
 /**
  *

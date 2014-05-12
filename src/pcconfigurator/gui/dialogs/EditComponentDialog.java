@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package pcconfigurator.gui;
+package pcconfigurator.gui.dialogs;
 
+import pcconfigurator.gui.frames.ComponentManagerFrame;
 import java.math.BigDecimal;
 
 /**
@@ -164,8 +165,7 @@ public class EditComponentDialog extends javax.swing.JDialog {
             warningDialog.setSize(365, 140);
             warningDialog.setVisible(true);
         } else {  
-            parent.updateComponent(vendorTextField.getText(),nameTextField.getText(),(new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP),(Integer)powerSpinner.getValue());
-            this.dispose();
+            parent.updateComponent(this, vendorTextField.getText(),nameTextField.getText(),(new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP),(Integer)powerSpinner.getValue());
         }
     }//GEN-LAST:event_jButton23ActionPerformed
 
