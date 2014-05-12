@@ -611,8 +611,6 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_compsInCofigTableMouseClicked
 
     private void findConfigsByCompButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findConfigsByCompButtonActionPerformed
-        editConfButton.setEnabled(false);
-        deleteConfButton.setEnabled(false);
         findConfigurationsByComponent();
     }//GEN-LAST:event_findConfigsByCompButtonActionPerformed
 
