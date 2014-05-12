@@ -26,6 +26,7 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
     private final ComponentManager compManager;
     private final ComponentTableModel compModel;
     private final Window thisWindow = this;
+    private final MainWindow parent;
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");   
     private Component component;
     /**
@@ -34,9 +35,10 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
     public AddCompToConfDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);        
         initComponents();
-        
+        this.parent = (MainWindow) parent;
+        addComponentButton.setEnabled(false);
         compManager = new ComponentManagerImpl();
-        this.compModel = (ComponentTableModel) componentsTable.getModel();
+        compModel = (ComponentTableModel) componentsTable.getModel();
         findAllComponents();
     }
     
@@ -51,29 +53,29 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton22 = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
         jLabel40 = new javax.swing.JLabel();
-        jSpinner4 = new javax.swing.JSpinner();
+        amountSpinner = new javax.swing.JSpinner();
         jScrollPane4 = new javax.swing.JScrollPane();
         componentsTable = new javax.swing.JTable();
-        jButton21 = new javax.swing.JButton();
+        addComponentButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("addComponent")); // NOI18N
         setResizable(false);
 
-        jButton22.setText(bundle.getString("cancel")); // NOI18N
-        jButton22.addActionListener(new java.awt.event.ActionListener() {
+        cancelButton.setText(bundle.getString("cancel")); // NOI18N
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton22ActionPerformed(evt);
+                cancelButtonActionPerformed(evt);
             }
         });
 
         jLabel40.setText(bundle.getString("amount")); // NOI18N
 
-        jSpinner4.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        jSpinner4.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        amountSpinner.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
 
         componentsTable.setModel(new ComponentTableModel());
         componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -92,11 +94,11 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
             componentsTable.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("power")); // NOI18N
         }
 
-        jButton21.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
-        jButton21.setText(bundle.getString("addComponent")); // NOI18N
-        jButton21.addActionListener(new java.awt.event.ActionListener() {
+        addComponentButton.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
+        addComponentButton.setText(bundle.getString("addComponent")); // NOI18N
+        addComponentButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton21ActionPerformed(evt);
+                addComponentButtonActionPerformed(evt);
             }
         });
 
@@ -108,11 +110,11 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
                 .addGap(46, 46, 46)
                 .addComponent(jLabel40)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton21, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addComponentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton22, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 671, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -124,27 +126,28 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton21, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton22, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addComponentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel40)
-                    .addComponent(jSpinner4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(amountSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton22ActionPerformed
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
        this.dispose();
-    }//GEN-LAST:event_jButton22ActionPerformed
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
+        addComponentButton.setEnabled(true);
         component = compModel.getComponentAt(componentsTable.convertRowIndexToModel(componentsTable.getSelectedRow()));
     }//GEN-LAST:event_componentsTableMouseClicked
 
-    private void jButton21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton21ActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_jButton21ActionPerformed
+    private void addComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addComponentButtonActionPerformed
+        parent.createPcSet(this, component, (Integer)amountSpinner.getValue());
+    }//GEN-LAST:event_addComponentButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,23 +177,16 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
         //</editor-fold>
 
         /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                AddCompToConfDialog dialog = new AddCompToConfDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            AddCompToConfDialog dialog = new AddCompToConfDialog(new javax.swing.JFrame(), true);
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
         });
-    }
-    
-    public Component showDialog(){
-        setVisible(true);
-        return component;
     }
     
     private void findAllComponents() {
@@ -229,11 +225,11 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addComponentButton;
+    private javax.swing.JSpinner amountSpinner;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JTable componentsTable;
-    private javax.swing.JButton jButton21;
-    private javax.swing.JButton jButton22;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSpinner jSpinner4;
     // End of variables declaration//GEN-END:variables
 }

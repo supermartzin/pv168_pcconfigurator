@@ -25,6 +25,7 @@ import pcconfigurator.componentmanager.ComponentManagerImpl;
 import pcconfigurator.configurationmanager.Configuration;
 import pcconfigurator.configurationmanager.ConfigurationManager;
 import pcconfigurator.configurationmanager.ConfigurationManagerImpl;
+import pcconfigurator.exception.InternalFailureException;
 import pcconfigurator.pcsetmanager.PcSet;
 import pcconfigurator.pcsetmanager.PcSetManager;
 import pcconfigurator.pcsetmanager.PcSetManagerImpl;
@@ -81,8 +82,8 @@ public class MainWindow extends javax.swing.JFrame {
         searchNameLabel = new javax.swing.JTextField();
         componentsComboBox = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        findConfigsByNameButton = new javax.swing.JButton();
+        findConfigsByCompButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -138,14 +139,19 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel4.setText(bundle.getString("searchByComponent")); // NOI18N
 
-        jButton1.setText(bundle.getString("search")); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        findConfigsByNameButton.setText(bundle.getString("search")); // NOI18N
+        findConfigsByNameButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                findConfigsByNameButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText(bundle.getString("search")); // NOI18N
+        findConfigsByCompButton.setText(bundle.getString("search")); // NOI18N
+        findConfigsByCompButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                findConfigsByCompButtonActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("sansserif", 1, 24)); // NOI18N
         jLabel5.setText(bundle.getString("configuration")); // NOI18N
@@ -329,8 +335,8 @@ public class MainWindow extends javax.swing.JFrame {
                                             .addComponent(componentsComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                                            .addComponent(findConfigsByCompButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(findConfigsByNameButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -405,12 +411,12 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(searchNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1))
+                            .addComponent(findConfigsByNameButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(componentsComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4)
-                            .addComponent(jButton2))
+                            .addComponent(findConfigsByCompButton))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -498,20 +504,18 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void addCompToConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompToConfButtonActionPerformed
         AddCompToConfDialog addCompToConf = new AddCompToConfDialog(this, true);
-        Component returnedComponent = addCompToConf.showDialog();
-        addCompToConf.setVisible(false);
-        pcSetManager.createPcSet(new PcSet(returnedComponent, currentConfiguration));      
-        findAllComponentsInConfiguration();
+        addCompToConf.setVisible(true);
     }//GEN-LAST:event_addCompToConfButtonActionPerformed
 
     private void deleteConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteConfButtonActionPerformed
-        configuration = configModel.getConfiguration(configsTable.getSelectedRow());
         DeleteConfigurationDialog deleteConfiguration = new DeleteConfigurationDialog(this, true);
-        deleteConfiguration.setConfToDelete(configuration);
+        deleteConfiguration.setConfToDelete(configModel.getConfiguration(configsTable.getSelectedRow()));
         deleteConfiguration.setVisible(true);
     }//GEN-LAST:event_deleteConfButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void findConfigsByNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findConfigsByNameButtonActionPerformed
+        editConfButton.setEnabled(false);
+        deleteConfButton.setEnabled(false);
         if (searchNameLabel.getText().isEmpty() || searchNameLabel.getText() == null)
         {
             WarningDialog warningDialog = new WarningDialog(this, true);
@@ -523,7 +527,7 @@ public class MainWindow extends javax.swing.JFrame {
         {
             findAllConfigurationsByName(searchNameLabel.getText());
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_findConfigsByNameButtonActionPerformed
 
     private void showAllConfsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllConfsButtonActionPerformed
         SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
@@ -553,6 +557,8 @@ public class MainWindow extends javax.swing.JFrame {
         };
         
         worker.execute();
+        editConfButton.setEnabled(false);
+        deleteConfButton.setEnabled(false);
     }//GEN-LAST:event_showAllConfsButtonActionPerformed
 
     private void configsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_configsTableMouseClicked
@@ -584,6 +590,12 @@ public class MainWindow extends javax.swing.JFrame {
         editAmountButton.setEnabled(true);
         currentComponent = compModel.getComponentAt(compsInCofigTable.convertRowIndexToModel(compsInCofigTable.getSelectedRow()));
     }//GEN-LAST:event_compsInCofigTableMouseClicked
+
+    private void findConfigsByCompButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findConfigsByCompButtonActionPerformed
+        editConfButton.setEnabled(false);
+        deleteConfButton.setEnabled(false);
+        findConfigurationsByComponent();
+    }//GEN-LAST:event_findConfigsByCompButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -625,8 +637,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton deleteConfButton;
     private javax.swing.JButton editAmountButton;
     private javax.swing.JButton editConfButton;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton findConfigsByCompButton;
+    private javax.swing.JButton findConfigsByNameButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -770,6 +782,29 @@ public class MainWindow extends javax.swing.JFrame {
         worker.execute();
     }
     
+    private void findConfigurationsByComponent() {
+        SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
+
+            @Override
+            protected Set<Configuration> doInBackground() throws Exception {
+                Component comp = (Component) compManager.findAllComponents().toArray()[componentsComboBox.getSelectedIndex()];
+                return pcSetManager.findConfigByComponent(comp);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    configModel.loadConfigurations(get());
+                    configModel.fireTableDataChanged();
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "Error getting configurations from database to table: ", ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
+    
     private void findAllComponentsInConfiguration() {
         SwingWorker<Map<Component,Integer>, Void> worker = new SwingWorker<Map<Component,Integer>, Void>() {
 
@@ -816,6 +851,44 @@ public class MainWindow extends javax.swing.JFrame {
         worker.execute();
     }
     
+    public void createPcSet(AddCompToConfDialog dialog, Component component, Integer count) {
+        SwingWorker<Map<Component, Integer>, Void> worker = new SwingWorker<Map<Component, Integer>, Void>() {
+
+            @Override
+            protected Map<Component, Integer> doInBackground() throws Exception {
+                PcSet newSet = new PcSet(component, currentConfiguration, (int)count);
+                try {
+                    pcSetManager.createPcSet(newSet);
+                    dialog.dispose();
+                } catch (IllegalArgumentException ex) {
+                    WarningDialog warningDialog = new WarningDialog(mainWindow, true);
+                    warningDialog.setSize(460, 140);
+                    warningDialog.setWarningLabel(bundle.getString("invalidNumberOfComponents"));
+                    warningDialog.setVisible(true);
+                } catch (InternalFailureException ex) {
+                    WarningDialog warningDialog = new WarningDialog(mainWindow, true);
+                    warningDialog.setSize(400, 140);
+                    warningDialog.setWarningLabel(bundle.getString("pcSetAlreadyExists"));
+                    warningDialog.setVisible(true);
+                }
+                return pcSetManager.listCompsInConfiguration(currentConfiguration);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    compModel.loadComponents(get());
+                    compModel.fireTableDataChanged();
+                    refreshPriceAndPower();
+                } catch (InterruptedException | ExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "Error getting components in configuration from database to table: ", ex);
+                }
+            }
+        };
+        
+        worker.execute();
+    }
+    
     private void refreshPriceAndPower() {
         double price = 0;
         Integer power = 0;
@@ -826,13 +899,12 @@ public class MainWindow extends javax.swing.JFrame {
             Component tempComponent = (Component) pairs.getKey();
             
             Integer count = ((Integer) pairs.getValue())==0 ? 1 : ((Integer) pairs.getValue());
-            price += tempComponent.getPrice().doubleValue();
-            //price.add(tempComponent.getPrice().multiply(new BigDecimal(count)));
-            power += tempComponent.getPower();
+            price += tempComponent.getPrice().doubleValue() * count;
+            power += tempComponent.getPower() * count;
             it.remove(); // avoids a ConcurrentModificationException
         }
 
-        totalPriceLabel.setText(new BigDecimal(price).toString());
+        totalPriceLabel.setText((new BigDecimal(price)).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         totalPowerLabel.setText(power.toString());
     }
     

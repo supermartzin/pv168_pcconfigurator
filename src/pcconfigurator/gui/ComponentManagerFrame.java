@@ -154,7 +154,9 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_editComponentButtonActionPerformed
 
     private void deleteComponentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteComponentButtonActionPerformed
-        deleteComponent(currentComponent);
+        DeleteComponentDialog deleteComponent = new DeleteComponentDialog(this, true);
+        deleteComponent.sendCompToDelete(compModel.getComponentAt(componentsTable.getSelectedRow()));
+        deleteComponent.setVisible(true);
     }//GEN-LAST:event_deleteComponentButtonActionPerformed
 
     private void componentsTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_componentsTableMouseClicked
@@ -275,6 +277,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         };
         
         worker.execute();
+        setButtonsVisibility();
     }
     
     public void deleteComponent(Component component){
@@ -303,6 +306,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         };
                 
         worker.execute();
+        setButtonsVisibility();
     }
     
     public void updateComponent(String vendor, String name, BigDecimal price, Integer power){
@@ -328,9 +332,15 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         };
         
         worker.execute();
+        setButtonsVisibility();
     }
     
     public void setParentWindow(MainWindow parent) {
         this.parentWindow = parent;
+    }
+    
+    public void setButtonsVisibility() {
+        editComponentButton.setEnabled(false);
+        deleteComponentButton.setEnabled(false);
     }
 }

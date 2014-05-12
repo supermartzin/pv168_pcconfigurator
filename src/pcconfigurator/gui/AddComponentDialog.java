@@ -17,7 +17,7 @@ import pcconfigurator.componentmanager.ComponentTypes;
  */
 public class AddComponentDialog extends javax.swing.JDialog {
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");
-    private ComponentManagerFrame parent;
+    private final ComponentManagerFrame parent;
     /**
      * Creates new form addComponentDialog
      */
@@ -181,7 +181,7 @@ public class AddComponentDialog extends javax.swing.JDialog {
         }
         else
         {
-            parent.createComponent(vendorTextField.getText(), new BigDecimal((Double)priceSpinner.getValue()), 
+            parent.createComponent(vendorTextField.getText(), (new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP), 
                                    ComponentTypes.values()[typeComboBox.getSelectedIndex()], (Integer)powerSpinner.getValue(), nameTextField.getText());
             this.dispose();
         }

@@ -76,7 +76,7 @@ public class PcSetManagerImpl implements PcSetManager {
         
         checkPcSet(pcSet);
         if (this.getPcSet(pcSet.getConfiguration(), pcSet.getComponent()) != null) {
-            throw new IllegalArgumentException("This PC Set already exists.");
+            throw new InternalFailureException("This PC Set already exists.");
         }
         
         PreparedStatement st = null;

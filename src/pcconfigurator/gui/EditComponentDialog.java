@@ -82,7 +82,7 @@ public class EditComponentDialog extends javax.swing.JDialog {
         jLabel43.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel43.setText(bundle.getString("vendor")); // NOI18N
 
-        priceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), null, null, Double.valueOf(1.0d)));
+        priceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
 
         powerSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 
@@ -164,7 +164,7 @@ public class EditComponentDialog extends javax.swing.JDialog {
             warningDialog.setSize(365, 140);
             warningDialog.setVisible(true);
         } else {  
-            parent.updateComponent(vendorTextField.getText(),nameTextField.getText(),new BigDecimal((Double)priceSpinner.getValue()),(Integer)powerSpinner.getValue());
+            parent.updateComponent(vendorTextField.getText(),nameTextField.getText(),(new BigDecimal((Double)priceSpinner.getValue())).setScale(2, BigDecimal.ROUND_HALF_UP),(Integer)powerSpinner.getValue());
             this.dispose();
         }
     }//GEN-LAST:event_jButton23ActionPerformed
