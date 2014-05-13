@@ -50,7 +50,7 @@ public class EditAmountDialog extends javax.swing.JDialog {
         setResizable(false);
 
         amountSpinner.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100000, 1));
 
         confirmButton.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         confirmButton.setText(bundle.getString("confirm")); // NOI18N

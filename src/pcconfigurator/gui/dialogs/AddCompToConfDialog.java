@@ -77,7 +77,7 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
         jLabel40.setText(bundle.getString("amount")); // NOI18N
 
         amountSpinner.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
-        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        amountSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100000, 1));
 
         componentsTable.setModel(new ComponentTableModel());
         componentsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);

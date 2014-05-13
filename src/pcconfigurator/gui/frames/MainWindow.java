@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pcconfigurator.gui.frames;
 
 import java.math.BigDecimal;
@@ -50,20 +49,20 @@ public class MainWindow extends javax.swing.JFrame {
 
     private final java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings");
     private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
-    
+
     private final ComponentManager compManager;
     private final ConfigurationManager configManager;
     private final PcSetManager pcSetManager;
-    
+
     private final ConfigurationTableModel configModel;
     private final ComponentsInConfigTableModel compModel;
-       
+
     private Component currentComponent;
     private Configuration configuration;
     private Configuration currentConfiguration;
-    
+
     private final MainWindow mainWindow = this;
-    
+
     /**
      * Creates new form MainWindow
      */
@@ -71,7 +70,7 @@ public class MainWindow extends javax.swing.JFrame {
         pcSetManager = new PcSetManagerImpl();
         configManager = new ConfigurationManagerImpl();
         compManager = new ComponentManagerImpl();
-        
+
         initComponents();
         configModel = (ConfigurationTableModel) configsTable.getModel();
         compModel = (ComponentsInConfigTableModel) compsInCofigTable.getModel();
@@ -513,7 +512,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void editAmountButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editAmountButtonActionPerformed
         EditAmountDialog editAmount = new EditAmountDialog(this, true);
-        editAmount.setCompAndConf(compModel.getComponentAt(compsInCofigTable.getSelectedRow()), currentConfiguration, Integer.parseInt((String)compsInCofigTable.getValueAt(compsInCofigTable.getSelectedRow(), 5)));
+        editAmount.setCompAndConf(compModel.getComponentAt(compsInCofigTable.getSelectedRow()), currentConfiguration, Integer.parseInt((String) compsInCofigTable.getValueAt(compsInCofigTable.getSelectedRow(), 5)));
         editAmount.setVisible(true);
         editConfButton.setEnabled(false);
         deleteConfButton.setEnabled(false);
@@ -533,15 +532,12 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_deleteConfButtonActionPerformed
 
     private void findConfigsByNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findConfigsByNameButtonActionPerformed
-        if (searchNameLabel.getText().isEmpty() || searchNameLabel.getText() == null)
-        {
+        if (searchNameLabel.getText().isEmpty() || searchNameLabel.getText() == null) {
             WarningDialog warningDialog = new WarningDialog(this, true);
             warningDialog.setSize(365, 140);
             warningDialog.setWarningLabel(bundle.getString("searchByNameEmpty"));
             warningDialog.setVisible(true);
-        }
-        else 
-        {
+        } else {
             findAllConfigurationsByName(searchNameLabel.getText());
         }
     }//GEN-LAST:event_findConfigsByNameButtonActionPerformed
@@ -562,8 +558,7 @@ public class MainWindow extends javax.swing.JFrame {
                         warningDialog.setSize(365, 140);
                         warningDialog.setWarningLabel(bundle.getString("noConfigurationInDB"));
                         warningDialog.setVisible(true);
-                    }
-                    else {
+                    } else {
                         configModel.loadConfigurations(get());
                         configModel.fireTableDataChanged();
                     }
@@ -572,7 +567,7 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
+
         worker.execute();
         editConfButton.setEnabled(false);
         deleteConfButton.setEnabled(false);
@@ -589,7 +584,7 @@ public class MainWindow extends javax.swing.JFrame {
         deleteConfButton.setEnabled(true);
         deleteCompInConfButton.setEnabled(false);
         editAmountButton.setEnabled(false);
-        
+
         findAllComponentsInConfiguration();
         refreshPriceAndPower();
     }//GEN-LAST:event_configsTableMouseClicked
@@ -597,7 +592,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void deleteCompInConfButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCompInConfButtonActionPerformed
         editConfButton.setEnabled(false);
         deleteConfButton.setEnabled(false);
-        if (currentComponent != null){
+        if (currentComponent != null) {
             DeletePcSetDialog dialog = new DeletePcSetDialog(this, true);
             dialog.setCompAndConf(currentConfiguration, currentComponent);
             dialog.setVisible(true);
@@ -686,8 +681,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel totalPowerLabel;
     private javax.swing.JLabel totalPriceLabel;
     // End of variables declaration//GEN-END:variables
-    
-    
+
     public void createConfiguration(CreateConfigurationDialog dialog, String name, String creator) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -697,7 +691,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     configManager.createConfiguration(conf);
                     dialog.dispose();
-                } catch(IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     WarningDialog warningDialog = new WarningDialog(mainWindow, true);
                     warningDialog.setSize(365, 140);
                     warningDialog.setWarningLabel(bundle.getString("configAlreadyExists"));
@@ -712,10 +706,10 @@ public class MainWindow extends javax.swing.JFrame {
                 configModel.fireTableDataChanged();
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void updateConfiguration(EditConfigurationDialog dialog, String name, String creator) {
         String oldName = name;
         String oldCreator = creator;
@@ -728,7 +722,7 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     configManager.updateConfiguration(configuration);
                     dialog.dispose();
-                } catch(IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     WarningDialog warningDialog = new WarningDialog(mainWindow, true);
                     warningDialog.setSize(365, 140);
                     warningDialog.setWarningLabel(bundle.getString("configAlreadyExists"));
@@ -745,10 +739,10 @@ public class MainWindow extends javax.swing.JFrame {
                 configModel.fireTableDataChanged();
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void deleteConfiguration(Configuration configuration) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -758,7 +752,7 @@ public class MainWindow extends javax.swing.JFrame {
                 comps.stream().forEach((comp) -> {
                     pcSetManager.deletePcSet(pcSetManager.getPcSet(configuration, comp));
                 });
-                
+
                 configManager.deleteConfiguration(configuration);
                 return null;
             }
@@ -776,10 +770,10 @@ public class MainWindow extends javax.swing.JFrame {
                 lastChangedOnTextBox.setText("");
             }
         };
-        
+
         worker.execute();
     }
-    
+
     private void findAllConfigurationsByName(String name) {
         SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
 
@@ -796,8 +790,7 @@ public class MainWindow extends javax.swing.JFrame {
                         warningDialog.setSize(365, 140);
                         warningDialog.setWarningLabel(bundle.getString("noConfigurationFound"));
                         warningDialog.setVisible(true);
-                    }
-                    else {
+                    } else {
                         configModel.loadConfigurations(get());
                         configModel.fireTableDataChanged();
                     }
@@ -806,10 +799,10 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
-        worker.execute();       
+
+        worker.execute();
     }
-    
+
     private void findAllConfigurations() {
         SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
 
@@ -830,7 +823,7 @@ public class MainWindow extends javax.swing.JFrame {
         };
         worker.execute();
     }
-    
+
     private void findConfigurationsByComponent() {
         SwingWorker<Set<Configuration>, Void> worker = new SwingWorker<Set<Configuration>, Void>() {
 
@@ -848,8 +841,7 @@ public class MainWindow extends javax.swing.JFrame {
                         warningDialog.setSize(365, 140);
                         warningDialog.setWarningLabel(bundle.getString("noConfigurationFound"));
                         warningDialog.setVisible(true);
-                    }
-                    else {
+                    } else {
                         configModel.loadConfigurations(get());
                         configModel.fireTableDataChanged();
                         deleteConfButton.setEnabled(false);
@@ -860,21 +852,21 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
+
         worker.execute();
     }
-    
+
     private void findAllComponentsInConfiguration() {
-        SwingWorker<Map<Component,Integer>, Void> worker = new SwingWorker<Map<Component,Integer>, Void>() {
+        SwingWorker<Map<Component, Integer>, Void> worker = new SwingWorker<Map<Component, Integer>, Void>() {
 
             @Override
-            protected Map<Component,Integer> doInBackground() throws Exception {
+            protected Map<Component, Integer> doInBackground() throws Exception {
                 return pcSetManager.listCompsInConfiguration(currentConfiguration);
             }
 
             @Override
             protected void done() {
-                try {                   
+                try {
                     compModel.loadComponents(get());
                     compModel.fireTableDataChanged();
                 } catch (InterruptedException | ExecutionException ex) {
@@ -882,10 +874,10 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void deletePcSet(Component component, Configuration configuration) {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -903,18 +895,20 @@ public class MainWindow extends javax.swing.JFrame {
                 configModel.fireTableDataChanged();
                 changeLastUpdateLabel(currentConfiguration);
                 refreshPriceAndPower();
+                editAmountButton.setEnabled(false);
+                deleteCompInConfButton.setEnabled(false);
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void createPcSet(AddCompToConfDialog dialog, Component component, Integer count) {
         SwingWorker<Map<Component, Integer>, Void> worker = new SwingWorker<Map<Component, Integer>, Void>() {
 
             @Override
             protected Map<Component, Integer> doInBackground() throws Exception {
-                PcSet newSet = new PcSet(component, currentConfiguration, (int)count);
+                PcSet newSet = new PcSet(component, currentConfiguration, (int) count);
                 try {
                     pcSetManager.createPcSet(newSet);
                     dialog.dispose();
@@ -941,15 +935,17 @@ public class MainWindow extends javax.swing.JFrame {
                     configModel.loadConfigurations(configManager.findAllConfigurations());
                     configModel.fireTableDataChanged();
                     refreshPriceAndPower();
+                    editAmountButton.setEnabled(false);
+                    deleteCompInConfButton.setEnabled(false);
                 } catch (InterruptedException | ExecutionException ex) {
                     LOGGER.log(Level.SEVERE, "Error getting components in configuration from database to table: ", ex);
                 }
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void updatePcSet(EditAmountDialog dialog, Configuration configuration, Component component, int amount) {
         SwingWorker<Map<Component, Integer>, Void> worker = new SwingWorker<Map<Component, Integer>, Void>() {
 
@@ -958,13 +954,13 @@ public class MainWindow extends javax.swing.JFrame {
                 try {
                     pcSetManager.updatePcSet(new PcSet(component, configuration, amount));
                     dialog.dispose();
-                } catch(IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     WarningDialog warningDialog = new WarningDialog(mainWindow, true);
                     warningDialog.setSize(460, 140);
                     warningDialog.setWarningLabel(bundle.getString("invalidNumberOfComponents"));
                     warningDialog.setVisible(true);
                 }
-                
+
                 return pcSetManager.listCompsInConfiguration(configuration);
             }
 
@@ -984,20 +980,20 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
+
         worker.execute();
     }
-    
+
     public void refreshPriceAndPower() {
         double price = 0;
         Integer power = 0;
         Iterator it = pcSetManager.listCompsInConfiguration(currentConfiguration).entrySet().iterator();
-        
+
         while (it.hasNext()) {
             Map.Entry pairs = (Map.Entry) it.next();
             Component tempComponent = (Component) pairs.getKey();
-            
-            Integer count = ((Integer) pairs.getValue())==0 ? 1 : ((Integer) pairs.getValue());
+
+            Integer count = ((Integer) pairs.getValue()) == 0 ? 1 : ((Integer) pairs.getValue());
             price += tempComponent.getPrice().doubleValue() * count;
             power += tempComponent.getPower() * count;
             it.remove(); // avoids a ConcurrentModificationException
@@ -1006,23 +1002,23 @@ public class MainWindow extends javax.swing.JFrame {
         totalPriceLabel.setText((new BigDecimal(price)).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
         totalPowerLabel.setText(power.toString());
     }
-    
+
     private String[] getComponentStrings() {
         List<String> strings = new ArrayList<>();
-        
+
         compManager.findAllComponents().stream().forEach((comp) -> {
             strings.add(comp.toString());
         });
-        
+
         String[] strings2 = new String[strings.size()];
         strings.toArray(strings2);
         return strings2;
     }
-    
+
     public void refreshComponentsComboBox() {
         componentsComboBox.setModel(new DefaultComboBoxModel(getComponentStrings()));
     }
-    
+
     public void refreshCompAndConfModel() {
         editAmountButton.setEnabled(false);
         deleteCompInConfButton.setEnabled(false);
@@ -1045,10 +1041,12 @@ public class MainWindow extends javax.swing.JFrame {
                 }
             }
         };
-        
-        if (currentConfiguration != null) worker.execute();
+
+        if (currentConfiguration != null) {
+            worker.execute();
+        }
     }
-    
+
     public void changeLastUpdateLabel(Configuration conf) {
         lastChangedOnTextBox.setText(conf.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_TIME) + " - " + conf.getLastUpdate().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }

@@ -24,7 +24,6 @@ import pcconfigurator.gui.tablemodels.ComponentTableModel;
 import pcconfigurator.gui.dialogs.DeleteComponentDialog;
 import pcconfigurator.gui.dialogs.EditComponentDialog;
 import pcconfigurator.gui.dialogs.WarningDialog;
-import pcconfigurator.pcsetmanager.PcSetManager;
 import pcconfigurator.pcsetmanager.PcSetManagerImpl;
 
 /**
@@ -360,6 +359,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 compModel.fireTableDataChanged();
                 parentWindow.refreshComponentsComboBox();
                 parentWindow.refreshCompAndConfModel();
+                parentWindow.refreshPriceAndPower();
             }
         };
         

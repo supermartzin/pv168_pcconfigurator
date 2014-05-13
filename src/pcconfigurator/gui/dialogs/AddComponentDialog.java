@@ -95,7 +95,7 @@ public class AddComponentDialog extends javax.swing.JDialog {
         jLabel23.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         jLabel23.setText(bundle.getString("power")); // NOI18N
 
-        priceSpinner.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
+        priceSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 100000.0d, 1.0d));
 
         powerSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(0), Integer.valueOf(0), null, Integer.valueOf(1)));
 
@@ -122,7 +122,7 @@ public class AddComponentDialog extends javax.swing.JDialog {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(priceSpinner)
-                                    .addComponent(powerSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(powerSpinner))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel24)
