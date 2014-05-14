@@ -71,6 +71,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("componentManager")); // NOI18N
+        setLocationByPlatform(true);
         setResizable(false);
 
         deleteComponentButton.setText(bundle.getString("delete")); // NOI18N

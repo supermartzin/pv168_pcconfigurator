@@ -52,6 +52,7 @@ public class DeleteConfigurationDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("deleteConfiguration")); // NOI18N
+        setLocationByPlatform(true);
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N

@@ -735,8 +735,13 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             protected void done() {
+                editConfButton.setEnabled(false);
+                deleteConfButton.setEnabled(false);
                 configModel.loadConfigurations(configManager.findAllConfigurations());
                 configModel.fireTableDataChanged();
+                changeLastUpdateLabel(configuration);
+                confNameTextBox.setText(configuration.getName());
+                confCreatorTextBox.setText(configuration.getCreator());
             }
         };
 
@@ -759,6 +764,9 @@ public class MainWindow extends javax.swing.JFrame {
 
             @Override
             protected void done() {
+                editConfButton.setEnabled(false);
+                deleteConfButton.setEnabled(false);
+                addCompToConfButton.setEnabled(false);
                 configModel.loadConfigurations(configManager.findAllConfigurations());
                 configModel.fireTableDataChanged();
                 compModel.loadComponents(new TreeMap<Component, Integer>());

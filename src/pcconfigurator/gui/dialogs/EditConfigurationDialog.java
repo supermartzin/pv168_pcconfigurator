@@ -45,6 +45,7 @@ public class EditConfigurationDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("editConfiguration")); // NOI18N
+        setLocationByPlatform(true);
         setResizable(false);
 
         jButton17.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N

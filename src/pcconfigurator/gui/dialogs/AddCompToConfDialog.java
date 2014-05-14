@@ -65,6 +65,7 @@ public class AddCompToConfDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("addComponent")); // NOI18N
+        setLocationByPlatform(true);
         setResizable(false);
 
         cancelButton.setText(bundle.getString("cancel")); // NOI18N

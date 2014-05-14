@@ -45,6 +45,7 @@ public class CreateConfigurationDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("pcconfigurator/gui/Strings"); // NOI18N
         setTitle(bundle.getString("createConfiguration")); // NOI18N
+        setLocationByPlatform(true);
         setResizable(false);
 
         jLabel35.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
