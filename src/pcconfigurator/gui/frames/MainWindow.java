@@ -706,7 +706,8 @@ public class MainWindow extends javax.swing.JFrame {
                 configModel.fireTableDataChanged();
             }
         };
-
+        
+        LOGGER.log(Level.INFO, "Creating configuration: " + name + " - " + creator);
         worker.execute();
     }
 
@@ -745,6 +746,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         };
 
+        LOGGER.log(Level.INFO, "Updating configuration: " + configuration + " to " + name + " - " + creator);
         worker.execute();
     }
 
@@ -769,7 +771,7 @@ public class MainWindow extends javax.swing.JFrame {
                 addCompToConfButton.setEnabled(false);
                 configModel.loadConfigurations(configManager.findAllConfigurations());
                 configModel.fireTableDataChanged();
-                compModel.loadComponents(new TreeMap<Component, Integer>());
+                compModel.loadComponents(new TreeMap<>());
                 compModel.fireTableDataChanged();
                 refreshPriceAndPower();
                 confNameTextBox.setText("");
@@ -778,7 +780,8 @@ public class MainWindow extends javax.swing.JFrame {
                 lastChangedOnTextBox.setText("");
             }
         };
-
+        
+        LOGGER.log(Level.INFO, "Deleting configuration: " + configuration);
         worker.execute();
     }
 
@@ -907,7 +910,8 @@ public class MainWindow extends javax.swing.JFrame {
                 deleteCompInConfButton.setEnabled(false);
             }
         };
-
+        
+        LOGGER.log(Level.INFO, "Deleting PC Set: " + pcSetManager.getPcSet(configuration, component));
         worker.execute();
     }
 
@@ -951,6 +955,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         };
 
+        LOGGER.log(Level.INFO, "Creating PC Set: " + component + ", amount: " + count + " with " + currentConfiguration);
         worker.execute();
     }
 
@@ -989,6 +994,7 @@ public class MainWindow extends javax.swing.JFrame {
             }
         };
 
+        LOGGER.log(Level.INFO, "Updating PC Set: " + component + ", amount: " + amount + " with " + configuration);
         worker.execute();
     }
 

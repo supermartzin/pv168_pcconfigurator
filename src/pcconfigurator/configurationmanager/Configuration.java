@@ -85,5 +85,9 @@ public class Configuration {
     
     public static final Comparator<Configuration> idComparator = (Configuration o1, Configuration o2) 
             -> o1.getId().compareTo(o2.getId());
-    
+
+    @Override
+    public String toString() {
+        return this.name + " - " + this.creator; 
+    }
 }

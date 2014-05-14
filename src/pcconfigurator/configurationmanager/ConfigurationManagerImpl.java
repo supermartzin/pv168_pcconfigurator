@@ -28,7 +28,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         Properties prop = new Properties();
         InputStream input = null;
         try {
-            input = new FileInputStream("credentials.properties");
+            input = new FileInputStream("./credentials.properties");
             prop.load(input); 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Error opening credentials file: ", ex);

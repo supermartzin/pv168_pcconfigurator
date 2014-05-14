@@ -289,6 +289,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             }
         };
         
+        LOGGER.log(Level.INFO, "Creating component: " + type.getName() + ": " + vendor + " " + name + " - " + power + " W [" + price.toString() + " €]");
         worker.execute();
         setButtonsVisibility();
     }
@@ -319,7 +320,8 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
                 parentWindow.refreshPriceAndPower();
             }
         };
-                
+               
+        LOGGER.log(Level.INFO, "Deleting component: " + component);
         worker.execute();
         setButtonsVisibility();
     }
@@ -364,6 +366,7 @@ public class ComponentManagerFrame extends javax.swing.JFrame {
             }
         };
         
+        LOGGER.log(Level.INFO, "Updating component: " + currentComponent + " to: " + vendor + " " + name + " - " + power + " W [" + price.toString() + " €]");
         worker.execute();
         setButtonsVisibility();
     }

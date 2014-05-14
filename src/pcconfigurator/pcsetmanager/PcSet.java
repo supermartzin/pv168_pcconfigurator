@@ -72,6 +72,9 @@ public class PcSet {
     
     public static final Comparator<PcSet> idComparator = (PcSet o1, PcSet o2) 
             -> o1.getComponent().getId().compareTo(o2.getComponent().getId())*o1.getConfiguration().getId().compareTo(o2.getConfiguration().getId());
-    
-    
+
+    @Override
+    public String toString() {
+        return "PC Set: " + this.configuration + ": " + this.component;
+    }
 }
